@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:foreground="?android:attr/selectableItemBackground">
+    <data>
+        <import type="android.view.View" />
+
+        <variable
+            name="conversation"
+            type="com.progcorp.unitedmessengers.data.model.Conversation" />
+        <variable
+            name="viewmodel"
+            type="com.progcorp.unitedmessengers.ui.conversations.ConversationsViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:paddingTop="@dimen/_3sdp"
+        android:paddingBottom="@dimen/_3sdp"
+        android:paddingLeft="@dimen/_8sdp"
+        android:paddingRight="@dimen/_8sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:clickable="true"
+        android:onClick="@{() -> viewmodel.xxxxx()}"
+        app:bind_message="@{conversation.last_message}"
+        app:bind_message_textView="@{last_message}"
+        app:bind_message_view="@{unread_count}"
+        app:bind_conversationID="@{viewmodel.conversationID}"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/photo"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_50sdp"
+            android:padding="@dimen/_3sdp"
+            app:bind_image_url="@{conversation.photo}"
+            app:shapeAppearanceOverlay="@style/circleImageView"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_baseline_account_circle_24"/>
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/primary_text"
+            android:textSize="@dimen/_13ssp"
+            android:textStyle="bold"
+            android:paddingStart="@dimen/_6sdp"
+            app:layout_constraintBottom_toTopOf="@+id/last_message"
+            app:layout_constraintLeft_toRightOf="@+id/photo"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
+            android:text="@{conversation.title}"
+            tools:text = "Test"/>
+
+        <TextView
+            android:id="@+id/last_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/secondary_text"
+            android:textSize="@dimen/_12ssp"
+            android:paddingStart="@dimen/_6sdp"
+            app:layout_constraintLeft_toRightOf="@+id/photo"
+            app:layout_constraintTop_toBottomOf="@+id/name"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@{conversation.last_message}"
+            tools:text = "Message"/>
+
+        <TextView
+            android:id="@+id/read_state"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:layout_gravity="center"
+            android:background="@drawable/unread_messages"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/_10ssp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name"
+            app:layout_constraintBottom_toTopOf="@+id/last_message"
+            android:layout_marginEnd="@dimen/_8sdp"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:id="@+id/unread_count"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center"
+            android:background="@drawable/unread_messages"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/_10ssp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name"
+            app:layout_constraintBottom_toTopOf="@+id/last_message"
+            android:visibility="invisible"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

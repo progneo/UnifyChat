@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_telegram">
+    <fragment
+        android:id="@+id/navigation_telegram"
+        android:name="com.progcorp.unitedmessengers.mvp.views.fragments.TelegramFragment"
+        android:label="@string/telegram"
+        tools:layout="@layout/fragment_telegram" />
+    <fragment
+        android:id="@+id/navigation_vk"
+        android:name="com.progcorp.unitedmessengers.mvp.views.fragments.VKFragment"
+        android:label="@string/vk"
+        tools:layout="@layout/fragment_vk" />
+</navigation>
