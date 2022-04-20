@@ -11,9 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.data.model.Conversation
-import com.progcorp.unitedmessengers.data.model.Message
-import com.progcorp.unitedmessenges.databinding.FragmentChatBinding
-import com.progcorp.unitedmessenges.databinding.ToolbarAddonChatBinding
+import com.progcorp.unitedmessengers.databinding.FragmentChatBinding
+import com.progcorp.unitedmessengers.databinding.ToolbarAddonChatBinding
 import kotlinx.android.synthetic.main.fragment_chat.*
 import java.lang.Exception
 
@@ -47,20 +46,20 @@ class ChatFragment : Fragment() {
     ): View {
         viewDataBinding =
             FragmentChatBinding.inflate(inflater, container, false)
-                .apply { viewmodel = viewmodel }
+                .apply { viewmodel = viewModel }
             viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
         setHasOptionsMenu(true)
 
         toolbarAddonChatBinding =
             ToolbarAddonChatBinding.inflate(inflater, container, false)
-                .apply { viewmodel = viewmodel }
+                .apply { viewmodel = viewModel }
         toolbarAddonChatBinding.lifecycleOwner = this.viewLifecycleOwner
 
         return viewDataBinding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setupCustomToolbar()
         setupListAdapter()
     }
@@ -96,7 +95,7 @@ class ChatFragment : Fragment() {
                 }
             })
             listAdapter =
-                MessagesListAdapter(viewModel, requireArguments().getParcelableArrayList<Message>("")!!)
+                MessagesListAdapter(viewModel)
             listAdapter.registerAdapterDataObserver(listAdapterObserver)
             viewDataBinding.recyclerView.adapter = listAdapter
         }

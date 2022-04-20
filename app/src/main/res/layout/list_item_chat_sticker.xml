@@ -35,6 +35,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/photo_sticker_left"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:shapeAppearanceOverlay="@style/circleImageView"
+                app:bind_image_url="@{message.senderPhoto}"
                 tools:src="@drawable/ic_baseline_account_circle_24" />
 
             <TextView
@@ -56,6 +57,7 @@
                 android:layout_marginStart="@dimen/_3sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/photo_sender"
+                app:bind_image_url="@{message.sticker}"
                 tools:src="@drawable/sticker"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
