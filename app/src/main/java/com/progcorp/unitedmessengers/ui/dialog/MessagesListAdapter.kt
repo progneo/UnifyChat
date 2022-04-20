@@ -6,10 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.data.model.Message
-import com.progcorp.unitedmessenges.databinding.*
-import com.squareup.picasso.Picasso
+import com.progcorp.unitedmessengers.databinding.*
 
-class MessagesListAdapter(private val viewModel: DialogViewModel, private val messageList: List<Message>) : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiffCallback()) {
+class MessagesListAdapter(private val viewModel: DialogViewModel) : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiffCallback()) {
 
     class DialogMessageViewHolder(private val binding: ListItemDialogMessageBinding)  :
         RecyclerView.ViewHolder(binding.root) {
@@ -25,7 +24,7 @@ class MessagesListAdapter(private val viewModel: DialogViewModel, private val me
         fun bind(viewModel: DialogViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
-            Picasso.get().load(item.sticker).into(binding.photoStickerLeft)
+            //Picasso.get().load(item.sticker).into(binding.photoStickerLeft)
             binding.executePendingBindings()
         }
     }
@@ -53,7 +52,7 @@ class MessagesListAdapter(private val viewModel: DialogViewModel, private val me
         fun bind(viewModel: DialogViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
-            Picasso.get().load(item.senderPhoto).into(binding.photoStickerRight)
+            //Picasso.get().load(item.senderPhoto).into(binding.photoStickerRight)
             binding.executePendingBindings()
         }
     }
@@ -68,7 +67,7 @@ class MessagesListAdapter(private val viewModel: DialogViewModel, private val me
     }
 
     override fun getItemViewType(position: Int): Int {
-        return messageList[position].type
+        return getItem(position).type
     }
 
     override fun onCreateViewHolder(
@@ -79,32 +78,32 @@ class MessagesListAdapter(private val viewModel: DialogViewModel, private val me
 
         return when (viewType) {
 
-            Message.CHAT_MESSAGE_OUT -> {
+            Message.DIALOG_MESSAGE_OUT -> {
                 val binding = ListItemDialogOutMessageBinding.inflate(layoutInflater, parent, false)
                 DialogOutMessageViewHolder(binding)
             }
 
-            Message.CHAT_STICKER_OUT -> {
+            Message.DIALOG_STICKER_OUT -> {
                 val binding = ListItemDialogOutStickerBinding.inflate(layoutInflater, parent, false)
                 DialogOutStickerViewHolder(binding)
             }
 
-            Message.CHAT_ATTACHMENT_OUT -> {
+            Message.DIALOG_ATTACHMENT_OUT -> {
                 val binding = ListItemDialogOutAttachmentBinding.inflate(layoutInflater, parent, false)
                 DialogOutAttachmentViewHolder(binding)
             }
 
-            Message.CHAT_MESSAGE -> {
+            Message.DIALOG_MESSAGE -> {
                 val binding = ListItemDialogMessageBinding.inflate(layoutInflater, parent, false)
                 DialogMessageViewHolder(binding)
             }
 
-            Message.CHAT_STICKER -> {
+            Message.DIALOG_STICKER -> {
                 val binding = ListItemDialogStickerBinding.inflate(layoutInflater, parent, false)
                 DialogStickerViewHolder(binding)
             }
 
-            Message.CHAT_ATTACHMENT -> {
+            Message.DIALOG_ATTACHMENT -> {
                 val binding = ListItemDialogAttachmentBinding.inflate(layoutInflater, parent, false)
                 DialogAttachmentViewHolder(binding)
             }
@@ -145,10 +144,6 @@ class MessagesListAdapter(private val viewModel: DialogViewModel, private val me
                 throw Exception("Error reading holder type")
             }
         }
-    }
-
-    override fun getItemCount(): Int {
-        return messageList.size
     }
 }
 

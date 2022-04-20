@@ -45,6 +45,7 @@
                 android:layout_height="@dimen/_100sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:bind_image_url="@{message.sticker}"
                 tools:src="@drawable/sticker"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

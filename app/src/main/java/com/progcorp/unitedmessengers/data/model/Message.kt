@@ -49,7 +49,6 @@ data class Message(
         parcel.writeString(senderPhoto)
         parcel.writeString(action)
         parcel.writeString(attachments)
-        //parcel.writeStringList(attachments)
         parcel.writeString(sticker)
         parcel.writeString(text)
         parcel.writeInt(type)

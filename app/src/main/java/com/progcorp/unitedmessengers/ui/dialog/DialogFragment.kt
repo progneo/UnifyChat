@@ -11,9 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.data.model.Conversation
-import com.progcorp.unitedmessengers.data.model.Message
-import com.progcorp.unitedmessenges.databinding.FragmentDialogBinding
-import com.progcorp.unitedmessenges.databinding.ToolbarAddonDialogBinding
+import com.progcorp.unitedmessengers.databinding.FragmentDialogBinding
+import com.progcorp.unitedmessengers.databinding.ToolbarAddonDialogBinding
 import kotlinx.android.synthetic.main.fragment_chat.*
 import java.lang.Exception
 
@@ -47,20 +46,20 @@ class DialogFragment : Fragment() {
     ): View {
         viewDataBinding =
             FragmentDialogBinding.inflate(inflater, container, false)
-                .apply { viewmodel = viewmodel }
+                .apply { viewmodel = viewModel }
             viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
         setHasOptionsMenu(true)
 
         toolbarAddonDialogBinding =
             ToolbarAddonDialogBinding.inflate(inflater, container, false)
-                .apply { viewmodel = viewmodel }
+                .apply { viewmodel = viewModel }
         toolbarAddonDialogBinding.lifecycleOwner = this.viewLifecycleOwner
 
         return viewDataBinding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setupCustomToolbar()
         setupListAdapter()
     }
@@ -96,7 +95,7 @@ class DialogFragment : Fragment() {
                 }
             })
             listAdapter =
-                MessagesListAdapter(viewModel, requireArguments().getParcelableArrayList<Message>("")!!)
+                MessagesListAdapter(viewModel)
             listAdapter.registerAdapterDataObserver(listAdapterObserver)
             viewDataBinding.recyclerView.adapter = listAdapter
         }

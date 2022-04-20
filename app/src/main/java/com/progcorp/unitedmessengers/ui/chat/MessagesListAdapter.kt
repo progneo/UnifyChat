@@ -6,17 +6,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.data.model.Message
-import com.progcorp.unitedmessenges.databinding.*
-import com.squareup.picasso.Picasso
+import com.progcorp.unitedmessengers.databinding.*
 
-class MessagesListAdapter(private val viewModel: ChatViewModel, private val messageList: List<Message>) : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiffCallback()) {
+class MessagesListAdapter(private val viewModel: ChatViewModel) : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiffCallback()) {
 
     class ChatMessageViewHolder(private val binding: ListItemChatMessageBinding)  :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(viewModel: ChatViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
-            Picasso.get().load(item.senderPhoto).into(binding.photoSender)
+            //Picasso.get().load(item.senderPhoto).into(binding.photoSender)
             binding.executePendingBindings()
         }
     }
@@ -26,8 +25,8 @@ class MessagesListAdapter(private val viewModel: ChatViewModel, private val mess
         fun bind(viewModel: ChatViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
-            Picasso.get().load(item.senderPhoto).into(binding.photoSender)
-            Picasso.get().load(item.sticker).into(binding.photoStickerLeft)
+            //Picasso.get().load(item.senderPhoto).into(binding.photoSender)
+            //Picasso.get().load(item.sticker).into(binding.photoStickerLeft)
             binding.executePendingBindings()
         }
     }
@@ -37,7 +36,7 @@ class MessagesListAdapter(private val viewModel: ChatViewModel, private val mess
         fun bind(viewModel: ChatViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
-            Picasso.get().load(item.senderPhoto).into(binding.photoSender)
+            //Picasso.get().load(item.senderPhoto).into(binding.photoSender)
             binding.executePendingBindings()
         }
     }
@@ -65,7 +64,7 @@ class MessagesListAdapter(private val viewModel: ChatViewModel, private val mess
         fun bind(viewModel: ChatViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
-            Picasso.get().load(item.senderPhoto).into(binding.photoStickerRight)
+            //Picasso.get().load(item.senderPhoto).into(binding.photoStickerRight)
             binding.executePendingBindings()
         }
     }
@@ -80,7 +79,7 @@ class MessagesListAdapter(private val viewModel: ChatViewModel, private val mess
     }
 
     override fun getItemViewType(position: Int): Int {
-        return messageList[position].type
+        return getItem(position).type
     }
 
     override fun onCreateViewHolder(
@@ -166,10 +165,6 @@ class MessagesListAdapter(private val viewModel: ChatViewModel, private val mess
                 throw Exception("Error reading holder type")
             }
         }
-    }
-
-    override fun getItemCount(): Int {
-        return messageList.size
     }
 }
 
