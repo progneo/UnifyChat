@@ -9,6 +9,7 @@ import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.ui.DefaultViewModel
 import com.progcorp.unitedmessengers.util.ConvertTime
+import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.addNewItem
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
@@ -28,12 +29,14 @@ class DialogViewModel(private val conversation: Conversation) : DefaultViewModel
 
     private val _conversation: MutableLiveData<Conversation> = MutableLiveData()
     private val _addedMessage = MutableLiveData<Message>()
+    private val _newMessage = MutableLiveData<Message>()
 
     val newMessageText = MutableLiveData<String>()
     val messagesList = MediatorLiveData<MutableList<Message>>()
     val chat: LiveData<Conversation> = _conversation
 
     init {
+        newMessageText.value = "123"
         setupChat()
     }
 
@@ -46,6 +49,9 @@ class DialogViewModel(private val conversation: Conversation) : DefaultViewModel
         messagesList.addSource(_addedMessage) {
             messagesList.addNewItem(it)
         }
+        messagesList.addSource(_newMessage) {
+            messagesList.addFrontItem(it)
+        }
         _messages.getMessages(this.conversation, offset, 30, false)
     }
 
@@ -56,19 +62,19 @@ class DialogViewModel(private val conversation: Conversation) : DefaultViewModel
     }
 
     private fun onNewMessage(message: Message) {
-        _addedMessage.value = message
+        _newMessage.value = message
     }
 
     fun sendMessagePressed() {
-        if (newMessageText.value.isNullOrBlank()) {
+        if (!newMessageText.value.isNullOrBlank()) {
             onNewMessage(
                 Message(
                     date = Date().time / 1000,
-                    time = ConvertTime.toDateTime(Date().time / 1000),
+                    time = ConvertTime.toTime(Date().time / 1000),
                     peerId = conversation.id,
                     out = true,
                     text = newMessageText.value!!,
-                    type = Message.CHAT_MESSAGE_OUT
+                    type = Message.MESSAGE_OUT
                 )
             )
             VK.execute(VKSendMessageCommand(conversation.id, newMessageText.value!!), object: VKApiCallback<Int> {
@@ -80,6 +86,7 @@ class DialogViewModel(private val conversation: Conversation) : DefaultViewModel
                     Log.e(TAG, error.toString())
                 }
             })
+            newMessageText.value = ""
         }
     }
     companion object {

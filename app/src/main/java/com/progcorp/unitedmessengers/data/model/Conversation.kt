@@ -115,12 +115,12 @@ data class Conversation(
 
             var lastMessage =
                 fixText((if (out) "Вы: " else "") + lastMessageObject.getString("text"), limitMessage)
-            if (lastMessage == "") {
+            if (lastMessage == "" || lastMessage == "Вы: ") {
                 val attachments = lastMessageObject.getJSONArray("attachments")
                 val action = lastMessageObject.optJSONObject("action")
                 when {
                     attachments.length() != 0 -> {
-                        lastMessage = when (attachments.optJSONObject(0)?.optString("type")) {
+                        lastMessage = (if (out) "Вы: " else "") + when (attachments.optJSONObject(0)?.optString("type")) {
                             "sticker" -> "Стикер"
                             "photo" -> "Фото"
                             "wall" -> "Запись со стены"

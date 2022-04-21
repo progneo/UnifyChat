@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View" />
         <variable
             name="viewmodel"
             type="com.progcorp.unitedmessengers.ui.dialog.DialogViewModel" />
@@ -43,6 +44,7 @@
                     android:layout_height="wrap_content"
                     style="@style/textview_message_left"
                     android:paddingBottom="0dp"
+                    app:bind_textview_visibility="@{message.text}"
                     android:text="@{message.text}"
                     tools:text="Сообщение в диалоге"/>
 
