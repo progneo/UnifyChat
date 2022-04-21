@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View" />
         <variable
             name="viewmodel"
             type="com.progcorp.unitedmessengers.ui.chat.ChatViewModel" />
@@ -57,6 +58,7 @@
                     style="@style/textview_message_right"
                     android:paddingBottom="0dp"
                     android:text="@{message.text}"
+                    app:bind_textview_visibility="@{message.text}"
                     tools:text="Сообщение от пользователя"/>
 
                 <TextView

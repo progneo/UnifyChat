@@ -1,5 +1,6 @@
 package com.progcorp.unitedmessengers.ui.dialog
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -78,17 +79,17 @@ class MessagesListAdapter(private val viewModel: DialogViewModel) : ListAdapter<
 
         return when (viewType) {
 
-            Message.DIALOG_MESSAGE_OUT -> {
+            Message.MESSAGE_OUT -> {
                 val binding = ListItemDialogOutMessageBinding.inflate(layoutInflater, parent, false)
                 DialogOutMessageViewHolder(binding)
             }
 
-            Message.DIALOG_STICKER_OUT -> {
+            Message.STICKER_OUT -> {
                 val binding = ListItemDialogOutStickerBinding.inflate(layoutInflater, parent, false)
                 DialogOutStickerViewHolder(binding)
             }
 
-            Message.DIALOG_ATTACHMENT_OUT -> {
+            Message.ATTACHMENT_OUT -> {
                 val binding = ListItemDialogOutAttachmentBinding.inflate(layoutInflater, parent, false)
                 DialogOutAttachmentViewHolder(binding)
             }
@@ -109,6 +110,7 @@ class MessagesListAdapter(private val viewModel: DialogViewModel) : ListAdapter<
             }
 
             else -> {
+                Log.e("MessagesListAdapter", "Wrong type: $viewType")
                 throw Exception("Error reading holder type")
             }
         }
@@ -116,15 +118,15 @@ class MessagesListAdapter(private val viewModel: DialogViewModel) : ListAdapter<
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
-            Message.DIALOG_MESSAGE_OUT -> (holder as DialogOutMessageViewHolder).bind(
+            Message.MESSAGE_OUT -> (holder as DialogOutMessageViewHolder).bind(
                 viewModel,
                 getItem(position)
             )
-            Message.DIALOG_STICKER_OUT -> (holder as DialogOutStickerViewHolder).bind(
+            Message.STICKER_OUT -> (holder as DialogOutStickerViewHolder).bind(
                 viewModel,
                 getItem(position)
             )
-            Message.DIALOG_ATTACHMENT_OUT -> (holder as DialogOutAttachmentViewHolder).bind(
+            Message.ATTACHMENT_OUT -> (holder as DialogOutAttachmentViewHolder).bind(
                 viewModel,
                 getItem(position)
             )
@@ -141,6 +143,7 @@ class MessagesListAdapter(private val viewModel: DialogViewModel) : ListAdapter<
                 getItem(position)
             )
             else -> {
+                Log.e("MessagesListAdapter", "Wrong type: $holder.itemViewType")
                 throw Exception("Error reading holder type")
             }
         }

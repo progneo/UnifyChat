@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
             navView.getOrCreateBadge(R.id.navigation_telegram).apply { isVisible = false }
 
         setSupportActionBar(mainToolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         val navController = findNavController(R.id.nav_host_fragment)
         navController.addOnDestinationChangedListener { _, destination, _ ->

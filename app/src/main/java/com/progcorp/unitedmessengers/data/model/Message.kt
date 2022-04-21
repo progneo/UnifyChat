@@ -59,16 +59,13 @@ data class Message(
     }
 
     companion object CREATOR : Parcelable.Creator<Message> {
-        const val CHAT_MESSAGE_OUT = 0
-        const val CHAT_STICKER_OUT = 1
-        const val CHAT_ATTACHMENT_OUT = 2
+        const val MESSAGE_OUT = 0
+        const val STICKER_OUT = 1
+        const val ATTACHMENT_OUT = 2
         const val CHAT_MESSAGE = 3
         const val CHAT_STICKER = 4
         const val CHAT_ATTACHMENT = 5
         const val CHAT_ACTION = 6
-        const val DIALOG_MESSAGE_OUT = 7
-        const val DIALOG_STICKER_OUT = 8
-        const val DIALOG_ATTACHMENT_OUT = 9
         const val DIALOG_MESSAGE = 10
         const val DIALOG_STICKER = 11
         const val DIALOG_ATTACHMENT = 12
@@ -84,7 +81,7 @@ data class Message(
         fun parseVK(json: JSONObject, profiles: JSONArray?): Message {
             val id = json.optInt("id")
             val timeStamp = json.optLong("date")
-            val time = ConvertTime.toDateTime(timeStamp)
+            val time = ConvertTime.toTime(timeStamp)
             val fromId = json.optInt("from_id")
             val peerId = json.optInt("peer_id")
             val out: Boolean = when (json.getInt("out")) {
@@ -203,12 +200,7 @@ data class Message(
                     sticker != "" -> {
                         type = when {
                             out -> {
-                                if (isDialog) {
-                                    DIALOG_STICKER_OUT
-                                }
-                                else {
-                                    CHAT_STICKER_OUT
-                                }
+                                STICKER_OUT
                             }
                             isDialog -> {
                                 DIALOG_STICKER
@@ -222,12 +214,7 @@ data class Message(
                     attachments != "" -> {
                         type = when {
                             out -> {
-                                if (isDialog) {
-                                    DIALOG_ATTACHMENT_OUT
-                                }
-                                else {
-                                    CHAT_ATTACHMENT_OUT
-                                }
+                                ATTACHMENT_OUT
                             }
                             isDialog -> {
                                 DIALOG_ATTACHMENT
@@ -241,12 +228,7 @@ data class Message(
                     else -> {
                         type = when {
                             out -> {
-                                if (isDialog) {
-                                    DIALOG_MESSAGE_OUT
-                                }
-                                else {
-                                    CHAT_MESSAGE_OUT
-                                }
+                                MESSAGE_OUT
                             }
                             isDialog -> {
                                 DIALOG_MESSAGE

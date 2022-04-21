@@ -60,7 +60,7 @@ class ChatViewModel(private val conversation: Conversation) : DefaultViewModel()
     }
 
     fun sendMessagePressed() {
-        if (newMessageText.value.isNullOrBlank()) {
+        if (!newMessageText.value.isNullOrBlank()) {
             onNewMessage(
                 Message(
                     date = Date().time / 1000,
@@ -68,7 +68,7 @@ class ChatViewModel(private val conversation: Conversation) : DefaultViewModel()
                     peerId = conversation.id,
                     out = true,
                     text = newMessageText.value!!,
-                    type = Message.CHAT_MESSAGE_OUT
+                    type = Message.MESSAGE_OUT
                 )
             )
             VK.execute(VKSendMessageCommand(conversation.id, newMessageText.value!!), object: VKApiCallback<Int> {
@@ -80,6 +80,7 @@ class ChatViewModel(private val conversation: Conversation) : DefaultViewModel()
                     Log.e(TAG, error.toString())
                 }
             })
+            newMessageText.value = ""
         }
     }
     companion object {

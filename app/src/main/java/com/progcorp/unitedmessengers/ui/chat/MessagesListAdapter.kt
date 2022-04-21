@@ -1,5 +1,6 @@
 package com.progcorp.unitedmessengers.ui.chat
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -90,17 +91,17 @@ class MessagesListAdapter(private val viewModel: ChatViewModel) : ListAdapter<Me
 
         return when (viewType) {
 
-            Message.CHAT_MESSAGE_OUT -> {
+            Message.MESSAGE_OUT -> {
                 val binding = ListItemChatOutMessageBinding.inflate(layoutInflater, parent, false)
                 ChatOutMessageViewHolder(binding)
             }
 
-            Message.CHAT_STICKER_OUT -> {
+            Message.STICKER_OUT -> {
                 val binding = ListItemChatOutStickerBinding.inflate(layoutInflater, parent, false)
                 ChatOutStickerViewHolder(binding)
             }
 
-            Message.CHAT_ATTACHMENT_OUT -> {
+            Message.ATTACHMENT_OUT -> {
                 val binding = ListItemChatOutAttachmentBinding.inflate(layoutInflater, parent, false)
                 ChatOutAttachmentViewHolder(binding)
             }
@@ -126,6 +127,7 @@ class MessagesListAdapter(private val viewModel: ChatViewModel) : ListAdapter<Me
             }
 
             else -> {
+                Log.e("MessagesListAdapter", "Wrong type: $viewType")
                 throw Exception("Error reading holder type")
             }
         }
@@ -133,15 +135,15 @@ class MessagesListAdapter(private val viewModel: ChatViewModel) : ListAdapter<Me
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
-            Message.CHAT_MESSAGE_OUT -> (holder as ChatOutMessageViewHolder).bind(
+            Message.MESSAGE_OUT -> (holder as ChatOutMessageViewHolder).bind(
                 viewModel,
                 getItem(position)
             )
-            Message.CHAT_STICKER_OUT -> (holder as ChatOutStickerViewHolder).bind(
+            Message.STICKER_OUT -> (holder as ChatOutStickerViewHolder).bind(
                 viewModel,
                 getItem(position)
             )
-            Message.CHAT_ATTACHMENT_OUT -> (holder as ChatOutAttachmentViewHolder).bind(
+            Message.ATTACHMENT_OUT -> (holder as ChatOutAttachmentViewHolder).bind(
                 viewModel,
                 getItem(position)
             )
@@ -162,6 +164,7 @@ class MessagesListAdapter(private val viewModel: ChatViewModel) : ListAdapter<Me
                 getItem(position)
             )
             else -> {
+                Log.e("MessagesListAdapter", "Wrong type: $holder.itemViewType")
                 throw Exception("Error reading holder type")
             }
         }

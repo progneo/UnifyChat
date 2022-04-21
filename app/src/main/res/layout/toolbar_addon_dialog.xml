@@ -11,7 +11,7 @@
             type="com.progcorp.unitedmessengers.ui.dialog.DialogViewModel" />
     </data>
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -28,26 +28,16 @@
             android:background="@color/white"
             android:layout_gravity="center">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/return_button"
-                android:layout_width="@dimen/_25sdp"
-                android:layout_height="@dimen/_25sdp"
-                android:background="@drawable/inset_return"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo"
                 android:layout_width="@dimen/_30sdp"
                 android:layout_height="@dimen/_30sdp"
                 android:padding="@dimen/_1sdp"
-                android:layout_marginStart="@dimen/_10sdp"
                 android:src="@drawable/ic_baseline_account_circle_24"
+                app:bind_image_url="@{viewmodel.chat.photo}"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@id/return_button"
+                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:bind_image_url = "@{viewmodel.chat.photo}"
                 app:shapeAppearanceOverlay="@style/circleImageView" />
 
             <TextView
@@ -80,5 +70,5 @@
                 tools:text="В сети" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
 </layout>

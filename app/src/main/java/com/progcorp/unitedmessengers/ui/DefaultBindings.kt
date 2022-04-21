@@ -1,6 +1,7 @@
 package com.progcorp.unitedmessengers.ui
 
 import android.annotation.SuppressLint
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -52,6 +53,16 @@ fun TextView.bindEpochTimeMsToDate(epochTimeMs: Long) {
         val pat = SimpleDateFormat().toLocalizedPattern().replace("\\W?[$replacePattern]+\\W?".toRegex(), " ")
         val formatter = SimpleDateFormat(pat, Locale.getDefault())
         this.text = formatter.format(Date(epochTimeMs))
+    }
+}
+
+@BindingAdapter("bind_textview_visibility")
+fun TextView.bindVisibility(text: String?) {
+    if (text != null && text != "") {
+        this.visibility = View.VISIBLE
+    }
+    else {
+        this.visibility = View.GONE
     }
 }
 
