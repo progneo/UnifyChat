@@ -10,68 +10,146 @@
             type="com.progcorp.unitedmessengers.ui.dialog.DialogViewModel" />
     </data>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".mvp.views.DialogActivity">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/appBar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/bottomLine"
-            app:bind_dialog_messages_list="@{viewmodel.messagesList}"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:reverseLayout="true"
-            tools:listitem="@layout/list_item_dialog_message" />
+            android:layout_height="?attr/actionBarSize"
+            android:paddingLeft="@dimen/_8sdp"
+            android:paddingTop="@dimen/_3sdp"
+            android:paddingRight="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_3sdp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/return_button"
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_25sdp"
+                android:background="@drawable/inset_return"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/photo"
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_30sdp"
+                android:padding="@dimen/_1sdp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:src="@drawable/ic_baseline_account_circle_24"
+                app:bind_image_url="@{viewmodel.chat.photo}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/return_button"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/circleImageView" />
+
+            <TextView
+                android:id="@+id/dialog_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/_6sdp"
+                android:paddingEnd="@dimen/_6sdp"
+                android:textColor="@color/primary_text"
+                android:textSize="@dimen/_12ssp"
+                android:textStyle="bold"
+                android:text="@{viewmodel.chat.title}"
+                app:layout_constraintBottom_toTopOf="@+id/last_seen"
+                app:layout_constraintLeft_toRightOf="@+id/photo"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="Имя Фамилия" />
+
+            <TextView
+                android:id="@+id/last_seen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/_6sdp"
+                android:paddingEnd="@dimen/_6sdp"
+                android:textColor="@color/secondary_text"
+                android:textSize="@dimen/_9ssp"
+                app:bind_online="@{viewmodel.chat}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/photo"
+                app:layout_constraintTop_toBottomOf="@+id/dialog_name"
+                tools:text="В сети" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
-            android:id="@+id/bottomLine"
+            android:id="@+id/topLine"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_1sdp"
             android:background="@color/accent"
-            android:layout_above="@+id/layout_input"/>
+            app:layout_constraintTop_toBottomOf="@id/appBar"/>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_input"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="horizontal"
-            android:paddingStart="@dimen/_8sdp"
-            android:paddingTop="@dimen/_7sdp"
-            android:paddingEnd="@dimen/_4sdp"
-            android:paddingBottom="@dimen/_7sdp">
+            android:layout_height="match_parent">
 
-            <EditText
-                android:id="@+id/edittext_chat_message"
-                android:layout_width="0dp"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/bottomLine"
+                app:bind_dialog_messages_list="@{viewmodel.messagesList}"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:reverseLayout="true"
+                tools:listitem="@layout/list_item_dialog_attachment"/>
+
+            <View
+                android:id="@+id/bottomLine"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:background="@color/accent"
+                android:layout_above="@+id/layout_input"/>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_input"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:autofillHints=""
-                android:background="@color/white"
-                android:hint="@string/enter_message_hint"
-                android:inputType="textMultiLine"
-                android:paddingStart="@dimen/_10sdp"
-                android:paddingTop="@dimen/_3sdp"
-                android:paddingEnd="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_3sdp"
-                android:textSize="@dimen/_12ssp"
-                android:text="@{viewmodel.newMessageText}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@id/button_send_message"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/_8sdp"
+                android:paddingTop="@dimen/_7sdp"
+                android:paddingEnd="@dimen/_4sdp"
+                android:paddingBottom="@dimen/_7sdp">
 
-            <Button
-                android:id="@+id/button_send_message"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:background="@drawable/inset_send"
-                android:layout_marginEnd="@dimen/_6sdp"
-                android:onClick="@{() -> viewmodel.sendMessagePressed()}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </RelativeLayout>
+                <EditText
+                    android:id="@+id/edittext_chat_message"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:importantForAutofill="no"
+                    android:background="@color/white"
+                    android:hint="@string/enter_message_hint"
+                    android:inputType="textMultiLine"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:paddingTop="@dimen/_3sdp"
+                    android:paddingEnd="@dimen/_10sdp"
+                    android:paddingBottom="@dimen/_3sdp"
+                    android:textSize="@dimen/_12ssp"
+                    android:text="@={viewmodel.newMessageText}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/button_send_message"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/button_send_message"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:background="@drawable/inset_send"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:onClick="@{() -> viewmodel.sendMessagePressed()}"
+                    android:layout_marginEnd="@dimen/_6sdp"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </RelativeLayout>
+    </LinearLayout>
 </layout>

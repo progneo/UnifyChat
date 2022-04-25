@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -34,11 +35,6 @@ class DialogFragment : Fragment() {
     private lateinit var listAdapterObserver: RecyclerView.AdapterDataObserver
     private lateinit var toolbarAddonDialogBinding: ToolbarAddonDialogBinding
 
-    override fun onDestroy() {
-        super.onDestroy()
-        removeCustomToolbar()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -48,7 +44,7 @@ class DialogFragment : Fragment() {
             FragmentDialogBinding.inflate(inflater, container, false)
                 .apply { viewmodel = viewModel }
             viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
-        setHasOptionsMenu(true)
+        //setHasOptionsMenu(true)
 
         toolbarAddonDialogBinding =
             ToolbarAddonDialogBinding.inflate(inflater, container, false)
@@ -60,30 +56,7 @@ class DialogFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupCustomToolbar()
         setupListAdapter()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                findNavController().popBackStack()
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun setupCustomToolbar() {
-        val supportActionBar = (activity as AppCompatActivity?)!!.supportActionBar
-        supportActionBar!!.setDisplayShowCustomEnabled(true)
-        supportActionBar.customView = toolbarAddonDialogBinding.root
-    }
-
-    private fun removeCustomToolbar() {
-        val supportActionBar = (activity as AppCompatActivity?)!!.supportActionBar
-        supportActionBar!!.setDisplayShowCustomEnabled(false)
-        supportActionBar.customView = null
     }
 
     private fun setupListAdapter() {
@@ -98,6 +71,15 @@ class DialogFragment : Fragment() {
                 MessagesListAdapter(viewModel)
             listAdapter.registerAdapterDataObserver(listAdapterObserver)
             viewDataBinding.recyclerView.adapter = listAdapter
+
+            viewDataBinding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    if (!recyclerView.canScrollVertically(-1)) {
+                        viewModel.loadMoreMessages()
+                    }
+                    super.onScrolled(recyclerView, dx, dy)
+                }
+            })
         }
         else {
             throw Exception("The viewmodel is not initialized")
@@ -108,18 +90,4 @@ class DialogFragment : Fragment() {
         super.onDestroyView()
         listAdapter.unregisterAdapterDataObserver(listAdapterObserver)
     }
-
-    //private fun initRecyclerView() {
-    //    recyclerView!!.adapter = ChatAdapter(arrayListOf())
-    //    recyclerView!!.setHasFixedSize(true)
-    //
-    //    recyclerView!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-    //        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-    //            if (!recyclerView.canScrollVertically(-1)) {
-    //                presenter!!.addMessages()
-    //            }
-    //            super.onScrolled(recyclerView, dx, dy)
-    //        }
-    //    })
-    //}
 }

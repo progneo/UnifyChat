@@ -34,11 +34,6 @@ class ChatFragment : Fragment() {
     private lateinit var listAdapterObserver: RecyclerView.AdapterDataObserver
     private lateinit var toolbarAddonChatBinding: ToolbarAddonChatBinding
 
-    override fun onDestroy() {
-        super.onDestroy()
-        removeCustomToolbar()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -48,7 +43,6 @@ class ChatFragment : Fragment() {
             FragmentChatBinding.inflate(inflater, container, false)
                 .apply { viewmodel = viewModel }
             viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
-        setHasOptionsMenu(true)
 
         toolbarAddonChatBinding =
             ToolbarAddonChatBinding.inflate(inflater, container, false)
@@ -60,30 +54,7 @@ class ChatFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupCustomToolbar()
         setupListAdapter()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                findNavController().popBackStack()
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun setupCustomToolbar() {
-        val supportActionBar = (activity as AppCompatActivity?)!!.supportActionBar
-        supportActionBar!!.setDisplayShowCustomEnabled(true)
-        supportActionBar.customView = toolbarAddonChatBinding.root
-    }
-
-    private fun removeCustomToolbar() {
-        val supportActionBar = (activity as AppCompatActivity?)!!.supportActionBar
-        supportActionBar!!.setDisplayShowCustomEnabled(false)
-        supportActionBar.customView = null
     }
 
     private fun setupListAdapter() {
@@ -94,10 +65,18 @@ class ChatFragment : Fragment() {
                     recycler_view.scrollToPosition(positionStart)
                 }
             })
-            listAdapter =
-                MessagesListAdapter(viewModel)
+            listAdapter = MessagesListAdapter(viewModel)
             listAdapter.registerAdapterDataObserver(listAdapterObserver)
             viewDataBinding.recyclerView.adapter = listAdapter
+
+            viewDataBinding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    if (!recyclerView.canScrollVertically(-1)) {
+                        viewModel.loadMoreMessages()
+                    }
+                    super.onScrolled(recyclerView, dx, dy)
+                }
+            })
         }
         else {
             throw Exception("The viewmodel is not initialized")
@@ -108,18 +87,4 @@ class ChatFragment : Fragment() {
         super.onDestroyView()
         listAdapter.unregisterAdapterDataObserver(listAdapterObserver)
     }
-
-    //private fun initRecyclerView() {
-    //    recyclerView!!.adapter = ChatAdapter(arrayListOf())
-    //    recyclerView!!.setHasFixedSize(true)
-    //
-    //    recyclerView!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-    //        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-    //            if (!recyclerView.canScrollVertically(-1)) {
-    //                presenter!!.addMessages()
-    //            }
-    //            super.onScrolled(recyclerView, dx, dy)
-    //        }
-    //    })
-    //}
 }

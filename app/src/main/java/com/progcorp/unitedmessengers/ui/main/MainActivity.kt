@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navView: BottomNavigationView
     private lateinit var mainProgressBar: ProgressBar
-    private lateinit var mainToolbar: Toolbar
     private lateinit var vkBadge: BadgeDrawable
     private lateinit var telegramBadge: BadgeDrawable
 
@@ -37,7 +36,6 @@ class MainActivity : AppCompatActivity() {
 
         tokenTracker
 
-        mainToolbar = findViewById(R.id.main_toolbar)
         navView = findViewById(R.id.nav_view)
         mainProgressBar = findViewById(R.id.main_progressBar)
 
@@ -47,7 +45,6 @@ class MainActivity : AppCompatActivity() {
         telegramBadge =
             navView.getOrCreateBadge(R.id.navigation_telegram).apply { isVisible = false }
 
-        setSupportActionBar(mainToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         val navController = findNavController(R.id.nav_host_fragment)
@@ -62,14 +59,14 @@ class MainActivity : AppCompatActivity() {
             currentFocus?.rootView?.forceHideKeyboard()
         }
 
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_telegram,
-                R.id.navigation_vk
-            )
-        )
-
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        //val appBarConfiguration = AppBarConfiguration(
+        //    setOf(
+        //        R.id.navigation_telegram,
+        //        R.id.navigation_vk
+        //    )
+        //)
+//
+        //setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
 
