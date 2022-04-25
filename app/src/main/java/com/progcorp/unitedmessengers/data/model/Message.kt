@@ -7,7 +7,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 data class Message(
-    val id: Int = 0,
+    var id: Int = 0,
     val date: Long = 0,
     val time: String = "",
     val fromId: Int = 0,

@@ -14,16 +14,15 @@
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:layout_height="?attr/actionBarSize">
+        android:minHeight="?attr/actionBarSize"
+        tools:layout_height="?attr/actionBarSize"
+        app:contentInsetStart="0dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/appBar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingLeft="@dimen/_8sdp"
             android:paddingTop="@dimen/_3sdp"
-            android:paddingRight="@dimen/_8sdp"
             android:paddingBottom="@dimen/_3sdp"
             android:background="@color/white"
             app:layout_constraintTop_toTopOf="parent">

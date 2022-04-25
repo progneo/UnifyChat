@@ -1,13 +1,15 @@
 package com.progcorp.unitedmessengers.ui.conversations.vk
 
+import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.data.Event
 import com.progcorp.unitedmessengers.data.db.vk.VKConversations
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.ui.DefaultViewModel
+import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.addNewItem
-import com.progcorp.unitedmessengers.util.updateItemAt
+import com.progcorp.unitedmessengers.util.removeItem
 import com.vk.api.sdk.VK
 
 class ConversationViewModelFactory() :
@@ -23,10 +25,14 @@ enum class LayoutState {
 
 class ConversationsViewModel() : DefaultViewModel(), VKConversations.OnConversationsFetched {
 
+    private var _handler = Handler()
+    private var _conversationsGetter: Runnable = Runnable {  }
+
     private val _conversations: VKConversations = VKConversations(this)
 
     private val _loginEvent = MutableLiveData<Event<Unit>>()
 
+    private val _newConversation = MutableLiveData<Conversation>()
     private val _updatedConversation = MutableLiveData<Conversation>()
     private val _selectedConversation = MutableLiveData<Event<Conversation>>()
     private val _loginState = MutableLiveData<Boolean>()
@@ -44,7 +50,22 @@ class ConversationsViewModel() : DefaultViewModel(), VKConversations.OnConversat
                 conversationsList.addNewItem(newConversation)
             }
             else {
-                conversationsList.updateItemAt(newConversation, conversationsList.value!!.indexOf(conversation))
+                if (newConversation.date != conversation.date) {
+                    conversationsList.removeItem(conversation)
+                    conversationsList.addFrontItem(newConversation)
+                }
+            }
+        }
+        conversationsList.addSource(_newConversation) { newConversation ->
+            val conversation = conversationsList.value?.find { it.id == newConversation.id }
+            if (conversation == null) {
+                conversationsList.addFrontItem(newConversation)
+            }
+            else {
+                if (newConversation.date != conversation.date) {
+                    conversationsList.removeItem(conversation)
+                    conversationsList.addFrontItem(newConversation)
+                }
             }
         }
         _loginState.value = VK.isLoggedIn()
@@ -64,19 +85,42 @@ class ConversationsViewModel() : DefaultViewModel(), VKConversations.OnConversat
     }
 
     private fun setupConversations() {
-        loadAndObserveConversations()
+        startGetter()
+        loadConversations(0)
     }
 
-    private fun loadAndObserveConversations() {
-        Log.i(TAG, "Loading conversations")
-        _conversations.getConversations(0)
+    private fun loadConversations(offset: Int) {
+        _conversations.getConversations(offset, false)
     }
 
-    override fun showConversations(chats: ArrayList<Conversation>) {
-        Log.i(TAG, "Got conversations: " + chats.size)
-        for (conversation in chats) {
-            _updatedConversation.value = conversation
+    private fun loadNewConversations() {
+        _conversations.getConversations(0, true)
+    }
+
+    private fun startGetter() {
+        _conversationsGetter = Runnable {
+            loadNewConversations()
+            _handler.postDelayed(_conversationsGetter, 5000)
         }
+        _handler.postDelayed(_conversationsGetter, 5000)
+    }
+
+    override fun showConversations(chats: ArrayList<Conversation>, isNew: Boolean) {
+        Log.i(TAG, "Got conversations: " + chats.size)
+        if (!isNew) {
+            for (conversation in chats) {
+                _updatedConversation.value = conversation
+            }
+        }
+        else {
+            for (conversation in chats) {
+                _newConversation.value = conversation
+            }
+        }
+    }
+
+    fun loadMoreConversations() {
+        loadConversations(conversationsList.value!!.size)
     }
 
     fun goToLoginPressed() {

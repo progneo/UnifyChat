@@ -1,4 +1,4 @@
-package com.progcorp.unitedmessengers.data.model;
+package com.progcorp.unitedmessengers.data.model
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -8,33 +8,42 @@ import org.json.JSONObject
 data class Conversation(
     val id: Int = 0,
     val type: String = "",
+    val date: Long = 0,
     val unread_count: Int = 0,
     val can_write: Boolean = true,
     var title: String = "",
     var photo: String = "",
     val last_message: String = "",
-    val members_count: Int = 2) : Parcelable {
+    val members_count: Int = 2,
+    val last_online: Long = 0,
+    val is_online: Boolean = false) : Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString()!!,
+        parcel.readLong(),
         parcel.readInt(),
         parcel.readByte() != 0.toByte(),
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
-        parcel.readInt()
+        parcel.readInt(),
+        parcel.readLong(),
+        parcel.readByte() != 0.toByte()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
         parcel.writeString(type)
+        parcel.writeLong(date)
         parcel.writeInt(unread_count)
         parcel.writeByte(if (can_write) 1 else 0)
         parcel.writeString(title)
         parcel.writeString(photo)
         parcel.writeString(last_message)
         parcel.writeInt(members_count)
+        parcel.writeLong(last_online)
+        parcel.writeByte(if (is_online) 1 else 0)
     }
 
     override fun describeContents(): Int {
@@ -65,6 +74,8 @@ data class Conversation(
 
             var title = "User"
             var photo = "https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg"
+            var lastOnline: Long = 0
+            var isOnline = false
 
             var membersCount = 2
             val chatSettings = conversation.optJSONObject("chat_settings")
@@ -83,6 +94,8 @@ data class Conversation(
                         if (profile.getInt("id") == id) {
                             title = profile.getString("first_name") + " " + profile.getString("last_name")
                             photo = profile.getString("photo_100")
+                            lastOnline = profile.getJSONObject("online_info").optLong("last_seen")
+                            isOnline = profile.getJSONObject("online_info").optBoolean("is_online")
                             break
                         }
                     }
@@ -91,7 +104,7 @@ data class Conversation(
                     for (i in 0 until groups.length()) {
                         val group = groups.getJSONObject(i)
                         if (group.getInt("id") == -id) {
-                            title = group.getString("name")
+                            title = fixText(group.getString("name"), limitMessage - 5)
                             photo = group.getString("photo_100")
                             break
                         }
@@ -100,6 +113,7 @@ data class Conversation(
             }
 
             val lastMessageObject = json.getJSONObject("last_message")
+            val date = lastMessageObject.optLong("date")
             val out: Boolean = when (lastMessageObject.getInt("out")) {
                 1 -> true
                 else -> false
@@ -155,7 +169,7 @@ data class Conversation(
                 }
             }
 
-            return Conversation(id, type, unreadCount, canWrite, title, photo, lastMessage, membersCount)
+            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline)
         }
 
         private fun fixText(text: String, limit: Int): String {

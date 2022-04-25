@@ -14,7 +14,7 @@ class VKChatsCommand(private val offset: Int): ApiCommand<List<Conversation>>(){
         val result = ArrayList<Conversation>()
         val call = VKMethodCall.Builder()
             .method("messages.getConversations")
-            .args("count", 30)
+            .args("count", 15)
             .args("offset", offset)
             .args("filter", "all")
             .args("extended", true)

@@ -7,20 +7,20 @@ import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 
 class VKConversations(private val onChatsFetched: OnConversationsFetched) {
-    fun getConversations(offset: Int) {
+    fun getConversations(offset: Int, isNew: Boolean) {
         VK.execute(VKChatsCommand(offset), object: VKApiCallback<List<Conversation>> {
             override fun success(result: List<Conversation>) {
-                onChatsFetched.showConversations(result as ArrayList<Conversation>)
+                onChatsFetched.showConversations(result as ArrayList<Conversation>, isNew)
             }
             override fun fail(error: Exception) {
                 Log.e(TAG, error.toString())
-                onChatsFetched.showConversations(arrayListOf<Conversation>())
+                onChatsFetched.showConversations(arrayListOf<Conversation>(), isNew)
             }
         })
     }
 
     interface OnConversationsFetched {
-        fun showConversations(chats: ArrayList<Conversation>)
+        fun showConversations(chats: ArrayList<Conversation>, isNew: Boolean)
     }
 
     companion object {
