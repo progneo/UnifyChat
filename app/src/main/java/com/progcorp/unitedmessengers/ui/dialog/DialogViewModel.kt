@@ -71,6 +71,10 @@ class DialogViewModel(private val conversation: Conversation) : DefaultViewModel
         _handler.postDelayed(_messagesGetter, 0)
     }
 
+    public fun stopGetter() {
+        _handler.removeCallbacks(_messagesGetter)
+    }
+
     private fun loadMessages(offset: Int) {
         _messages.getMessages(this.conversation, offset, 20, false)
     }

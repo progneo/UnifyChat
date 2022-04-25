@@ -64,13 +64,16 @@ class ChatViewModel(private val conversation: Conversation) : DefaultViewModel()
         startGetter()
     }
 
-
     private fun startGetter() {
         _messagesGetter = Runnable {
             loadNewMessages()
             _handler.postDelayed(_messagesGetter, 3000)
         }
         _handler.postDelayed(_messagesGetter, 0)
+    }
+
+    public fun stopGetter() {
+        _handler.removeCallbacks(_messagesGetter)
     }
 
     private fun loadMessages(offset: Int) {

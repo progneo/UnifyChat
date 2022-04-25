@@ -85,6 +85,7 @@ class ChatFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewModel.stopGetter()
         listAdapter.unregisterAdapterDataObserver(listAdapterObserver)
     }
 }
