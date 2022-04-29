@@ -1,6 +1,5 @@
-package com.progcorp.unitedmessengers.ui.chat
+package com.progcorp.unitedmessengers.ui.conversation
 
-import android.annotation.SuppressLint
 import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.*
@@ -9,7 +8,6 @@ import com.progcorp.unitedmessengers.data.db.vk.requests.VKSendMessageCommand
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.ui.DefaultViewModel
-import com.progcorp.unitedmessengers.ui.interfaces.IConversationViewModel
 import com.progcorp.unitedmessengers.util.ConvertTime
 import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.addNewItem
@@ -18,15 +16,15 @@ import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 import java.util.*
 
-class ChatViewModelFactory(private val conversation: Conversation) :
+class ConversationViewModelFactory(private val conversation: Conversation) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ChatViewModel(conversation) as T
+        return ConversationViewModel(conversation) as T
     }
 }
 
-class ChatViewModel(private val conversation: Conversation) :
-    DefaultViewModel(), Messages.OnMessagesFetched, IConversationViewModel {
+class ConversationViewModel(private val conversation: Conversation) :
+    DefaultViewModel(), Messages.OnMessagesFetched {
 
     private var _handler = Handler()
     private var _messagesGetter: Runnable = Runnable {  }
@@ -65,7 +63,7 @@ class ChatViewModel(private val conversation: Conversation) :
         startListeners()
     }
 
-    override fun startListeners() {
+    private fun startListeners() {
         _messagesGetter = Runnable {
             loadNewMessages()
             _handler.postDelayed(_messagesGetter, 3000)
@@ -73,15 +71,15 @@ class ChatViewModel(private val conversation: Conversation) :
         _handler.postDelayed(_messagesGetter, 0)
     }
 
-    override fun stopListeners() {
+    fun stopListeners() {
         _handler.removeCallbacks(_messagesGetter)
     }
 
-    override fun loadSelectedMessages(offset: Int) {
+    private fun loadSelectedMessages(offset: Int) {
         _messages.vkGetMessages(this.conversation, offset, 20, false)
     }
 
-    override fun loadNewMessages() {
+    private fun loadNewMessages() {
         _messages.vkGetMessages(this.conversation, 0, 20, true)
     }
 
@@ -98,40 +96,35 @@ class ChatViewModel(private val conversation: Conversation) :
         }
     }
 
-    override fun onNewMessage(message: Message) {
+    fun sendMessagePressed() {if (
+        !newMessageText.value.isNullOrBlank()) {
+        val message = Message(
+            date = Date().time / 1000,
+            time = ConvertTime.toTime(Date().time / 1000),
+            peerId = conversation.id,
+            out = true,
+            text = newMessageText.value!!,
+            type = Message.MESSAGE_OUT
+        )
         _newMessage.value = message
-    }
+        VK.execute(VKSendMessageCommand(conversation.id, newMessageText.value!!), object:
+            VKApiCallback<Int> {
+            override fun success(result: Int) {
+                message.id = result
+                Log.i(TAG, "Message sent")
+            }
+            override fun fail(error: Exception) {
+                Log.e(TAG, error.toString())
+            }
+        })
+        newMessageText.value = null
+    }}
 
-    override fun sendMessagePressed() {
-        if (!newMessageText.value.isNullOrBlank()) {
-            val message = Message(
-                date = Date().time / 1000,
-                time = ConvertTime.toTime(Date().time / 1000),
-                peerId = conversation.id,
-                out = true,
-                text = newMessageText.value!!,
-                type = Message.MESSAGE_OUT
-            )
-            onNewMessage(message)
-            VK.execute(VKSendMessageCommand(conversation.id, newMessageText.value!!), object: VKApiCallback<Int> {
-                @SuppressLint("SetTextI18n")
-                override fun success(result: Int) {
-                    message.id = result
-                    Log.i(TAG, "Message sent")
-                }
-                override fun fail(error: Exception) {
-                    Log.e(TAG, error.toString())
-                }
-            })
-            newMessageText.value = null
-        }
-    }
-
-    override fun loadMoreMessages() {
+    fun loadMoreMessages() {
         loadSelectedMessages(messagesList.value!!.size)
     }
 
     companion object {
-        const val TAG = "ChatViewModel"
+        const val TAG = "ConversationViewModel"
     }
 }

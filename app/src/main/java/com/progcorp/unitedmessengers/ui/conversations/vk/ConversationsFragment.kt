@@ -1,6 +1,5 @@
 package com.progcorp.unitedmessengers.ui.conversations.vk
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +14,8 @@ import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.EventObserver
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.FragmentVkBinding
-import com.progcorp.unitedmessengers.ui.chat.ChatFragment
-import com.progcorp.unitedmessengers.ui.dialog.DialogFragment
+import com.progcorp.unitedmessengers.ui.conversation.chat.ChatFragment
+import com.progcorp.unitedmessengers.ui.conversation.dialog.DialogFragment
 import java.lang.Exception
 
 class ConversationsFragment : Fragment() {

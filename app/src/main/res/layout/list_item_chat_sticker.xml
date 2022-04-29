@@ -11,7 +11,7 @@
             type="com.progcorp.unitedmessengers.data.model.Message" />
         <variable
             name="viewmodel"
-            type="com.progcorp.unitedmessengers.ui.chat.ChatViewModel" />
+            type="com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel" />
     </data>
 
     <LinearLayout

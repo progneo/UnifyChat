@@ -7,14 +7,13 @@
 
         <variable
             name="viewmodel"
-            type="com.progcorp.unitedmessengers.ui.chat.ChatViewModel" />
+            type="com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:context=".mvp.views.ChatActivity">
+        android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/appBar"

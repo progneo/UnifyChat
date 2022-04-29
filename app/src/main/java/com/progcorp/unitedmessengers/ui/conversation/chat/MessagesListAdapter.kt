@@ -1,4 +1,4 @@
-package com.progcorp.unitedmessengers.ui.chat
+package com.progcorp.unitedmessengers.ui.conversation.chat
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,12 +8,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.databinding.*
+import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
 
-class MessagesListAdapter(private val viewModel: ChatViewModel) : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiffCallback()) {
+class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiffCallback()) {
 
     class ChatMessageViewHolder(private val binding: ListItemChatMessageBinding)  :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: ChatViewModel, item: Message) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
             //Picasso.get().load(item.senderPhoto).into(binding.photoSender)
@@ -23,7 +24,7 @@ class MessagesListAdapter(private val viewModel: ChatViewModel) : ListAdapter<Me
 
     class ChatStickerViewHolder(private val binding: ListItemChatStickerBinding)  :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: ChatViewModel, item: Message) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
             //Picasso.get().load(item.senderPhoto).into(binding.photoSender)
@@ -34,7 +35,7 @@ class MessagesListAdapter(private val viewModel: ChatViewModel) : ListAdapter<Me
 
     class ChatAttachmentViewHolder(private val binding: ListItemChatAttachmentBinding)  :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: ChatViewModel, item: Message) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
             //Picasso.get().load(item.senderPhoto).into(binding.photoSender)
@@ -44,7 +45,7 @@ class MessagesListAdapter(private val viewModel: ChatViewModel) : ListAdapter<Me
 
     class ChatActionViewHolder(private val binding: ListItemChatActionBinding)  :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: ChatViewModel, item: Message) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
             binding.executePendingBindings()
@@ -53,7 +54,7 @@ class MessagesListAdapter(private val viewModel: ChatViewModel) : ListAdapter<Me
 
     class ChatOutMessageViewHolder(private val binding: ListItemChatOutMessageBinding)  :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: ChatViewModel, item: Message) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
             binding.executePendingBindings()
@@ -62,7 +63,7 @@ class MessagesListAdapter(private val viewModel: ChatViewModel) : ListAdapter<Me
 
     class ChatOutStickerViewHolder(private val binding: ListItemChatOutStickerBinding)  :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: ChatViewModel, item: Message) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
             //Picasso.get().load(item.senderPhoto).into(binding.photoStickerRight)
@@ -72,7 +73,7 @@ class MessagesListAdapter(private val viewModel: ChatViewModel) : ListAdapter<Me
 
     class ChatOutAttachmentViewHolder(private val binding: ListItemChatOutAttachmentBinding)  :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: ChatViewModel, item: Message) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
             binding.executePendingBindings()

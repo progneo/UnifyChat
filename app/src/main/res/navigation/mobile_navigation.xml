@@ -33,10 +33,10 @@
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
-        android:name="com.progcorp.unitedmessengers.ui.chat.ChatFragment"/>
+        android:name="com.progcorp.unitedmessengers.ui.conversation.chat.ChatFragment"/>
     <fragment
         android:id="@+id/dialogFragment"
-        android:name="com.progcorp.unitedmessengers.ui.dialog.DialogFragment"/>
+        android:name="com.progcorp.unitedmessengers.ui.conversation.dialog.DialogFragment"/>
     <activity
         android:id="@+id/login_vk"
         android:name="com.progcorp.unitedmessengers.ui.login.vk.VKLoginActivity"

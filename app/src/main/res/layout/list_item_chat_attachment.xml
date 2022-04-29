@@ -6,7 +6,7 @@
         <import type="android.view.View" />
         <variable
             name="viewmodel"
-            type="com.progcorp.unitedmessengers.ui.chat.ChatViewModel" />
+            type="com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel" />
         <variable
             name="message"
             type="com.progcorp.unitedmessengers.data.model.Message" />

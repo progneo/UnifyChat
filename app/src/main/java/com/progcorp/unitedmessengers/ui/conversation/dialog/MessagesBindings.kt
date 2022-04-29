@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package com.progcorp.unitedmessengers.ui.dialog
+package com.progcorp.unitedmessengers.ui.conversation.dialog
 
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
