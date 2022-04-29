@@ -2,14 +2,10 @@ package com.progcorp.unitedmessengers.ui.dialog
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.FragmentDialogBinding
@@ -88,7 +84,7 @@ class DialogFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        viewModel.stopGetter()
+        viewModel.stopListeners()
         listAdapter.unregisterAdapterDataObserver(listAdapterObserver)
     }
 }

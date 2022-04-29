@@ -4,7 +4,7 @@ import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.data.Event
-import com.progcorp.unitedmessengers.data.db.vk.VKConversations
+import com.progcorp.unitedmessengers.data.db.vk.Conversations
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.ui.DefaultViewModel
 import com.progcorp.unitedmessengers.util.addFrontItem
@@ -23,12 +23,12 @@ enum class LayoutState {
     LOGGED_ID, NEED_TO_LOGIN
 }
 
-class ConversationsViewModel() : DefaultViewModel(), VKConversations.OnConversationsFetched {
+class ConversationsViewModel() : DefaultViewModel(), Conversations.OnConversationsFetched {
 
     private var _handler = Handler()
     private var _conversationsGetter: Runnable = Runnable {  }
 
-    private val _conversations: VKConversations = VKConversations(this)
+    private val _conversations: Conversations = Conversations(this)
 
     private val _loginEvent = MutableLiveData<Event<Unit>>()
 
@@ -90,11 +90,11 @@ class ConversationsViewModel() : DefaultViewModel(), VKConversations.OnConversat
     }
 
     private fun loadConversations(offset: Int) {
-        _conversations.getConversations(offset, false)
+        _conversations.vkGetConversations(offset, false)
     }
 
     private fun loadNewConversations() {
-        _conversations.getConversations(0, true)
+        _conversations.vkGetConversations(0, true)
     }
 
     private fun startGetter() {

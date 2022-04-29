@@ -7,8 +7,8 @@ import com.progcorp.unitedmessengers.data.model.User
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 
-class VKUsers(private val onUsersFetched: OnUsersFetched) {
-    fun getUsers(uids: IntArray) {
+class Users(private val onUsersFetched: OnUsersFetched) {
+    fun vkGetUsers(uids: IntArray) {
         VK.execute(VKUsersCommand(uids), object : VKApiCallback<List<User>> {
             override fun success(result: List<User>) {
                 onUsersFetched.showUsers(result as ArrayList<User>)
