@@ -4,11 +4,12 @@ import android.annotation.SuppressLint
 import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.*
-import com.progcorp.unitedmessengers.data.db.vk.VKMessages
+import com.progcorp.unitedmessengers.data.db.vk.Messages
 import com.progcorp.unitedmessengers.data.db.vk.requests.VKSendMessageCommand
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.ui.DefaultViewModel
+import com.progcorp.unitedmessengers.ui.interfaces.IConversationViewModel
 import com.progcorp.unitedmessengers.util.ConvertTime
 import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.addNewItem
@@ -16,7 +17,6 @@ import com.progcorp.unitedmessengers.util.updateItemAt
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ChatViewModelFactory(private val conversation: Conversation) :
     ViewModelProvider.Factory {
@@ -25,12 +25,13 @@ class ChatViewModelFactory(private val conversation: Conversation) :
     }
 }
 
-class ChatViewModel(private val conversation: Conversation) : DefaultViewModel(), VKMessages.OnMessagesFetched {
+class ChatViewModel(private val conversation: Conversation) :
+    DefaultViewModel(), Messages.OnMessagesFetched, IConversationViewModel {
 
     private var _handler = Handler()
     private var _messagesGetter: Runnable = Runnable {  }
 
-    private val _messages: VKMessages = VKMessages(this)
+    private val _messages: Messages = Messages(this)
 
     private val _conversation: MutableLiveData<Conversation> = MutableLiveData()
     private val _addedMessage = MutableLiveData<Message>()
@@ -60,11 +61,11 @@ class ChatViewModel(private val conversation: Conversation) : DefaultViewModel()
             }
         }
         _conversation.value = conversation
-        loadMessages(0)
-        startGetter()
+        loadSelectedMessages(0)
+        startListeners()
     }
 
-    private fun startGetter() {
+    override fun startListeners() {
         _messagesGetter = Runnable {
             loadNewMessages()
             _handler.postDelayed(_messagesGetter, 3000)
@@ -72,19 +73,19 @@ class ChatViewModel(private val conversation: Conversation) : DefaultViewModel()
         _handler.postDelayed(_messagesGetter, 0)
     }
 
-    public fun stopGetter() {
+    override fun stopListeners() {
         _handler.removeCallbacks(_messagesGetter)
     }
 
-    private fun loadMessages(offset: Int) {
-        _messages.getMessages(this.conversation, offset, 20, false)
+    override fun loadSelectedMessages(offset: Int) {
+        _messages.vkGetMessages(this.conversation, offset, 20, false)
     }
 
-    private fun loadNewMessages() {
-        _messages.getMessages(this.conversation, 0, 20, true)
+    override fun loadNewMessages() {
+        _messages.vkGetMessages(this.conversation, 0, 20, true)
     }
 
-    override fun showMessages(messages: java.util.ArrayList<Message>, isNew: Boolean) {
+    override fun showMessages(messages: ArrayList<Message>, isNew: Boolean) {
         if (!isNew) {
             for (message in messages) {
                 _addedMessage.value = message
@@ -97,11 +98,11 @@ class ChatViewModel(private val conversation: Conversation) : DefaultViewModel()
         }
     }
 
-    private fun onNewMessage(message: Message) {
+    override fun onNewMessage(message: Message) {
         _newMessage.value = message
     }
 
-    fun sendMessagePressed() {
+    override fun sendMessagePressed() {
         if (!newMessageText.value.isNullOrBlank()) {
             val message = Message(
                 date = Date().time / 1000,
@@ -126,8 +127,8 @@ class ChatViewModel(private val conversation: Conversation) : DefaultViewModel()
         }
     }
 
-    fun loadMoreMessages() {
-        loadMessages(messagesList.value!!.size)
+    override fun loadMoreMessages() {
+        loadSelectedMessages(messagesList.value!!.size)
     }
 
     companion object {

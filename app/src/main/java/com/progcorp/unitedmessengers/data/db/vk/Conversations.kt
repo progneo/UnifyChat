@@ -6,8 +6,8 @@ import com.progcorp.unitedmessengers.data.model.Conversation
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 
-class VKConversations(private val onChatsFetched: OnConversationsFetched) {
-    fun getConversations(offset: Int, isNew: Boolean) {
+class Conversations(private val onChatsFetched: OnConversationsFetched) {
+    fun vkGetConversations(offset: Int, isNew: Boolean) {
         VK.execute(VKChatsCommand(offset), object: VKApiCallback<List<Conversation>> {
             override fun success(result: List<Conversation>) {
                 onChatsFetched.showConversations(result as ArrayList<Conversation>, isNew)

@@ -7,8 +7,8 @@ import com.progcorp.unitedmessengers.data.model.Message
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 
-class VKMessages(private val onMessagesFetched: OnMessagesFetched) {
-    fun getMessages(chat: Conversation, offset: Int, count: Int, isNew: Boolean) {
+class Messages(private val onMessagesFetched: OnMessagesFetched) {
+    fun vkGetMessages(chat: Conversation, offset: Int, count: Int, isNew: Boolean) {
         VK.execute(VKMessagesCommand(chat.id, offset, count), object : VKApiCallback<List<Message>> {
             override fun success(result: List<Message>) {
                 onMessagesFetched.showMessages(result as ArrayList<Message>, isNew)
