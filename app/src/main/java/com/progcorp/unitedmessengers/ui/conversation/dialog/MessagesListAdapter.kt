@@ -1,4 +1,4 @@
-package com.progcorp.unitedmessengers.ui.dialog
+package com.progcorp.unitedmessengers.ui.conversation.dialog
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,12 +8,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.databinding.*
+import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
 
-class MessagesListAdapter(private val viewModel: DialogViewModel) : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiffCallback()) {
+class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiffCallback()) {
 
     class DialogMessageViewHolder(private val binding: ListItemDialogMessageBinding)  :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: DialogViewModel, item: Message) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
             binding.executePendingBindings()
@@ -22,7 +23,7 @@ class MessagesListAdapter(private val viewModel: DialogViewModel) : ListAdapter<
 
     class DialogStickerViewHolder(private val binding: ListItemDialogStickerBinding)  :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: DialogViewModel, item: Message) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
             //Picasso.get().load(item.sticker).into(binding.photoStickerLeft)
@@ -32,7 +33,7 @@ class MessagesListAdapter(private val viewModel: DialogViewModel) : ListAdapter<
 
     class DialogAttachmentViewHolder(private val binding: ListItemDialogAttachmentBinding)  :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: DialogViewModel, item: Message) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
             binding.executePendingBindings()
@@ -41,7 +42,7 @@ class MessagesListAdapter(private val viewModel: DialogViewModel) : ListAdapter<
 
     class DialogOutMessageViewHolder(private val binding: ListItemDialogOutMessageBinding)  :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: DialogViewModel, item: Message) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
             binding.executePendingBindings()
@@ -50,7 +51,7 @@ class MessagesListAdapter(private val viewModel: DialogViewModel) : ListAdapter<
 
     class DialogOutStickerViewHolder(private val binding: ListItemDialogOutStickerBinding)  :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: DialogViewModel, item: Message) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
             //Picasso.get().load(item.senderPhoto).into(binding.photoStickerRight)
@@ -60,7 +61,7 @@ class MessagesListAdapter(private val viewModel: DialogViewModel) : ListAdapter<
 
     class DialogOutAttachmentViewHolder(private val binding: ListItemDialogOutAttachmentBinding)  :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: DialogViewModel, item: Message) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
             binding.executePendingBindings()

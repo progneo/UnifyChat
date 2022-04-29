@@ -9,15 +9,10 @@ import android.widget.ProgressBar
 import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.badge.BadgeDrawable
 import com.progcorp.unitedmessengers.R
-import com.progcorp.unitedmessengers.databinding.ActivityMainBinding
-import com.progcorp.unitedmessengers.databinding.ToolbarAddonChatBindingImpl
 import com.progcorp.unitedmessengers.util.forceHideKeyboard
 import com.vk.api.sdk.VKTokenExpiredHandler
 

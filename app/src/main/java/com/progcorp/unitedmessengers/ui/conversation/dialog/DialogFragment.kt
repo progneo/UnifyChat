@@ -1,4 +1,4 @@
-package com.progcorp.unitedmessengers.ui.dialog
+package com.progcorp.unitedmessengers.ui.conversation.dialog
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +9,8 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.FragmentDialogBinding
-import com.progcorp.unitedmessengers.databinding.ToolbarAddonDialogBinding
+import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
+import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModelFactory
 import kotlinx.android.synthetic.main.fragment_chat.*
 import java.lang.Exception
 
@@ -20,8 +21,8 @@ class DialogFragment : Fragment() {
         const val TAG = "DialogFragment"
     }
 
-    private val viewModel: DialogViewModel by viewModels {
-        DialogViewModelFactory(
+    private val viewModel: ConversationViewModel by viewModels {
+        ConversationViewModelFactory(
             requireArguments().getParcelable<Conversation>(ARGS_CONVERSATION)!!
         )
     }
@@ -29,7 +30,6 @@ class DialogFragment : Fragment() {
     private lateinit var viewDataBinding: FragmentDialogBinding
     private lateinit var listAdapter: MessagesListAdapter
     private lateinit var listAdapterObserver: RecyclerView.AdapterDataObserver
-    private lateinit var toolbarAddonDialogBinding: ToolbarAddonDialogBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,11 +41,6 @@ class DialogFragment : Fragment() {
                 .apply { viewmodel = viewModel }
             viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
         //setHasOptionsMenu(true)
-
-        toolbarAddonDialogBinding =
-            ToolbarAddonDialogBinding.inflate(inflater, container, false)
-                .apply { viewmodel = viewModel }
-        toolbarAddonDialogBinding.lifecycleOwner = this.viewLifecycleOwner
 
         return viewDataBinding.root
     }

@@ -1,4 +1,4 @@
-package com.progcorp.unitedmessengers.ui.chat
+package com.progcorp.unitedmessengers.ui.conversation.chat
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,19 +9,19 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.FragmentChatBinding
-import com.progcorp.unitedmessengers.databinding.ToolbarAddonChatBinding
+import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
+import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModelFactory
 import kotlinx.android.synthetic.main.fragment_chat.*
 import java.lang.Exception
 
 class ChatFragment : Fragment() {
-
     companion object {
         const val ARGS_CONVERSATION = "conversation"
         const val TAG = "ChatFragment"
     }
 
-    private val viewModel: ChatViewModel by viewModels {
-        ChatViewModelFactory(
+    private val viewModel: ConversationViewModel by viewModels {
+        ConversationViewModelFactory(
             requireArguments().getParcelable<Conversation>(ARGS_CONVERSATION)!!
         )
     }
@@ -29,7 +29,6 @@ class ChatFragment : Fragment() {
     private lateinit var viewDataBinding: FragmentChatBinding
     private lateinit var listAdapter: MessagesListAdapter
     private lateinit var listAdapterObserver: RecyclerView.AdapterDataObserver
-    private lateinit var toolbarAddonChatBinding: ToolbarAddonChatBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,11 +39,6 @@ class ChatFragment : Fragment() {
             FragmentChatBinding.inflate(inflater, container, false)
                 .apply { viewmodel = viewModel }
             viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
-
-        toolbarAddonChatBinding =
-            ToolbarAddonChatBinding.inflate(inflater, container, false)
-                .apply { viewmodel = viewModel }
-        toolbarAddonChatBinding.lifecycleOwner = this.viewLifecycleOwner
 
         return viewDataBinding.root
     }
