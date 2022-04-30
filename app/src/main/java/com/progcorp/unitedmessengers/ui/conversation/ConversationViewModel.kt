@@ -3,7 +3,8 @@ package com.progcorp.unitedmessengers.ui.conversation
 import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.*
-import com.progcorp.unitedmessengers.data.db.vk.Messages
+import com.progcorp.unitedmessengers.data.db.Conversations
+import com.progcorp.unitedmessengers.data.db.Messages
 import com.progcorp.unitedmessengers.data.db.vk.requests.VKSendMessageCommand
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
@@ -15,6 +16,7 @@ import com.progcorp.unitedmessengers.util.updateItemAt
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 import java.util.*
+import kotlin.collections.ArrayList
 
 class ConversationViewModelFactory(private val conversation: Conversation) :
     ViewModelProvider.Factory {
@@ -24,12 +26,14 @@ class ConversationViewModelFactory(private val conversation: Conversation) :
 }
 
 class ConversationViewModel(private val conversation: Conversation) :
-    DefaultViewModel(), Messages.OnMessagesFetched {
+    DefaultViewModel(), Messages.OnMessagesFetched, Conversations.OnConversationsFetched {
 
     private var _handler = Handler()
     private var _messagesGetter: Runnable = Runnable {  }
+    private var _conversationGetter: Runnable = Runnable {  }
 
     private val _messages: Messages = Messages(this)
+    private val _conversations: Conversations = Conversations(this)
 
     private val _conversation: MutableLiveData<Conversation> = MutableLiveData()
     private val _addedMessage = MutableLiveData<Message>()
@@ -41,21 +45,21 @@ class ConversationViewModel(private val conversation: Conversation) :
 
     init {
         messagesList.addSource(_addedMessage) { newMessage ->
-            val conversation = messagesList.value?.find { it.id == newMessage.id }
-            if (conversation == null) {
+            val message = messagesList.value?.find { it.id == newMessage.id }
+            if (message == null) {
                 messagesList.addNewItem(newMessage)
             }
             else {
-                messagesList.updateItemAt(newMessage, messagesList.value!!.indexOf(conversation))
+                messagesList.updateItemAt(newMessage, messagesList.value!!.indexOf(message))
             }
         }
         messagesList.addSource(_newMessage) { newMessage ->
-            val conversation = messagesList.value?.find { it.id == newMessage.id }
-            if (conversation == null) {
+            val message = messagesList.value?.find { it.id == newMessage.id }
+            if (message == null) {
                 messagesList.addFrontItem(newMessage)
             }
             else {
-                messagesList.updateItemAt(newMessage, messagesList.value!!.indexOf(conversation))
+                messagesList.updateItemAt(newMessage, messagesList.value!!.indexOf(message))
             }
         }
         _conversation.value = conversation
@@ -68,11 +72,17 @@ class ConversationViewModel(private val conversation: Conversation) :
             loadNewMessages()
             _handler.postDelayed(_messagesGetter, 3000)
         }
+        _conversationGetter = Runnable {
+            updateConversation()
+            _handler.postDelayed(_conversationGetter, 30000)
+        }
+        _handler.postDelayed(_conversationGetter, 30000)
         _handler.postDelayed(_messagesGetter, 0)
     }
 
     fun stopListeners() {
         _handler.removeCallbacks(_messagesGetter)
+        _handler.removeCallbacks(_conversationGetter)
     }
 
     private fun loadSelectedMessages(offset: Int) {
@@ -81,6 +91,10 @@ class ConversationViewModel(private val conversation: Conversation) :
 
     private fun loadNewMessages() {
         _messages.vkGetMessages(this.conversation, 0, 20, true)
+    }
+
+    private fun updateConversation() {
+        _conversations.vkGetConversationById(conversation.id)
     }
 
     override fun showMessages(messages: ArrayList<Message>, isNew: Boolean) {
@@ -94,6 +108,10 @@ class ConversationViewModel(private val conversation: Conversation) :
                 _newMessage.value = message
             }
         }
+    }
+
+    override fun showConversations(chats: ArrayList<Conversation>, isNew: Boolean) {
+        _conversation.value = chats[0]
     }
 
     fun sendMessagePressed() {if (

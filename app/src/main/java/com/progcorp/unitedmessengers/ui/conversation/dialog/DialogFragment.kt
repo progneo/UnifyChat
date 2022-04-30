@@ -11,11 +11,11 @@ import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.FragmentDialogBinding
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModelFactory
+import com.progcorp.unitedmessengers.ui.conversation.MessagesListAdapter
 import kotlinx.android.synthetic.main.fragment_chat.*
 import java.lang.Exception
 
 class DialogFragment : Fragment() {
-
     companion object {
         const val ARGS_CONVERSATION = "conversation"
         const val TAG = "DialogFragment"
@@ -40,7 +40,6 @@ class DialogFragment : Fragment() {
             FragmentDialogBinding.inflate(inflater, container, false)
                 .apply { viewmodel = viewModel }
             viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
-        //setHasOptionsMenu(true)
 
         return viewDataBinding.root
     }

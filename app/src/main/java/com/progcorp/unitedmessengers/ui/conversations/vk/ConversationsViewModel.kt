@@ -4,12 +4,13 @@ import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.data.Event
-import com.progcorp.unitedmessengers.data.db.vk.Conversations
+import com.progcorp.unitedmessengers.data.db.Conversations
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.ui.DefaultViewModel
 import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.addNewItem
 import com.progcorp.unitedmessengers.util.removeItem
+import com.progcorp.unitedmessengers.util.updateItemAt
 import com.vk.api.sdk.VK
 
 class ConversationViewModelFactory() :
@@ -45,7 +46,9 @@ class ConversationsViewModel() : DefaultViewModel(), Conversations.OnConversatio
 
     init {
         conversationsList.addSource(_updatedConversation) { newConversation ->
-            val conversation = conversationsList.value?.find { it.id == newConversation.id }
+            val conversation = conversationsList.value?.find {
+                it.id == newConversation.id
+            }
             if (conversation == null) {
                 conversationsList.addNewItem(newConversation)
             }
@@ -54,10 +57,16 @@ class ConversationsViewModel() : DefaultViewModel(), Conversations.OnConversatio
                     conversationsList.removeItem(conversation)
                     conversationsList.addFrontItem(newConversation)
                 }
+                else if (newConversation.unread_count != conversation.unread_count ||
+                    newConversation.is_online != conversation.is_online) {
+                    conversationsList.updateItemAt(newConversation, conversationsList.value!!.indexOf(conversation))
+                }
             }
         }
         conversationsList.addSource(_newConversation) { newConversation ->
-            val conversation = conversationsList.value?.find { it.id == newConversation.id }
+            val conversation = conversationsList.value?.find {
+                it.id == newConversation.id
+            }
             if (conversation == null) {
                 conversationsList.addFrontItem(newConversation)
             }
@@ -65,6 +74,10 @@ class ConversationsViewModel() : DefaultViewModel(), Conversations.OnConversatio
                 if (newConversation.date != conversation.date) {
                     conversationsList.removeItem(conversation)
                     conversationsList.addFrontItem(newConversation)
+                }
+                else if (newConversation.unread_count != conversation.unread_count ||
+                        newConversation.is_online != conversation.is_online) {
+                    conversationsList.updateItemAt(newConversation, conversationsList.value!!.indexOf(conversation))
                 }
             }
         }
@@ -107,6 +120,9 @@ class ConversationsViewModel() : DefaultViewModel(), Conversations.OnConversatio
 
     override fun showConversations(chats: ArrayList<Conversation>, isNew: Boolean) {
         Log.i(TAG, "Got conversations: " + chats.size)
+        chats.sortByDescending {
+            it.date
+        }
         if (!isNew) {
             for (conversation in chats) {
                 _updatedConversation.value = conversation

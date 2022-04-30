@@ -11,6 +11,7 @@ import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.FragmentChatBinding
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModelFactory
+import com.progcorp.unitedmessengers.ui.conversation.MessagesListAdapter
 import kotlinx.android.synthetic.main.fragment_chat.*
 import java.lang.Exception
 

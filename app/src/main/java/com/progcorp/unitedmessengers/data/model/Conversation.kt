@@ -60,7 +60,10 @@ data class Conversation(
         }
 
         fun parse(json: JSONObject, profiles: JSONArray?, groups: JSONArray?): Conversation {
-            val conversation = json.getJSONObject("conversation")
+            var conversation = json.optJSONObject("conversation")
+            if (conversation == null) {
+                conversation = json
+            }
             val peer = conversation.getJSONObject("peer")
             var limitMessage = 34
 
