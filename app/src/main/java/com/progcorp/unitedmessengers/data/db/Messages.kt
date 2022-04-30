@@ -1,4 +1,4 @@
-package com.progcorp.unitedmessengers.data.db.vk
+package com.progcorp.unitedmessengers.data.db
 
 import android.util.Log
 import com.progcorp.unitedmessengers.data.db.vk.requests.VKMessagesCommand
@@ -26,6 +26,6 @@ class Messages(private val onMessagesFetched: OnMessagesFetched) {
     }
 
     companion object {
-        const val TAG = "VKMessages"
+        const val TAG = "Messages"
     }
 }

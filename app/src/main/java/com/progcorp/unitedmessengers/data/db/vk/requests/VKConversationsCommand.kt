@@ -9,7 +9,7 @@ import com.vk.api.sdk.internal.ApiCommand
 import org.json.JSONException
 import org.json.JSONObject
 
-class VKChatsCommand(private val offset: Int): ApiCommand<List<Conversation>>(){
+class VKConversationsCommand(private val offset: Int): ApiCommand<List<Conversation>>(){
     override fun onExecute(manager: VKApiManager): List<Conversation> {
         val result = ArrayList<Conversation>()
         val call = VKMethodCall.Builder()
@@ -24,7 +24,6 @@ class VKChatsCommand(private val offset: Int): ApiCommand<List<Conversation>>(){
         result.addAll(manager.execute(call, ResponseApiParser()))
         return result
     }
-
 
     private class ResponseApiParser : VKApiJSONResponseParser<List<Conversation>> {
         override fun parse(responseJson: JSONObject): List<Conversation> {

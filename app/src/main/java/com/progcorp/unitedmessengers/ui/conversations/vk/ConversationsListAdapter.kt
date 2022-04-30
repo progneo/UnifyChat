@@ -37,6 +37,8 @@ class ConversationDiffCallback : DiffUtil.ItemCallback<Conversation>() {
     }
 
     override fun areContentsTheSame(oldItem: Conversation, itemWithUserInfo: Conversation): Boolean {
-        return oldItem.last_message == itemWithUserInfo.last_message
+        return oldItem.last_message == itemWithUserInfo.last_message &&
+                oldItem.unread_count == itemWithUserInfo.unread_count &&
+                oldItem.last_online == itemWithUserInfo.last_online
     }
 }

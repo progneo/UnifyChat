@@ -95,10 +95,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_above="@+id/bottomLine"
-                app:bind_dialog_messages_list="@{viewmodel.messagesList}"
+                app:bind_messages_list="@{viewmodel.messagesList}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:reverseLayout="true"
-                tools:listitem="@layout/list_item_dialog_attachment"/>
+                tools:listitem="@layout/list_item_dialog_attachment" />
 
             <View
                 android:id="@+id/bottomLine"

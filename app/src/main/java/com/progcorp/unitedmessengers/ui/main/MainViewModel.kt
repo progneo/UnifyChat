@@ -3,7 +3,7 @@ package com.progcorp.unitedmessengers.ui.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.progcorp.unitedmessengers.data.db.vk.Users
+import com.progcorp.unitedmessengers.data.db.Users
 import com.progcorp.unitedmessengers.data.model.User
 import com.vk.api.sdk.VK
 

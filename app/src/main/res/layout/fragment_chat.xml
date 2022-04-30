@@ -95,10 +95,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_above="@+id/bottomLine"
-                app:bind_chat_messages_list="@{viewmodel.messagesList}"
+                app:bind_messages_list="@{viewmodel.messagesList}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:reverseLayout="true"
-                tools:listitem="@layout/list_item_chat_sticker"/>
+                tools:listitem="@layout/list_item_chat_sticker" />
 
             <View
                 android:id="@+id/bottomLine"
@@ -114,9 +114,9 @@
                 android:layout_alignParentBottom="true"
                 android:orientation="horizontal"
                 android:paddingStart="@dimen/_8sdp"
-                android:paddingTop="@dimen/_7sdp"
-                android:paddingEnd="@dimen/_4sdp"
-                android:paddingBottom="@dimen/_7sdp">
+                android:paddingTop="@dimen/_4sdp"
+                android:paddingEnd="@dimen/_7sdp"
+                android:paddingBottom="@dimen/_4sdp">
 
                 <EditText
                     android:id="@+id/edittext_chat_message"
@@ -127,12 +127,12 @@
                     android:background="@color/white"
                     android:hint="@string/enter_message_hint"
                     android:inputType="textMultiLine"
-                    android:paddingStart="@dimen/_10sdp"
+                    android:paddingStart="@dimen/_5sdp"
                     android:paddingTop="@dimen/_3sdp"
                     android:paddingEnd="@dimen/_10sdp"
                     android:paddingBottom="@dimen/_3sdp"
-                    android:textSize="@dimen/_12ssp"
                     android:text="@={viewmodel.newMessageText}"
+                    android:textSize="@dimen/_12ssp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toLeftOf="@id/button_send_message"
@@ -140,14 +140,14 @@
 
                 <Button
                     android:id="@+id/button_send_message"
-                    android:layout_width="@dimen/_20sdp"
-                    android:layout_height="@dimen/_20sdp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="@dimen/_6sdp"
                     android:background="@drawable/inset_send"
+                    android:onClick="@{() -> viewmodel.sendMessagePressed()}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:onClick="@{() -> viewmodel.sendMessagePressed()}"
-                    android:layout_marginEnd="@dimen/_6sdp"/>
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </RelativeLayout>
     </LinearLayout>

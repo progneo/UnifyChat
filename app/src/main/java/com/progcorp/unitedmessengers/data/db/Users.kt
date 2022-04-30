@@ -1,9 +1,8 @@
-package com.progcorp.unitedmessengers.data.db.vk
+package com.progcorp.unitedmessengers.data.db
 
 import android.util.Log
 import com.progcorp.unitedmessengers.data.db.vk.requests.VKUsersCommand
 import com.progcorp.unitedmessengers.data.model.User
-
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 
@@ -26,6 +25,6 @@ class Users(private val onUsersFetched: OnUsersFetched) {
     }
 
     companion object {
-        const val TAG = "VKUsers"
+        const val TAG = "Users"
     }
 }

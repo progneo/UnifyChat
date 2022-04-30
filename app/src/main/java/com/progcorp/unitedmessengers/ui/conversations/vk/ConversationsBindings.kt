@@ -41,3 +41,13 @@ fun TextView.bindUnreadCount(unreadCount: Int) {
         }
     }
 }
+
+@BindingAdapter("bind_online")
+fun View.bindOnline(isOnline: Boolean) {
+    if (isOnline) {
+        this.visibility = View.VISIBLE
+    }
+    else {
+        this.visibility = View.GONE
+    }
+}
