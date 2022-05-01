@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
+import com.progcorp.unitedmessengers.util.ConvertTime
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,17 +26,11 @@ fun bindImageWithPicasso(imageView: ImageView, url: String?) {
 @SuppressLint("SimpleDateFormat")
 @BindingAdapter("bind_epochTimeMsToDate_with_days_ago")
 fun TextView.bindEpochTimeMsToDateWithDaysAgo(epochTimeMs: Long) {
-    val numOfDays = TimeUnit.MILLISECONDS.toDays(Date().time - epochTimeMs)
+    val numOfDays = TimeUnit.MILLISECONDS.toDays(Date().time - epochTimeMs * 1000)
 
     this.text = when {
-        numOfDays == 1.toLong() -> "Yesterday"
-        numOfDays > 1.toLong() -> "$numOfDays days ago"
-        else -> {
-            val pat =
-                SimpleDateFormat().toLocalizedPattern().replace("\\W?[YyMd]+\\W?".toRegex(), " ")
-            val formatter = SimpleDateFormat(pat, Locale.getDefault())
-            formatter.format(Date(epochTimeMs))
-        }
+        numOfDays >= 1.toLong() -> numOfDays.toString() + "d"
+        else -> ConvertTime.toTime(epochTimeMs)
     }
 }
 

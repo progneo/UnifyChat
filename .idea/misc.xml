@@ -15,10 +15,11 @@
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/drawable/inset_send.xml" value="0.2095" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/drawable/left_node_bg.xml" value="0.2095" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/drawable/online_dot.xml" value="0.3395" />
+        <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/drawable/unread_messages.xml" value="0.3595" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/activity_chat.xml" value="0.2674772036474164" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/activity_dialog.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/activity_main.xml" value="0.3582427536231884" />
-        <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/activity_vk_login.xml" value="0.55" />
+        <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/activity_vk_login.xml" value="0.46714031971580816" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/fragment_chat.xml" value="0.5" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/fragment_dashboard.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/fragment_dialog.xml" value="0.25" />
@@ -33,7 +34,7 @@
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_chat_out_message.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_chat_out_sticker.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_chat_sticker.xml" value="0.55" />
-        <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_conversation.xml" value="0.45" />
+        <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_conversation.xml" value="0.67" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_dialog_attachment.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_dialog_message.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_dialog_out_attachment.xml" value="0.40443840579710144" />

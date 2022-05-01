@@ -14,5 +14,5 @@
     <string name="members">Members: %1$s</string>
     <string name="online">Online</string>
     <string name="last_seen">Was online at: %1$s</string>
-    <integer name="com_vk_sdk_AppId">2685278</integer>
+    <integer name="com_vk_sdk_AppId">6287487</integer>
 </resources>

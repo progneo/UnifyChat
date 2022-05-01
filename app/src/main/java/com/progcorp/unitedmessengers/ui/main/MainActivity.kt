@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         //        R.id.navigation_vk
         //    )
         //)
-//
+        //
         //setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
@@ -68,6 +68,9 @@ class MainActivity : AppCompatActivity() {
     private val tokenTracker = object: VKTokenExpiredHandler {
         override fun onTokenExpired() {
             Log.i("VK Token", "Token expired.")
+            val intent = intent
+            finish()
+            startActivity(intent)
         }
     }
 

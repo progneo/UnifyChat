@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
+import com.progcorp.unitedmessengers.data.EventObserver
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.FragmentChatBinding
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
@@ -47,6 +48,11 @@ class ChatFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupListAdapter()
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.backEvent.observe(viewLifecycleOwner, EventObserver { close() } )
     }
 
     private fun setupListAdapter() {
@@ -73,6 +79,10 @@ class ChatFragment : Fragment() {
         else {
             throw Exception("The viewmodel is not initialized")
         }
+    }
+
+    private fun close() {
+        activity?.onBackPressed()
     }
 
     override fun onDestroyView() {
