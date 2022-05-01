@@ -1,18 +1,21 @@
 package com.progcorp.unitedmessengers.ui.login
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.WebView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.util.VKAccountService
 import com.progcorp.unitedmessengers.util.VKAuthStatus
 import java.net.URLEncoder
 import java.util.regex.Pattern
+
 
 class VKAuthFragment : Fragment() {
     private val webView by lazy { WebView(requireContext()) }
@@ -20,8 +23,7 @@ class VKAuthFragment : Fragment() {
         append(String.format("%s=%s", URLEncoder.encode("client_id", "UTF-8"), URLEncoder.encode("2685278", "UTF-8")) + "&")
         append(String.format("%s=%s", URLEncoder.encode("redirect_uri", "UTF-8"), URLEncoder.encode("https://oauth.vk.com/blank.html", "UTF-8")) + "&")
         append(String.format("%s=%s", URLEncoder.encode("display", "UTF-8"), URLEncoder.encode("mobile", "UTF-8")) + "&")
-        append(String.format("%s=%s", URLEncoder.encode("scope", "UTF-8"), URLEncoder.encode(
-            VKAccountService.SCOPE, "UTF-8")) + "&")
+        append(String.format("%s=%s", URLEncoder.encode("scope", "UTF-8"), URLEncoder.encode(VKAccountService.SCOPE, "UTF-8")) + "&")
         append(String.format("%s=%s", URLEncoder.encode("response_type", "UTF-8"), URLEncoder.encode("token", "UTF-8")) + "&")
         append(String.format("%s=%s", URLEncoder.encode("v", "UTF-8"), URLEncoder.encode("5.131", "UTF-8")) + "&")
         append(String.format("%s=%s", URLEncoder.encode("state", "UTF-8"), URLEncoder.encode("12345", "UTF-8")) + "&")
@@ -64,7 +66,17 @@ class VKAuthFragment : Fragment() {
                                 App.application.vkAccountService.userId = userId
                             }
                         }
-                        activity?.onBackPressed()
+                        Handler().post {
+                            val intent = requireActivity().intent
+                            intent.addFlags(
+                                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                                        or Intent.FLAG_ACTIVITY_NO_ANIMATION
+                            )
+                            requireActivity().overridePendingTransition(0, 0)
+                            requireActivity().finish()
+                            requireActivity().overridePendingTransition(0, 0)
+                            startActivity(intent)
+                        }
                     }
                 }
             }

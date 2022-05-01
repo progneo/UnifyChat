@@ -32,7 +32,7 @@ class MainViewModel : ViewModel(), Users.OnUsersFetched {
 
     private fun setUserInfo() {
         _scope.launch {
-            _users.vkGetUsers(intArrayOf(App.application.vkAccountService.userId!!.toInt()))
+            _users.vkGetUsers()
         }
     }
 }

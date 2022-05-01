@@ -9,11 +9,10 @@ import org.json.JSONException
 import org.json.JSONObject
 
 class Users(private val onUsersFetched: OnUsersFetched) {
-    suspend fun vkGetUsers(uids: IntArray) {
-        val chunks = uids.toList().chunked(CHUNK_LIMIT)
+    suspend fun vkGetUsers() {
         val response = App.application.vkRetrofit.create(VKUsersRequest::class.java)
             .usersGet(
-                App.application.vkAccountService.token!!, "5.131", "", "photo_100,online,last_seen", 0
+                App.application.vkAccountService.token!!, "5.131", "photo_100", 0
             )
         val responseJson = JSONObject(response)
         try {
