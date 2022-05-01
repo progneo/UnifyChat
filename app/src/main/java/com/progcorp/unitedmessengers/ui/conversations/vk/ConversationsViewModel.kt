@@ -12,6 +12,8 @@ import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.addNewItem
 import com.progcorp.unitedmessengers.util.removeItem
 import com.progcorp.unitedmessengers.util.updateItemAt
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class ConversationViewModelFactory() :
     ViewModelProvider.Factory {
@@ -25,6 +27,8 @@ enum class LayoutState {
 }
 
 class ConversationsViewModel() : DefaultViewModel(), Conversations.OnConversationsFetched {
+
+    private val _scope = MainScope()
 
     private var _handler = Handler()
     private var _conversationsGetter: Runnable = Runnable {  }
@@ -103,11 +107,15 @@ class ConversationsViewModel() : DefaultViewModel(), Conversations.OnConversatio
     }
 
     private fun loadConversations(offset: Int) {
-        _conversations.vkGetConversations(offset, false)
+        _scope.launch {
+            _conversations.vkGetConversations(offset, false)
+        }
     }
 
     private fun loadNewConversations() {
-        _conversations.vkGetConversations(0, true)
+        _scope.launch {
+            _conversations.vkGetConversations(0, true)
+        }
     }
 
     private fun startGetter() {

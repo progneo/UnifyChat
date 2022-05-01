@@ -6,14 +6,11 @@ import com.progcorp.unitedmessengers.data.db.vk.requests.VKMessagesRequest
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.json.JSONException
 import org.json.JSONObject
 
 class Messages(private val onMessagesFetched: OnMessagesFetched) {
-    fun vkGetMessages(chat: Conversation, offset: Int, count: Int, isNew: Boolean) = runBlocking {
+    suspend fun vkGetMessages(chat: Conversation, offset: Int, count: Int, isNew: Boolean) {
         val response = App.application.vkRetrofit.create(VKMessagesRequest::class.java)
             .messagesGet(
                 App.application.vkAccountService.token!!,
