@@ -40,7 +40,7 @@ class DialogFragment : Fragment() {
         viewDataBinding =
             FragmentDialogBinding.inflate(inflater, container, false)
                 .apply { viewmodel = viewModel }
-            viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
+        viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
 
         return viewDataBinding.root
     }

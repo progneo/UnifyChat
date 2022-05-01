@@ -105,8 +105,8 @@
 
         <TextView
             android:id="@+id/unread_count"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
             android:layout_gravity="center"
             android:background="@drawable/unread_messages"
             android:gravity="center"
