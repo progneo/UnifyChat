@@ -80,7 +80,7 @@ data class Message(
 
         fun parseVK(json: JSONObject, profiles: JSONArray?): Message {
             val id = json.optInt("id")
-            val timeStamp = json.optLong("date")
+            val timeStamp = json.optLong("date") * 1000
             val time = ConvertTime.toTime(timeStamp)
             val fromId = json.optInt("from_id")
             val peerId = json.optInt("peer_id")

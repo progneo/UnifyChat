@@ -18,7 +18,6 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
-            //Picasso.get().load(item.senderPhoto).into(binding.photoSender)
             binding.executePendingBindings()
         }
     }
@@ -28,8 +27,6 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
-            //Picasso.get().load(item.senderPhoto).into(binding.photoSender)
-            //Picasso.get().load(item.sticker).into(binding.photoStickerLeft)
             binding.executePendingBindings()
         }
     }
@@ -39,7 +36,6 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
-            //Picasso.get().load(item.senderPhoto).into(binding.photoSender)
             binding.executePendingBindings()
         }
     }
@@ -67,7 +63,6 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
-            //Picasso.get().load(item.senderPhoto).into(binding.photoStickerRight)
             binding.executePendingBindings()
         }
     }
@@ -95,7 +90,6 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
-            //Picasso.get().load(item.sticker).into(binding.photoStickerLeft)
             binding.executePendingBindings()
         }
     }
@@ -123,7 +117,6 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
             binding.message = item
-            //Picasso.get().load(item.senderPhoto).into(binding.photoStickerRight)
             binding.executePendingBindings()
         }
     }

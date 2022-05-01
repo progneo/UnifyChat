@@ -123,7 +123,7 @@ class ConversationsViewModel() : DefaultViewModel(), Conversations.OnConversatio
             loadNewConversations()
             _handler.postDelayed(_conversationsGetter, 5000)
         }
-        _handler.postDelayed(_conversationsGetter, 5000)
+        _handler.postDelayed(_conversationsGetter, 0)
     }
 
     override fun showConversations(chats: ArrayList<Conversation>, isNew: Boolean) {

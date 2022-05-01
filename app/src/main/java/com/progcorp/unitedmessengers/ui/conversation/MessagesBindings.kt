@@ -2,6 +2,7 @@
 
 package com.progcorp.unitedmessengers.ui.conversation
 
+import android.view.View
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -24,5 +25,26 @@ fun TextView.bindOnlineText(conversation: Conversation) {
     }
     else {
         resources.getString(R.string.last_seen, ConvertTime.toDateTime(conversation.last_online))
+    }
+}
+
+@BindingAdapter("bind_message", "bind_message_viewModel")
+fun View.bindShouldMessageShowTimeText(message: Message, viewModel: ConversationViewModel) {
+    val index = viewModel.messagesList.value!!.indexOf(message)
+
+    if (index != viewModel.messagesList.value!!.size - 1) {
+        val messageBefore = viewModel.messagesList.value!![index + 1]
+
+        val dateBefore = ConvertTime.toDateWithDayOfWeek(messageBefore.date)
+        val dateThis = ConvertTime.toDateWithDayOfWeek(message.date)
+
+        if (dateThis == dateBefore) {
+            this.visibility = View.GONE
+        } else {
+            this.visibility = View.VISIBLE
+        }
+    }
+    else {
+        this.visibility = View.GONE
     }
 }

@@ -29,15 +29,9 @@ fun TextView.bindUnreadCount(unreadCount: Int) {
         unreadCount <= 0 -> {
             this.visibility = View.INVISIBLE
         }
-        unreadCount > 9 -> {
-            this.text = unreadCount.toString()
-            this.visibility = View.VISIBLE
-            this.width = 100
-        }
         else -> {
             this.text = unreadCount.toString()
             this.visibility = View.VISIBLE
-            this.width = 50
         }
     }
 }

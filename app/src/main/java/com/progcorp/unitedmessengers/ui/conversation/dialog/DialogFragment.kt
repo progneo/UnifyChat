@@ -63,8 +63,7 @@ class DialogFragment : Fragment() {
                     recycler_view.scrollToPosition(positionStart)
                 }
             })
-            listAdapter =
-                MessagesListAdapter(viewModel)
+            listAdapter = MessagesListAdapter(viewModel)
             listAdapter.registerAdapterDataObserver(listAdapterObserver)
             viewDataBinding.recyclerView.adapter = listAdapter
 

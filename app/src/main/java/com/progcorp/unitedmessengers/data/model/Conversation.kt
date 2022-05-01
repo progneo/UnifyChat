@@ -118,7 +118,7 @@ data class Conversation(
             }
 
             val lastMessageObject = json.getJSONObject("last_message")
-            val date = lastMessageObject.optLong("date")
+            val date = lastMessageObject.optLong("date") * 1000
             val out: Boolean = when (lastMessageObject.getInt("out")) {
                 1 -> true
                 else -> false
@@ -171,11 +171,6 @@ data class Conversation(
             }
 
             return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline)
-        }
-
-        private fun fixText(text: String, limit: Int): String {
-            val newText = if (text.length > limit) text.substring(0, limit) + "..." else text
-            return newText.replace('\n', ' ', true)
         }
     }
 
