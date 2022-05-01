@@ -14,7 +14,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.badge.BadgeDrawable
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.util.forceHideKeyboard
-import com.vk.api.sdk.VKTokenExpiredHandler
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,8 +27,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        tokenTracker
 
         navView = findViewById(R.id.nav_view)
         mainProgressBar = findViewById(R.id.main_progressBar)
@@ -63,15 +60,6 @@ class MainActivity : AppCompatActivity() {
         //
         //setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-    }
-
-    private val tokenTracker = object: VKTokenExpiredHandler {
-        override fun onTokenExpired() {
-            Log.i("VK Token", "Token expired.")
-            val intent = intent
-            finish()
-            startActivity(intent)
-        }
     }
 
     fun showGlobalProgressBar(isShow: Boolean) {

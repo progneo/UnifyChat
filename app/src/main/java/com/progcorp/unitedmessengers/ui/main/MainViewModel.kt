@@ -3,9 +3,11 @@ package com.progcorp.unitedmessengers.ui.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.db.Users
 import com.progcorp.unitedmessengers.data.model.User
-import com.vk.api.sdk.VK
+import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel(), Users.OnUsersFetched {
     private val _users: Users = Users(this)
@@ -14,9 +16,10 @@ class MainViewModel : ViewModel(), Users.OnUsersFetched {
     var vkUserInfo: LiveData<User> = _vkUserInfo
 
     init {
-
-        if (VK.isLoggedIn()) {
-            setUserInfo()
+        viewModelScope.launch {
+            if (App.application.vkAccountService.token != null) {
+                setUserInfo()
+            }
         }
     }
 
@@ -25,6 +28,6 @@ class MainViewModel : ViewModel(), Users.OnUsersFetched {
     }
 
     private fun setUserInfo() {
-        _users.vkGetUsers(intArrayOf(VK.getUserId().toString().toInt()))
+        _users.vkGetUsers(intArrayOf(App.application.vkAccountService.userId!!.toInt()))
     }
 }

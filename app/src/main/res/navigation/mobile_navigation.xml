@@ -22,8 +22,8 @@
         android:label="@string/vk"
         tools:layout="@layout/fragment_vk">
         <action
-            android:id="@+id/action_navigation_chats_to_loginActivity"
-            app:destination="@id/login_vk" />
+            android:id="@+id/action_navigation_chats_to_vkAuthFragment"
+            app:destination="@id/vkAuthFragment" />
         <action
             android:id="@+id/action_navigation_chats_to_chatFragment"
             app:destination="@id/chatFragment" />
@@ -37,9 +37,7 @@
     <fragment
         android:id="@+id/dialogFragment"
         android:name="com.progcorp.unitedmessengers.ui.conversation.dialog.DialogFragment"/>
-    <activity
-        android:id="@+id/login_vk"
-        android:name="com.progcorp.unitedmessengers.ui.login.vk.VKLoginActivity"
-        tools:layout="@layout/activity_vk_login">
-    </activity>
+    <fragment
+        android:id="@+id/vkAuthFragment"
+        android:name="com.progcorp.unitedmessengers.ui.login.VKAuthFragment"/>
 </navigation>
