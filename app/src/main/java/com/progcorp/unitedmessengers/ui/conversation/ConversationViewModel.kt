@@ -15,6 +15,8 @@ import com.progcorp.unitedmessengers.util.ConvertTime
 import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.addNewItem
 import com.progcorp.unitedmessengers.util.updateItemAt
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.json.JSONException
@@ -31,6 +33,8 @@ class ConversationViewModelFactory(private val conversation: Conversation) :
 
 class ConversationViewModel(private val conversation: Conversation) :
     DefaultViewModel(), Messages.OnMessagesFetched, Conversations.OnConversationsFetched {
+
+    private var _scope = MainScope()
 
     private var _handler = Handler()
     private var _messagesGetter: Runnable = Runnable {  }
@@ -94,15 +98,21 @@ class ConversationViewModel(private val conversation: Conversation) :
     }
 
     private fun loadSelectedMessages(offset: Int) {
-        _messages.vkGetMessages(this.conversation, offset, 20, false)
+        _scope.launch(Dispatchers.Main) {
+            _messages.vkGetMessages(conversation, offset, 20, false)
+        }
     }
 
     private fun loadNewMessages() {
-        _messages.vkGetMessages(this.conversation, 0, 20, true)
+        _scope.launch(Dispatchers.Main) {
+            _messages.vkGetMessages(conversation, 0, 20, true)
+        }
     }
 
     private fun updateConversation() {
-        _conversations.vkGetConversationById(conversation.id)
+        _scope.launch {
+            _conversations.vkGetConversationById(conversation.id)
+        }
     }
 
     override fun showMessages(messages: ArrayList<Message>, isNew: Boolean) {

@@ -5,12 +5,11 @@ import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.db.vk.requests.VKUsersRequest
 import com.progcorp.unitedmessengers.data.model.User
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
-import kotlinx.coroutines.runBlocking
 import org.json.JSONException
 import org.json.JSONObject
 
 class Users(private val onUsersFetched: OnUsersFetched) {
-    fun vkGetUsers(uids: IntArray) = runBlocking {
+    suspend fun vkGetUsers(uids: IntArray) {
         val chunks = uids.toList().chunked(CHUNK_LIMIT)
         val response = App.application.vkRetrofit.create(VKUsersRequest::class.java)
             .usersGet(

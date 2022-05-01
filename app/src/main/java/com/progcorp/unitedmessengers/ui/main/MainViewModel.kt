@@ -7,9 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.db.Users
 import com.progcorp.unitedmessengers.data.model.User
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel(), Users.OnUsersFetched {
+    private val _scope = MainScope()
+
     private val _users: Users = Users(this)
     private val _vkUserInfo: MutableLiveData<User> = MutableLiveData()
 
@@ -28,6 +31,8 @@ class MainViewModel : ViewModel(), Users.OnUsersFetched {
     }
 
     private fun setUserInfo() {
-        _users.vkGetUsers(intArrayOf(App.application.vkAccountService.userId!!.toInt()))
+        _scope.launch {
+            _users.vkGetUsers(intArrayOf(App.application.vkAccountService.userId!!.toInt()))
+        }
     }
 }

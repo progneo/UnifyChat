@@ -11,7 +11,7 @@ import org.json.JSONException
 import org.json.JSONObject
 
 class Conversations(private val onChatsFetched: OnConversationsFetched) {
-    fun vkGetConversations(offset: Int, isNew: Boolean) = runBlocking {
+    suspend fun vkGetConversations(offset: Int, isNew: Boolean) {
         val response = App.application.vkRetrofit.create(VKConversationsRequest::class.java)
             .conversationsGet(
                 App.application.vkAccountService.token!!, "5.131", 15, offset, true, 0
@@ -34,7 +34,7 @@ class Conversations(private val onChatsFetched: OnConversationsFetched) {
         }
     }
 
-    fun vkGetConversationById(id: Int) = runBlocking {
+    suspend fun vkGetConversationById(id: Int) {
         val response = App.application.vkRetrofit.create(VKConversationByIdRequest::class.java)
             .conversationGet(
                 App.application.vkAccountService.token!!, "5.131", id, true, 0
