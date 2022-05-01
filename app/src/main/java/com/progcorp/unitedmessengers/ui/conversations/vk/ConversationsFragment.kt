@@ -90,6 +90,6 @@ class ConversationsFragment : Fragment() {
     }
 
     private fun navigateToLogin() {
-        findNavController().navigate(R.id.action_navigation_chats_to_loginActivity)
+        findNavController().navigate(R.id.action_navigation_chats_to_vkAuthFragment)
     }
 }

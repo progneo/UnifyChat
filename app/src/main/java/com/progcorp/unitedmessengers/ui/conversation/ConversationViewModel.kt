@@ -3,10 +3,11 @@ package com.progcorp.unitedmessengers.ui.conversation
 import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.*
+import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
 import com.progcorp.unitedmessengers.data.db.Conversations
 import com.progcorp.unitedmessengers.data.db.Messages
-import com.progcorp.unitedmessengers.data.db.vk.requests.VKSendMessageCommand
+import com.progcorp.unitedmessengers.data.db.vk.requests.VKSendMessageRequest
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.ui.DefaultViewModel
@@ -14,8 +15,10 @@ import com.progcorp.unitedmessengers.util.ConvertTime
 import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.addNewItem
 import com.progcorp.unitedmessengers.util.updateItemAt
-import com.vk.api.sdk.VK
-import com.vk.api.sdk.VKApiCallback
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.json.JSONException
+import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -119,8 +122,8 @@ class ConversationViewModel(private val conversation: Conversation) :
         _conversation.value = chats[0]
     }
 
-    fun sendMessagePressed() {if (
-        !newMessageText.value.isNullOrBlank()) {
+    fun sendMessagePressed() = runBlocking {
+        if (!newMessageText.value.isNullOrBlank()) {
         val message = Message(
             date = Date().time / 1000,
             time = ConvertTime.toTime(Date().time / 1000),
@@ -130,16 +133,23 @@ class ConversationViewModel(private val conversation: Conversation) :
             type = Message.MESSAGE_OUT
         )
         _newMessage.value = message
-        VK.execute(VKSendMessageCommand(conversation.id, newMessageText.value!!), object:
-            VKApiCallback<Int> {
-            override fun success(result: Int) {
-                message.id = result
-                Log.i(TAG, "Message sent")
-            }
-            override fun fail(error: Exception) {
-                Log.e(TAG, error.toString())
-            }
-        })
+
+        val response = App.application.vkRetrofit.create(VKSendMessageRequest::class.java)
+            .messageSend(
+                App.application.vkAccountService.token!!,
+                "5.131",
+                conversation.id, newMessageText.value!!,
+                0,
+                0
+            )
+
+        val responseJson = JSONObject(response)
+        try {
+            message.id = responseJson.getInt("response")
+        } catch (ex: JSONException) {
+            Log.e(TAG, ex.stackTraceToString())
+        }
+
         newMessageText.value = null
     }}
 

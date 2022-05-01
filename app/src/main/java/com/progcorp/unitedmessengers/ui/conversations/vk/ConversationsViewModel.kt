@@ -3,6 +3,7 @@ package com.progcorp.unitedmessengers.ui.conversations.vk
 import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.*
+import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
 import com.progcorp.unitedmessengers.data.db.Conversations
 import com.progcorp.unitedmessengers.data.model.Conversation
@@ -11,7 +12,6 @@ import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.addNewItem
 import com.progcorp.unitedmessengers.util.removeItem
 import com.progcorp.unitedmessengers.util.updateItemAt
-import com.vk.api.sdk.VK
 
 class ConversationViewModelFactory() :
     ViewModelProvider.Factory {
@@ -81,7 +81,7 @@ class ConversationsViewModel() : DefaultViewModel(), Conversations.OnConversatio
                 }
             }
         }
-        _loginState.value = VK.isLoggedIn()
+        _loginState.value = (App.application.vkAccountService.token != null)
         layoutState.addSource(_loginState) { updateLayoutState(it) }
         if (_loginState.value == true) {
             setupConversations()
