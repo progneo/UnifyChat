@@ -32,16 +32,14 @@ class ConversationViewModelFactory(private val conversation: Conversation) :
 }
 
 class ConversationViewModel(private val conversation: Conversation) :
-    DefaultViewModel(), Messages.OnMessagesFetched, Conversations.OnConversationsFetched {
+    DefaultViewModel(), Messages.OnMessagesFetched {
 
     private var _scope = MainScope()
 
     private var _handler = Handler()
     private var _messagesGetter: Runnable = Runnable {  }
-    private var _conversationGetter: Runnable = Runnable {  }
 
     private val _messages: Messages = Messages(this)
-    private val _conversations: Conversations = Conversations(this)
 
     private val _backEvent = MutableLiveData<Event<Unit>>()
 
@@ -84,17 +82,11 @@ class ConversationViewModel(private val conversation: Conversation) :
             loadNewMessages()
             _handler.postDelayed(_messagesGetter, 3000)
         }
-        _conversationGetter = Runnable {
-            updateConversation()
-            _handler.postDelayed(_conversationGetter, 30000)
-        }
-        _handler.postDelayed(_conversationGetter, 30000)
         _handler.postDelayed(_messagesGetter, 0)
     }
 
     fun stopListeners() {
         _handler.removeCallbacks(_messagesGetter)
-        _handler.removeCallbacks(_conversationGetter)
     }
 
     private fun loadSelectedMessages(offset: Int) {
@@ -106,12 +98,6 @@ class ConversationViewModel(private val conversation: Conversation) :
     private fun loadNewMessages() {
         _scope.launch(Dispatchers.Main) {
             _messages.vkGetMessages(conversation, 0, 20, true)
-        }
-    }
-
-    private fun updateConversation() {
-        _scope.launch {
-            _conversations.vkGetConversationById(conversation.id)
         }
     }
 
@@ -128,47 +114,46 @@ class ConversationViewModel(private val conversation: Conversation) :
         }
     }
 
-    override fun showConversations(chats: ArrayList<Conversation>, isNew: Boolean) {
-        _conversation.value = chats[0]
-    }
-
-    fun sendMessagePressed() = runBlocking {
+    fun sendMessagePressed() {
+        _scope.launch {
         if (!newMessageText.value.isNullOrBlank()) {
-        val message = Message(
-            date = Date().time / 1000,
-            time = ConvertTime.toTime(Date().time / 1000),
-            peerId = conversation.id,
-            out = true,
-            text = newMessageText.value!!,
-            type = Message.MESSAGE_OUT
-        )
-        _newMessage.value = message
-
-        val response = App.application.vkRetrofit.create(VKSendMessageRequest::class.java)
-            .messageSend(
-                App.application.vkAccountService.token!!,
-                "5.131",
-                conversation.id, newMessageText.value!!,
-                0,
-                0
+            val message = Message(
+                date = Date().time / 1000,
+                time = ConvertTime.toTime(Date().time / 1000),
+                peerId = conversation.id,
+                out = true,
+                text = newMessageText.value!!,
+                type = Message.MESSAGE_OUT
             )
+            _newMessage.value = message
 
-        val responseJson = JSONObject(response)
-        try {
-            message.id = responseJson.getInt("response")
-        } catch (ex: JSONException) {
-            Log.e(TAG, ex.stackTraceToString())
+            val response = App.application.vkRetrofit.create(VKSendMessageRequest::class.java)
+                .messageSend(
+                    App.application.vkAccountService.token!!,
+                    "5.131",
+                    conversation.id, newMessageText.value!!,
+                    0,
+                    0
+                )
+
+            val responseJson = JSONObject(response)
+            try {
+                message.id = responseJson.getInt("response")
+            } catch (ex: JSONException) {
+                Log.e(TAG, ex.stackTraceToString())
+            }
+
+            newMessageText.value = null
+            }
         }
-
-        newMessageText.value = null
-    }}
+    }
 
     fun backPressed() {
         _backEvent.value = Event(Unit)
     }
 
     fun loadMoreMessages() {
-        loadSelectedMessages(messagesList.value!!.size)
+        loadSelectedMessages(messagesList.value!!.size - 1)
     }
 
     companion object {

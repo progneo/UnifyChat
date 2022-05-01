@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.util.ConvertTime
 import com.squareup.picasso.Picasso
-import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -26,7 +25,7 @@ fun bindImageWithPicasso(imageView: ImageView, url: String?) {
 @SuppressLint("SimpleDateFormat")
 @BindingAdapter("bind_epochTimeMsToDate_with_days_ago")
 fun TextView.bindEpochTimeMsToDateWithDaysAgo(epochTimeMs: Long) {
-    val numOfDays = TimeUnit.MILLISECONDS.toDays(Date().time - epochTimeMs * 1000)
+    val numOfDays = TimeUnit.MILLISECONDS.toDays(Date().time - epochTimeMs)
 
     this.text = when {
         numOfDays >= 1.toLong() -> numOfDays.toString() + "d"
@@ -38,16 +37,7 @@ fun TextView.bindEpochTimeMsToDateWithDaysAgo(epochTimeMs: Long) {
 @BindingAdapter("bind_epochTimeMsToDate")
 fun TextView.bindEpochTimeMsToDate(epochTimeMs: Long) {
     if (epochTimeMs > 0) {
-        val currentTimeMs = Date().time
-        val numOfDays = TimeUnit.MILLISECONDS.toDays(currentTimeMs - epochTimeMs)
-
-        val replacePattern = when {
-            numOfDays >= 1.toLong() -> "Yy"
-            else -> "YyMd"
-        }
-        val pat = SimpleDateFormat().toLocalizedPattern().replace("\\W?[$replacePattern]+\\W?".toRegex(), " ")
-        val formatter = SimpleDateFormat(pat, Locale.getDefault())
-        this.text = formatter.format(Date(epochTimeMs))
+        this.text = ConvertTime.toDateWithDayOfWeek(epochTimeMs)
     }
 }
 
@@ -67,3 +57,4 @@ fun bindDisableRecyclerViewItemAnimator(recyclerView: RecyclerView, disable: Boo
         recyclerView.itemAnimator = null
     }
 }
+

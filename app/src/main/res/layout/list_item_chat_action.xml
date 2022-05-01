@@ -33,7 +33,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 android:text="@{message.text}"
-                tools:text="Пользователь покинул беседу"/>
+                tools:text="User was kicked"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
