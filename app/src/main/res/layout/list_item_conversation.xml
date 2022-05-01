@@ -52,31 +52,40 @@
 
         <TextView
             android:id="@+id/name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/primary_text"
-            android:textSize="@dimen/_13ssp"
-            android:textStyle="bold"
             android:paddingStart="@dimen/_6sdp"
-            app:layout_constraintBottom_toTopOf="@+id/last_message"
-            app:layout_constraintLeft_toRightOf="@+id/photo"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
+            android:paddingEnd="@dimen/_6sdp"
+            android:maxLines="1"
             android:text="@{conversation.title}"
-            tools:text = "Test"/>
+            android:textColor="@color/primary_text"
+            android:textSize="@dimen/_12ssp"
+            android:textStyle="bold"
+            android:ellipsize="end"
+            app:layout_constraintBottom_toTopOf="@+id/last_message"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/photo"
+            app:layout_constraintRight_toLeftOf="@id/date"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="Test" />
 
         <TextView
             android:id="@+id/last_message"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/secondary_text"
-            android:textSize="@dimen/_12ssp"
+            android:layout_marginTop="@dimen/_3sdp"
             android:paddingStart="@dimen/_6sdp"
+            android:paddingEnd="@dimen/_6sdp"
+            android:maxLines="1"
             android:text="@{conversation.last_message}"
-            app:layout_constraintLeft_toRightOf="@+id/photo"
-            app:layout_constraintTop_toBottomOf="@+id/name"
+            android:textColor="@color/secondary_text"
+            android:textSize="@dimen/_11ssp"
+            android:ellipsize="end"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:text = "Message"/>
+            app:layout_constraintTop_toBottomOf="@+id/name"
+            app:layout_constraintLeft_toRightOf="@+id/photo"
+            app:layout_constraintRight_toLeftOf="@id/unread_count"
+            tools:text="Message"/>
 
         <TextView
             android:id="@+id/read_state"
@@ -88,26 +97,42 @@
             android:textColor="@android:color/white"
             android:textSize="@dimen/_10ssp"
             app:bind_read_state="@{conversation.unread_count}"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name"
-            app:layout_constraintBottom_toTopOf="@+id/last_message"
-            android:layout_marginEnd="@dimen/_8sdp"
+            app:layout_constraintRight_toRightOf="@id/date"
+            app:layout_constraintLeft_toLeftOf="@id/date"
+            app:layout_constraintTop_toTopOf="@+id/last_message"
+            app:layout_constraintBottom_toBottomOf="@+id/last_message"
             android:visibility="invisible"/>
 
         <TextView
             android:id="@+id/unread_count"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:layout_gravity="center"
             android:background="@drawable/unread_messages"
             android:gravity="center"
             android:textColor="@android:color/white"
             android:textSize="@dimen/_10ssp"
             app:bind_unread_count="@{conversation.unread_count}"
+            app:layout_constraintRight_toRightOf="@id/date"
+            app:layout_constraintLeft_toLeftOf="@id/date"
+            app:layout_constraintTop_toTopOf="@+id/last_message"
+            app:layout_constraintBottom_toBottomOf="@+id/last_message"
+            tools:text="11"
+            android:visibility="visible"/>
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="@dimen/_32sdp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="@dimen/_11ssp"
+            app:bind_epochTimeMsToDate_with_days_ago="@{conversation.date}"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name"
-            app:layout_constraintBottom_toTopOf="@+id/last_message"
-            tools:text="5"
+            app:layout_constraintBottom_toBottomOf="@id/name"
+            app:layout_constraintTop_toTopOf="@id/name"
+            tools:text="20:40"
             android:visibility="visible"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

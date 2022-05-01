@@ -65,7 +65,7 @@ data class Conversation(
                 conversation = json
             }
             val peer = conversation.getJSONObject("peer")
-            var limitMessage = 34
+           // val limitMessage = 30
 
             val id = peer.optInt("id")
 
@@ -84,7 +84,8 @@ data class Conversation(
             val chatSettings = conversation.optJSONObject("chat_settings")
             when {
                 type == "chat" && chatSettings != null -> {
-                    title = fixText(chatSettings.optString("title"), limitMessage - 5)
+                    title = chatSettings.optString("title")
+                    //title = fixText(chatSettings.optString("title"), limitMessage - 5)
                     val photoObject = chatSettings.optJSONObject("photo")
                     if (photoObject != null) {
                         photo = photoObject.optString("photo_100").toString()
@@ -107,7 +108,8 @@ data class Conversation(
                     for (i in 0 until groups.length()) {
                         val group = groups.getJSONObject(i)
                         if (group.getInt("id") == -id) {
-                            title = fixText(group.getString("name"), limitMessage - 5)
+                            title = group.getString("name")
+                            //title = fixText(group.getString("name"), limitMessage - 5)
                             photo = group.getString("photo_100")
                             break
                         }
@@ -126,12 +128,8 @@ data class Conversation(
                 unreadCount = -1
             }
 
-            if (unreadCount != 0) {
-                limitMessage -= 10
-            }
-
-            var lastMessage =
-                fixText((if (out) "Вы: " else "") + lastMessageObject.getString("text"), limitMessage)
+            var lastMessage = (if (out) "Вы: " else "") + lastMessageObject.getString("text")
+                //fixText((if (out) "Вы: " else "") + lastMessageObject.getString("text"), limitMessage)
             if (lastMessage == "" || lastMessage == "Вы: ") {
                 val attachments = lastMessageObject.getJSONArray("attachments")
                 val action = lastMessageObject.optJSONObject("action")

@@ -3,6 +3,7 @@ package com.progcorp.unitedmessengers.ui.conversation
 import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.*
+import com.progcorp.unitedmessengers.data.Event
 import com.progcorp.unitedmessengers.data.db.Conversations
 import com.progcorp.unitedmessengers.data.db.Messages
 import com.progcorp.unitedmessengers.data.db.vk.requests.VKSendMessageCommand
@@ -35,9 +36,13 @@ class ConversationViewModel(private val conversation: Conversation) :
     private val _messages: Messages = Messages(this)
     private val _conversations: Conversations = Conversations(this)
 
+    private val _backEvent = MutableLiveData<Event<Unit>>()
+
     private val _conversation: MutableLiveData<Conversation> = MutableLiveData()
     private val _addedMessage = MutableLiveData<Message>()
     private val _newMessage = MutableLiveData<Message>()
+
+    val backEvent: LiveData<Event<Unit>> = _backEvent
 
     val newMessageText = MutableLiveData<String?>()
     val messagesList = MediatorLiveData<MutableList<Message>>()
@@ -137,6 +142,10 @@ class ConversationViewModel(private val conversation: Conversation) :
         })
         newMessageText.value = null
     }}
+
+    fun backPressed() {
+        _backEvent.value = Event(Unit)
+    }
 
     fun loadMoreMessages() {
         loadSelectedMessages(messagesList.value!!.size)

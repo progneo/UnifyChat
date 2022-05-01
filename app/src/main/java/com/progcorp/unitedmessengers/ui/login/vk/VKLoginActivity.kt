@@ -46,6 +46,7 @@ class VKLoginActivity : AppCompatActivity(){
 
     private fun onLogin() {
         Toast.makeText(this, "Successful", Toast.LENGTH_SHORT).show()
+
         finish()
     }
 
