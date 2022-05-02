@@ -8,7 +8,7 @@ interface VKSendMessageRequest {
     suspend fun messageSend(
         @Query("access_token") token: String,
         @Query("v") v: String,
-        @Query("peer_id") peer_id: Int,
+        @Query("peer_id") peer_id: Long,
         @Query("message") message: String,
         @Query("random_id") random_id: Int,
         @Query("lang") lang: Int

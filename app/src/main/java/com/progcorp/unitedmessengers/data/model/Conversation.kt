@@ -2,11 +2,13 @@ package com.progcorp.unitedmessengers.data.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import org.drinkless.td.libcore.telegram.TdApi
+import org.drinkless.td.libcore.telegram.TdApi.*
 import org.json.JSONArray
 import org.json.JSONObject
 
 data class Conversation(
-    val id: Int = 0,
+    val id: Long = 0,
     val type: String = "",
     val date: Long = 0,
     val unread_count: Int = 0,
@@ -19,7 +21,7 @@ data class Conversation(
     val is_online: Boolean = false) : Parcelable {
 
     constructor(parcel: Parcel) : this(
-        parcel.readInt(),
+        parcel.readLong(),
         parcel.readString()!!,
         parcel.readLong(),
         parcel.readInt(),
@@ -33,7 +35,7 @@ data class Conversation(
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(id)
+        parcel.writeLong(id)
         parcel.writeString(type)
         parcel.writeLong(date)
         parcel.writeInt(unread_count)
@@ -59,7 +61,7 @@ data class Conversation(
             return arrayOfNulls(size)
         }
 
-        fun parse(json: JSONObject, profiles: JSONArray?, groups: JSONArray?): Conversation {
+        fun vkParse(json: JSONObject, profiles: JSONArray?, groups: JSONArray?): Conversation {
             var conversation = json.optJSONObject("conversation")
             if (conversation == null) {
                 conversation = json
@@ -67,7 +69,7 @@ data class Conversation(
             val peer = conversation.getJSONObject("peer")
            // val limitMessage = 30
 
-            val id = peer.optInt("id")
+            val id = peer.optLong("id")
 
             val type = peer.optString("type")
 
@@ -95,10 +97,10 @@ data class Conversation(
                 type == "user" && profiles != null -> {
                     for (i in 0 until profiles.length()) {
                         val profile = profiles.getJSONObject(i)
-                        if (profile.getInt("id") == id) {
+                        if (profile.getLong("id") == id) {
                             title = profile.getString("first_name") + " " + profile.getString("last_name")
                             photo = profile.getString("photo_100")
-                            lastOnline = profile.getJSONObject("online_info").optLong("last_seen")
+                            lastOnline = profile.getJSONObject("online_info").optLong("last_seen") * 1000
                             isOnline = profile.getJSONObject("online_info").optBoolean("is_online")
                             break
                         }
@@ -107,7 +109,7 @@ data class Conversation(
                 type == "group" && groups != null -> {
                     for (i in 0 until groups.length()) {
                         val group = groups.getJSONObject(i)
-                        if (group.getInt("id") == -id) {
+                        if (group.getLong("id") == -id) {
                             title = group.getString("name")
                             //title = fixText(group.getString("name"), limitMessage - 5)
                             photo = group.getString("photo_100")
@@ -169,6 +171,36 @@ data class Conversation(
                     }
                 }
             }
+
+            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline)
+        }
+
+        fun tgParse(conversation: TdApi.Chat): Conversation {
+            val id = conversation.id
+            val type = when(conversation.type.constructor) {
+                ChatTypePrivate.CONSTRUCTOR -> "user"
+                //TdApi.ChatTypeBasicGroup.CONSTRUCTOR -> "chat"
+                ChatTypeSupergroup.CONSTRUCTOR -> "chat"
+                ChatTypeSecret.CONSTRUCTOR -> "user"
+                else -> "group"
+            }
+
+            val date: Long =
+            if (conversation.lastMessage != null) conversation.lastMessage!!.date.toLong()
+            else 0
+
+            val unreadCount = conversation.unreadCount
+            val canWrite = conversation.permissions.canSendMessages
+            val title = conversation.title
+            val photo = "https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg"
+            val lastMessage = ""
+            val membersCount = when (type) {
+                "user" -> 2
+                "chat" -> 0
+                else -> 0
+            }
+            val lastOnline: Long = 0
+            val isOnline = false
 
             return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline)
         }

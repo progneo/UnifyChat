@@ -11,7 +11,7 @@
             type="com.progcorp.unitedmessengers.data.model.Conversation" />
         <variable
             name="viewmodel"
-            type="com.progcorp.unitedmessengers.ui.conversations.vk.ConversationsViewModel" />
+            type="com.progcorp.unitedmessengers.interfaces.IConversationsViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

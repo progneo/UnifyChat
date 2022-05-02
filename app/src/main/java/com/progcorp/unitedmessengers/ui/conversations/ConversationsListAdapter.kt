@@ -1,4 +1,4 @@
-package com.progcorp.unitedmessengers.ui.conversations.vk
+package com.progcorp.unitedmessengers.ui.conversations
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,13 +7,14 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.ListItemConversationBinding
+import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
 
-class ConversationsListAdapter internal constructor(private val viewModel: ConversationsViewModel) :
+class ConversationsListAdapter internal constructor(private val viewModel: IConversationsViewModel) :
     ListAdapter<(Conversation), ConversationsListAdapter.ViewHolder>(ConversationDiffCallback()) {
 
     class ViewHolder(private val binding: ListItemConversationBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: ConversationsViewModel, item: Conversation) {
+        fun bind(viewModel: IConversationsViewModel, item: Conversation) {
             binding.viewmodel = viewModel
             binding.conversation = item
             binding.executePendingBindings()

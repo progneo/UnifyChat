@@ -1,4 +1,4 @@
-package com.progcorp.unitedmessengers.ui.login
+package com.progcorp.unitedmessengers.ui.login.vk
 
 import android.content.Context
 import android.view.View

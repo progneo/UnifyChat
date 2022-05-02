@@ -9,6 +9,11 @@ plugins {
 android {
     compileSdk 32
 
+    sourceSets {
+        main {
+            jniLibs.srcDirs 'prebuilt-libtd/src/main/libs'
+        }
+    }
     defaultConfig {
         applicationId "com.progcorp.unitedmessengers"
         minSdk 24

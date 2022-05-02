@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package com.progcorp.unitedmessengers.ui.conversations.vk
+package com.progcorp.unitedmessengers.ui.conversations
 
 import android.view.View
 import android.widget.TextView

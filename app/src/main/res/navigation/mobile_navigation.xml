@@ -6,7 +6,7 @@
     app:startDestination="@+id/navigation_vk">
     <fragment
         android:id="@+id/navigation_telegram"
-        android:name="com.progcorp.unitedmessengers.ui.conversations.telegram.ConversationsFragment"
+        android:name="com.progcorp.unitedmessengers.ui.conversations.telegram.TelegramFragment"
         android:label="@string/telegram"
         tools:layout="@layout/fragment_telegram">
         <action
@@ -15,10 +15,13 @@
         <action
             android:id="@+id/action_navigation_chats_to_dialogFragment"
             app:destination="@id/dialogFragment" />
+        <action
+            android:id="@+id/action_navigation_chats_to_telegramAuthFragment"
+            app:destination="@id/telegramAuthFragment"/>
     </fragment>
     <fragment
         android:id="@+id/navigation_vk"
-        android:name="com.progcorp.unitedmessengers.ui.conversations.vk.ConversationsFragment"
+        android:name="com.progcorp.unitedmessengers.ui.conversations.vk.VKFragment"
         android:label="@string/vk"
         tools:layout="@layout/fragment_vk">
         <action
@@ -39,5 +42,8 @@
         android:name="com.progcorp.unitedmessengers.ui.conversation.dialog.DialogFragment"/>
     <fragment
         android:id="@+id/vkAuthFragment"
-        android:name="com.progcorp.unitedmessengers.ui.login.VKAuthFragment"/>
+        android:name="com.progcorp.unitedmessengers.ui.login.vk.VKAuthFragment"/>
+    <fragment
+        android:id="@+id/telegramAuthFragment"
+        android:name="com.progcorp.unitedmessengers.ui.login.telegram.TelegramAuthFragment"/>
 </navigation>

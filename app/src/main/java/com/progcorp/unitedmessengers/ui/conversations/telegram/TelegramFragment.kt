@@ -1,4 +1,4 @@
-package com.progcorp.unitedmessengers.ui.conversations.vk
+package com.progcorp.unitedmessengers.ui.conversations.telegram
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,16 +13,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.EventObserver
 import com.progcorp.unitedmessengers.data.model.Conversation
-import com.progcorp.unitedmessengers.databinding.FragmentVkBinding
+import com.progcorp.unitedmessengers.databinding.FragmentTelegramBinding
 import com.progcorp.unitedmessengers.ui.conversation.chat.ChatFragment
 import com.progcorp.unitedmessengers.ui.conversation.dialog.DialogFragment
+import com.progcorp.unitedmessengers.ui.conversations.ConversationsListAdapter
 import java.lang.Exception
 
-class ConversationsFragment : Fragment() {
+class TelegramFragment : Fragment() {
+    private val viewModel: TelegramConversationsViewModel by viewModels { TelegramConversationsViewModelFactory() }
 
-    private val viewModel: ConversationsViewModel by viewModels { ConversationViewModelFactory() }
-
-    private lateinit var viewDataBinding: FragmentVkBinding
+    private lateinit var viewDataBinding: FragmentTelegramBinding
     private lateinit var listAdapter: ConversationsListAdapter
 
     override fun onCreateView(
@@ -31,7 +31,7 @@ class ConversationsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         viewDataBinding =
-            FragmentVkBinding.inflate(inflater, container, false).apply { viewmodel = viewModel }
+            FragmentTelegramBinding.inflate(inflater, container, false).apply { viewmodel = viewModel }
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
         return viewDataBinding.root
     }
@@ -66,7 +66,6 @@ class ConversationsFragment : Fragment() {
         viewModel.selectedConversation.observe(viewLifecycleOwner, EventObserver { navigateToChat(it) } )
         viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver { navigateToLogin() })
     }
-
     private fun navigateToChat(conversation: Conversation) {
         when (conversation.type) {
             "chat" -> {
@@ -90,6 +89,6 @@ class ConversationsFragment : Fragment() {
     }
 
     private fun navigateToLogin() {
-        findNavController().navigate(R.id.action_navigation_chats_to_vkAuthFragment)
+        findNavController().navigate(R.id.action_navigation_chats_to_telegramAuthFragment)
     }
 }

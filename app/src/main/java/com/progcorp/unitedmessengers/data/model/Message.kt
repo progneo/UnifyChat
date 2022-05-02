@@ -10,8 +10,8 @@ data class Message(
     var id: Int = 0,
     val date: Long = 0,
     val time: String = "",
-    val fromId: Int = 0,
-    val peerId: Int = 0,
+    val peerId: Long = 0,
+    val fromId: Long = 0,
     val out: Boolean = false,
     val senderName: String = "",
     val senderPhoto: String = "",
@@ -26,8 +26,8 @@ data class Message(
         parcel.readInt(),
         parcel.readLong(),
         parcel.readString()!!,
-        parcel.readInt(),
-        parcel.readInt(),
+        parcel.readLong(),
+        parcel.readLong(),
         parcel.readByte() != 0.toByte(),
         parcel.readString()!!,
         parcel.readString()!!,
@@ -42,8 +42,8 @@ data class Message(
         parcel.writeInt(id)
         parcel.writeLong(date)
         parcel.writeString(time)
-        parcel.writeInt(fromId)
-        parcel.writeInt(peerId)
+        parcel.writeLong(fromId)
+        parcel.writeLong(peerId)
         parcel.writeByte(if (out) 1 else 0)
         parcel.writeString(senderName)
         parcel.writeString(senderPhoto)
@@ -82,8 +82,8 @@ data class Message(
             val id = json.optInt("id")
             val timeStamp = json.optLong("date") * 1000
             val time = ConvertTime.toTime(timeStamp)
-            val fromId = json.optInt("from_id")
-            val peerId = json.optInt("peer_id")
+            val fromId = json.optLong("from_id")
+            val peerId = json.optLong("peer_id")
             val out: Boolean = when (json.getInt("out")) {
                 1 -> true
                 else -> false
@@ -102,7 +102,7 @@ data class Message(
             if (profiles != null) {
                 for (i in 0 until profiles.length()) {
                     val profile = profiles.getJSONObject(i)
-                    if (profile.getInt("id") == fromId) {
+                    if (profile.getLong("id") == fromId) {
                         fromName =
                             profile.getString("first_name") + " " + profile.getString("last_name")
                         photo = profile.getString("photo_100")

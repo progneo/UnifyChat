@@ -72,6 +72,8 @@
                     android:layout_height="wrap_content"
                     style="@style/textview_dialog_message_left"
                     android:text="@{message.text}"
+                    android:textColorLink="@color/royal_blue"
+                    android:autoLink="web"
                     tools:text="Сообщение с чатика"/>
             </LinearLayout>
 

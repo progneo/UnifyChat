@@ -66,6 +66,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{message.text}"
+                    android:textColorLink="@color/royal_blue"
+                    android:autoLink="web"
                     style="@style/textview_message_right"
                     tools:text="Сообщение от пользователя"/>
             </LinearLayout>

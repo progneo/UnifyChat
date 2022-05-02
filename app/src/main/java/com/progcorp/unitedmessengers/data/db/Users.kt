@@ -5,9 +5,14 @@ import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.db.vk.requests.VKUsersRequest
 import com.progcorp.unitedmessengers.data.model.User
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONException
 import org.json.JSONObject
 
+@ExperimentalCoroutinesApi
 class Users(private val onUsersFetched: OnUsersFetched) {
     suspend fun vkGetUsers() {
         val response = App.application.vkRetrofit.create(VKUsersRequest::class.java)
@@ -28,12 +33,18 @@ class Users(private val onUsersFetched: OnUsersFetched) {
         }
     }
 
+    suspend fun tgGetUser(userId: Long) = callbackFlow {
+        App.application.tgClient.client.send(TdApi.GetUser(userId)) {
+            this.trySend(it as TdApi.User).isSuccess
+        }
+        awaitClose {}
+    }
+
     interface OnUsersFetched {
         fun showUsers(users: ArrayList<User>)
     }
 
     companion object {
         const val TAG = "Users"
-        const val CHUNK_LIMIT = 900
     }
 }

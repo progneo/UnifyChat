@@ -75,6 +75,8 @@
                     android:paddingBottom="0dp"
                     app:bind_textview_visibility="@{message.text}"
                     android:text="@{message.text}"
+                    android:textColorLink="@color/royal_blue"
+                    android:autoLink="web"
                     tools:text="Сообщение с чатика"/>
 
                 <TextView

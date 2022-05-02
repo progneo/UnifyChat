@@ -1,4 +1,4 @@
-package com.progcorp.unitedmessengers.ui.conversations.vk
+package com.progcorp.unitedmessengers.ui.conversations.telegram
 
 import android.os.Handler
 import android.util.Log
@@ -7,18 +7,16 @@ import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
 import com.progcorp.unitedmessengers.data.db.Conversations
 import com.progcorp.unitedmessengers.data.model.Conversation
+import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
 import com.progcorp.unitedmessengers.ui.DefaultViewModel
-import com.progcorp.unitedmessengers.util.addFrontItem
-import com.progcorp.unitedmessengers.util.addNewItem
-import com.progcorp.unitedmessengers.util.removeItem
-import com.progcorp.unitedmessengers.util.updateItemAt
+import com.progcorp.unitedmessengers.util.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-class ConversationViewModelFactory() :
+class TelegramConversationsViewModelFactory() :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ConversationsViewModel() as T
+        return TelegramConversationsViewModel() as T
     }
 }
 
@@ -26,7 +24,7 @@ enum class LayoutState {
     LOGGED_ID, NEED_TO_LOGIN
 }
 
-class ConversationsViewModel() : DefaultViewModel(), Conversations.OnConversationsFetched {
+class TelegramConversationsViewModel() : DefaultViewModel(), Conversations.OnConversationsFetched, IConversationsViewModel {
 
     private val _scope = MainScope()
 
@@ -85,7 +83,10 @@ class ConversationsViewModel() : DefaultViewModel(), Conversations.OnConversatio
                 }
             }
         }
-        _loginState.value = (App.application.vkAccountService.token != null)
+        _loginState.value = when (App.application.tgClient.authState.value) {
+            Authentication.AUTHENTICATED -> true
+            else -> false
+        }
         layoutState.addSource(_loginState) { updateLayoutState(it) }
         if (_loginState.value == true) {
             setupConversations()
@@ -106,15 +107,15 @@ class ConversationsViewModel() : DefaultViewModel(), Conversations.OnConversatio
         loadConversations(0)
     }
 
-    private fun loadConversations(offset: Int) {
+    private fun loadConversations(offset: Long) {
         _scope.launch {
-            _conversations.vkGetConversations(offset, false)
+            _conversations.tgGetConversations(offset, false)
         }
     }
 
     private fun loadNewConversations() {
         _scope.launch {
-            _conversations.vkGetConversations(0, true)
+            _conversations.tgGetConversations(0, true)
         }
     }
 
@@ -144,14 +145,14 @@ class ConversationsViewModel() : DefaultViewModel(), Conversations.OnConversatio
     }
 
     fun loadMoreConversations() {
-        loadConversations(conversationsList.value!!.size)
+        loadConversations(conversationsList.value!!.size.toLong())
     }
 
     fun goToLoginPressed() {
         _loginEvent.value = Event(Unit)
     }
 
-    fun selectConversationPressed(conversation: Conversation) {
+    override fun selectConversationPressed(conversation: Conversation) {
         _selectedConversation.value = Event(conversation)
     }
 
