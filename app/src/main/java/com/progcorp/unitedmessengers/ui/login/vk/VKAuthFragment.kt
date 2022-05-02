@@ -1,4 +1,4 @@
-package com.progcorp.unitedmessengers.ui.login
+package com.progcorp.unitedmessengers.ui.login.vk
 
 import android.content.Intent
 import android.os.Bundle

@@ -53,6 +53,8 @@
                     android:layout_height="wrap_content"
                     style="@style/textview_message_left"
                     tools:text="Сообщение в диалоге"
+                    android:textColorLink="@color/royal_blue"
+                    android:autoLink="web"
                     android:text="@{message.text}"/>
             </LinearLayout>
 

@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
-import com.progcorp.unitedmessengers.data.db.Conversations
 import com.progcorp.unitedmessengers.data.db.Messages
 import com.progcorp.unitedmessengers.data.db.vk.requests.VKSendMessageRequest
 import com.progcorp.unitedmessengers.data.model.Conversation
@@ -18,7 +17,6 @@ import com.progcorp.unitedmessengers.util.updateItemAt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*

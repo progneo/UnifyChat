@@ -4149,7 +4149,7 @@ public class TdApi {
         public Chat() {
         }
 
-        /**
+        /**group
          * A chat. (Can be a private chat, basic group, supergroup, or secret chat.)
          *
          * @param id Chat unique identifier.

@@ -10,7 +10,7 @@ interface VKMessagesRequest {
         @Query("v") v: String,
         @Query("count") count: Int,
         @Query("offset") offset: Int,
-        @Query("peer_id") peer_id: Int,
+        @Query("peer_id") peer_id: Long,
         @Query("extended") extended: Boolean,
         @Query("lang") lang: Int
     ): String
