@@ -17,7 +17,7 @@
     <string name="members">Members: %1$s</string>
     <string name="online">Online</string>
     <string name="last_seen">Was online at: %1$s</string>
-    <integer name="com_vk_sdk_AppId">6287487</integer>
+    <integer name="com_vk_sdk_AppId">6121396</integer>
     <integer name="telegram_api_id">18101985</integer>
     <string name="telegram_api_hash">267c7593ce626d6c0afcba3534e09d94</string>
 </resources>

@@ -55,8 +55,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:orientation="vertical"
-                    android:visibility="@{viewmodel.layoutState == viewmodel.layoutState.INSERT_NUMBER ? View.VISIBLE : View.GONE}">
+                    android:orientation="vertical">
 
                     <EditText
                         android:id="@+id/phoneText"
@@ -91,8 +90,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:visibility="@{viewmodel.layoutState == viewmodel.layoutState.INSERT_CODE ? View.VISIBLE : View.GONE}"
-                    tools:visibility="gone">
+                    tools:visibility="visible">
 
                     <EditText
                         android:id="@+id/codeText"
@@ -127,8 +125,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:visibility="@{viewmodel.layoutState == viewmodel.layoutState.INSERT_PASSWORD ? View.VISIBLE : View.GONE}"
-                    tools:visibility="gone">
+                    tools:visibility="visible">
 
                     <EditText
                         android:id="@+id/passwordText"

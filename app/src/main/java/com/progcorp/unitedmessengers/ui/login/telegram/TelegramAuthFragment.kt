@@ -1,32 +1,27 @@
 package com.progcorp.unitedmessengers.ui.login.telegram
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.progcorp.unitedmessengers.R
+import androidx.fragment.app.viewModels
+import com.progcorp.unitedmessengers.databinding.FragmentTelegramAuthBinding
 
 class TelegramAuthFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = TelegramAuthFragment()
-    }
+    private val viewModel: TelegramAuthViewModel by viewModels { TelegramAuthViewModelFactory() }
 
-    private lateinit var viewModel: TelegramAuthViewModel
+    private lateinit var viewDataBinding: FragmentTelegramAuthBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_telegram_auth, container, false)
+        viewDataBinding =
+            FragmentTelegramAuthBinding.inflate(inflater, container, false).apply { viewmodel = viewModel }
+        viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
+        return viewDataBinding.root
     }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(TelegramAuthViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
-
 }

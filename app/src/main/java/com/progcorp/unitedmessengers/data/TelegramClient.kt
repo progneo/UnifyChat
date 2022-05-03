@@ -2,15 +2,13 @@ package com.progcorp.unitedmessengers.data
 
 import android.util.Log
 import com.progcorp.unitedmessengers.util.Authentication
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 
+@ExperimentalCoroutinesApi
 class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Client.ResultHandler {
     val client = Client.create(this, null, null)!!
 
@@ -53,8 +51,8 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
 
     fun startAuthentication() {
         Log.d(TAG, "startAuthentication called")
-        if (_authState.value != Authentication.UNAUTHENTICATED) {
-            throw IllegalStateException("Start authentication called but client already authenticated. State: ${_authState.value}.")
+        if (_authState.value != Authentication.UNAUTHENTICATED && _authState.value != Authentication.UNKNOWN) {
+            Log.w(TAG, "Start authentication called but client already authenticated. State: ${_authState.value}.")
         }
 
         doAsync {
@@ -189,7 +187,7 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
         client.send(TdApi.DownloadFile(fileId, 1, 0, 0, true)) {
             when (it.constructor) {
                 TdApi.Ok.CONSTRUCTOR -> {
-                    offer(Unit)
+                    trySend(Unit).isSuccess
                 }
                 else -> {
                     cancel("", Exception(""))
@@ -210,7 +208,6 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
                     offer(it)
                 }
             }
-            //close()
         }
         awaitClose { }
     }

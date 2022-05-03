@@ -80,6 +80,11 @@ class TelegramFragment : Fragment() {
                 )
                 findNavController().navigate(R.id.action_navigation_chats_to_dialogFragment, bundle)
             }
+            "secret" -> {
+                Toast.makeText(
+                    context, "Secret dialogs are not supported", Toast.LENGTH_SHORT
+                ).show()
+            }
             else -> {
                 Toast.makeText(
                     context, "Dialogs with groups are not supported", Toast.LENGTH_SHORT

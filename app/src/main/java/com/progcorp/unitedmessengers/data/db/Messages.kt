@@ -2,12 +2,15 @@ package com.progcorp.unitedmessengers.data.db
 
 import android.util.Log
 import com.progcorp.unitedmessengers.App
+import com.progcorp.unitedmessengers.data.db.telegram.TgMessagesRepository
 import com.progcorp.unitedmessengers.data.db.vk.requests.VKMessagesRequest
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
+import kotlinx.coroutines.flow.first
 import org.json.JSONException
 import org.json.JSONObject
+import java.lang.Exception
 
 class Messages(private val onMessagesFetched: OnMessagesFetched) {
     suspend fun vkGetMessages(chat: Conversation, offset: Int, count: Int, isNew: Boolean) {
@@ -27,7 +30,7 @@ class Messages(private val onMessagesFetched: OnMessagesFetched) {
             val p = responseJson.getJSONObject("response").optJSONArray("profiles")
             val r = ArrayList<Message>(o.length())
             for (i in 0 until o.length()) {
-                val message = Message.parseVK(
+                val message = Message.vkParse(
                     o.getJSONObject(i),
                     p
                 )
@@ -36,6 +39,25 @@ class Messages(private val onMessagesFetched: OnMessagesFetched) {
             onMessagesFetched.showMessages(r, isNew)
         } catch (ex: JSONException) {
             Log.e(ConversationViewModel.TAG, ex.stackTraceToString())
+        }
+    }
+
+    suspend fun tgGetMessage(chatId: Long, messageId: Long) {
+
+    }
+
+    suspend fun tgGetMessages(chatId: Long, fromMessageId: Long, limit: Int, isNew: Boolean) {
+        try {
+            val response = TgMessagesRepository().getMessages(chatId, fromMessageId, limit)
+            val tgMessages = response.first()
+            val messages: ArrayList<Message> = arrayListOf()
+            for (message in tgMessages) {
+                messages.add(Message.tgParse(message))
+            }
+            onMessagesFetched.showMessages(messages, isNew)
+        }
+        catch (e: Exception) {
+            Log.e(TAG, e.stackTraceToString())
         }
     }
 

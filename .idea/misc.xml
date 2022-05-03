@@ -22,10 +22,9 @@
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/activity_vk_login.xml" value="0.46714031971580816" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/fragment_chat.xml" value="0.5" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/fragment_dashboard.xml" value="0.55" />
-        <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/fragment_dialog.xml" value="0.5" />
+        <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/fragment_dialog.xml" value="0.25" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/fragment_notifications.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/fragment_telegram.xml" value="0.55" />
-        <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/fragment_telegram_auth.xml" value="0.43148148148148147" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/fragment_vk.xml" value="0.45" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/fragment_vk_auth.xml" value="0.33" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/item_list_chat_sticker.xml" value="0.5" />
@@ -36,7 +35,7 @@
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_chat_out_message.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_chat_out_sticker.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_chat_sticker.xml" value="0.55" />
-        <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_conversation.xml" value="0.4633699633699634" />
+        <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_conversation.xml" value="0.67" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_dialog_attachment.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_dialog_message.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/list_item_dialog_out_attachment.xml" value="0.40443840579710144" />
@@ -52,6 +51,8 @@
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/toolbar_addon_dialog.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/toolbar_main.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/menu/bottom_nav_menu.xml" value="0.1" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/fragment_telegram.xml" value="0.36770833333333336" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/fragment_telegram_auth.xml" value="0.36770833333333336" />
       </map>
     </option>
   </component>
