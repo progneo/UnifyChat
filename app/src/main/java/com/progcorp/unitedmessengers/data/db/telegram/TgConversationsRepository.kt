@@ -1,5 +1,6 @@
 package com.progcorp.unitedmessengers.data.db.telegram
 
+import android.util.Log
 import com.progcorp.unitedmessengers.App
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -17,13 +18,12 @@ class TgConversationsRepository {
                         trySend((it as TdApi.Chats).chatIds).isSuccess
                     }
                     TdApi.Error.CONSTRUCTOR -> {
-                        error("")
+                        Log.e("getChats", (it as TdApi.Error).message)
                     }
                     else -> {
-                        error("")
+                        Log.e("getBasicGroup", "Something went wrong")
                     }
                 }
-                //close()
             }
             awaitClose { }
         }
@@ -44,13 +44,12 @@ class TgConversationsRepository {
                     trySend(it as TdApi.Chat).isSuccess
                 }
                 TdApi.Error.CONSTRUCTOR -> {
-                    error("Something went wrong")
+                    Log.e("getChat", "${(it as TdApi.Error).message}. ID: $chatId")
                 }
                 else -> {
-                    error("Something went wrong")
+                    Log.e("getBasicGroup", "Something went wrong")
                 }
             }
-            //close()
         }
         awaitClose { }
     }
@@ -61,4 +60,41 @@ class TgConversationsRepository {
         }?.id?.let { fileId ->
             App.application.tgClient.downloadFile(fileId).map { chat.photo?.small?.local?.path }
         } ?: flowOf(chat.photo?.small?.local?.path)
+
+
+    fun getSupergroup(chatId: Long): Flow<TdApi.Supergroup> =
+        callbackFlow {
+            App.application.tgClient.client.send(TdApi.GetSupergroup(chatId)) {
+                when (it.constructor) {
+                    TdApi.Supergroup.CONSTRUCTOR -> {
+                        trySend(it as TdApi.Supergroup).isSuccess
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+                        Log.e("getSupergroup", "${(it as TdApi.Error).message}. ID: $chatId")
+                    }
+                    else -> {
+                        Log.e("getBasicGroup", "Something went wrong")
+                    }
+                }
+            }
+            awaitClose { }
+        }
+
+    fun getBasicGroup(chatId: Long): Flow<TdApi.BasicGroup> =
+        callbackFlow {
+            App.application.tgClient.client.send(TdApi.GetBasicGroup(chatId)) {
+                when (it.constructor) {
+                    TdApi.BasicGroup.CONSTRUCTOR -> {
+                        trySend(it as TdApi.BasicGroup).isSuccess
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+                        Log.e("getBasicGroup", "${(it as TdApi.Error).message}. ID: $chatId")
+                    }
+                    else -> {
+                        Log.e("getBasicGroup", "Something went wrong")
+                    }
+                }
+            }
+            awaitClose { }
+        }
 }

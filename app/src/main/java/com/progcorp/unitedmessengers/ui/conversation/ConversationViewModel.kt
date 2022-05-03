@@ -88,14 +88,22 @@ class ConversationViewModel(private val conversation: Conversation) :
     }
 
     private fun loadSelectedMessages(offset: Int) {
-        _scope.launch(Dispatchers.Main) {
-            _messages.vkGetMessages(conversation, offset, 20, false)
+        when (conversation.from) {
+            "vk" -> {
+                _scope.launch(Dispatchers.Main) {
+                    _messages.vkGetMessages(conversation, offset, 20, false)
+                }
+            }
         }
     }
 
     private fun loadNewMessages() {
-        _scope.launch(Dispatchers.Main) {
-            _messages.vkGetMessages(conversation, 0, 20, true)
+        when (conversation.from) {
+            "vk" -> {
+                _scope.launch(Dispatchers.Main) {
+                    _messages.vkGetMessages(conversation, 0, 20, true)
+                }
+            }
         }
     }
 
@@ -125,20 +133,25 @@ class ConversationViewModel(private val conversation: Conversation) :
             )
             _newMessage.value = message
 
-            val response = App.application.vkRetrofit.create(VKSendMessageRequest::class.java)
-                .messageSend(
-                    App.application.vkAccountService.token!!,
-                    "5.131",
-                    conversation.id, newMessageText.value!!,
-                    0,
-                    0
-                )
+            when (conversation.from) {
+                "vk" -> {
+                    val response =
+                        App.application.vkRetrofit.create(VKSendMessageRequest::class.java)
+                            .messageSend(
+                                App.application.vkAccountService.token!!,
+                                "5.131",
+                                conversation.id, newMessageText.value!!,
+                                0,
+                                0
+                            )
 
-            val responseJson = JSONObject(response)
-            try {
-                message.id = responseJson.getLong("response")
-            } catch (ex: JSONException) {
-                Log.e(TAG, ex.stackTraceToString())
+                    val responseJson = JSONObject(response)
+                    try {
+                        message.id = responseJson.getLong("response")
+                    } catch (ex: JSONException) {
+                        Log.e(TAG, ex.stackTraceToString())
+                    }
+                }
             }
 
             newMessageText.value = null
