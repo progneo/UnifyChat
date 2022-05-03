@@ -2,19 +2,17 @@ package com.progcorp.unitedmessengers.data.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import android.util.Log
-import androidx.annotation.RestrictTo
-import com.progcorp.unitedmessengers.App
+import android.text.format.DateUtils
 import com.progcorp.unitedmessengers.data.db.telegram.TgConversationsRepository
 import com.progcorp.unitedmessengers.data.db.telegram.TgMessagesRepository
-import kotlinx.coroutines.MainScope
+import com.progcorp.unitedmessengers.data.db.telegram.TgUserRepository
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import org.drinkless.td.libcore.telegram.TdApi
 import org.drinkless.td.libcore.telegram.TdApi.*
+import org.drinkless.td.libcore.telegram.TdApi.Date
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.Math.round
+import java.util.*
 
 data class Conversation(
     val id: Long = 0,
@@ -27,7 +25,8 @@ data class Conversation(
     val last_message: String = "",
     val members_count: Int = 2,
     val last_online: Long = 0,
-    val is_online: Boolean = false) : Parcelable {
+    val is_online: Boolean = false,
+    val from: String = "") : Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
@@ -176,17 +175,23 @@ data class Conversation(
                 }
             }
 
-            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline)
+            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline, "vk")
         }
 
         suspend fun tgParse(conversation: Chat): Conversation {
             val id = conversation.id
             val type = when(conversation.type.constructor) {
                 ChatTypePrivate.CONSTRUCTOR -> "user"
-                ChatTypeBasicGroup.CONSTRUCTOR -> "group"
-                ChatTypeSupergroup.CONSTRUCTOR -> "chat"
+                ChatTypeBasicGroup.CONSTRUCTOR -> "basicgroup"
+                ChatTypeSupergroup.CONSTRUCTOR -> "supergroup"
                 ChatTypeSecret.CONSTRUCTOR -> "secret"
                 else -> "group"
+            }
+
+            val extraId: Long = when (type) {
+                "supergroup" -> (conversation.type as ChatTypeSupergroup).supergroupId
+                "basicgroup" -> (conversation.type as ChatTypeBasicGroup).basicGroupId
+                else -> 0
             }
 
             val date: Long =
@@ -197,24 +202,58 @@ data class Conversation(
             val canWrite = conversation.permissions.canSendMessages
             val title = conversation.title
             val photo = "https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg"
-            val tgMessage: TdApi.Message
-            val message: Message
             var lastMessage = ""
 
             if (conversation.lastMessage != null) {
-                tgMessage = TgMessagesRepository().getMessage(id, conversation.lastMessage!!.id).first()
-                message = Message.tgParse(tgMessage)
+                val tgMessage = TgMessagesRepository().getMessage(id, conversation.lastMessage!!.id).first()
+                val message = Message.tgParse(tgMessage)
                 lastMessage = message.text
             }
-            val membersCount = when (type) {
-                "user" -> 2
-                "chat" -> 0
-                else -> 0
-            }
-            val lastOnline: Long = 0
-            val isOnline = false
 
-            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline)
+            val membersCount: Int = when (type) {
+                "supergroup" -> {
+                    val group = TgConversationsRepository().getSupergroup(extraId).first()
+                    group.memberCount
+                }
+                "basicgroup" -> {
+                    val group = TgConversationsRepository().getBasicGroup(extraId).first()
+                     group.memberCount
+                }
+                else -> 2
+            }
+
+            var lastOnline: Long = 0
+            var isOnline = false
+            if (type == "user") {
+                val cal: Calendar = Calendar.getInstance()
+                val user = TgUserRepository().getUser(id).first()
+                when (user.status.constructor) {
+                    UserStatusEmpty.CONSTRUCTOR -> {
+                        lastOnline = 0
+                    }
+                    UserStatusLastMonth.CONSTRUCTOR -> {
+                        lastOnline = 1
+                    }
+                    UserStatusLastWeek.CONSTRUCTOR -> {
+                        cal.add(Calendar.DAY_OF_YEAR, -7)
+                        lastOnline = 2
+                    }
+                    UserStatusOffline.CONSTRUCTOR -> {
+                        lastOnline = ((user.status as UserStatusOffline).wasOnline * 1000).toLong()
+                    }
+                    UserStatusOnline.CONSTRUCTOR -> {
+                        lastOnline = 0
+                        isOnline = true
+                    }
+                    UserStatusRecently.CONSTRUCTOR -> {
+                        lastOnline = 3
+                    }
+                }
+                //TODO: Создать класс с типами скрытых онлайнов
+            }
+
+
+            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline, "tg")
         }
     }
 

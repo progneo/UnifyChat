@@ -1,5 +1,6 @@
 package com.progcorp.unitedmessengers.data.db.telegram
 
+import android.util.Log
 import com.progcorp.unitedmessengers.App
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -28,21 +29,21 @@ class TgMessagesRepository {
             awaitClose { }
         }
 
-    fun getMessage(chatId: Long, messageId: Long): Flow<TdApi.Message> = callbackFlow {
-    App.application.tgClient.client.send(TdApi.GetMessage(chatId, messageId)) {
-        when (it.constructor) {
-            TdApi.Message.CONSTRUCTOR -> {
-                trySend(it as TdApi.Message).isSuccess
+    fun getMessage(chatId: Long, messageId: Long): Flow<TdApi.Message> =
+        callbackFlow {
+            App.application.tgClient.client.send(TdApi.GetMessage(chatId, messageId)) {
+                when (it.constructor) {
+                    TdApi.Message.CONSTRUCTOR -> {
+                        trySend(it as TdApi.Message).isSuccess
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+                        Log.e("getMessage", "${(it as TdApi.Error).message}. ID: $chatId")
+                    }
+                    else -> {
+                        error("Something went wrong")
+                    }
+                }
             }
-            TdApi.Error.CONSTRUCTOR -> {
-                error("Something went wrong")
-            }
-            else -> {
-                error("Something went wrong")
-            }
+            awaitClose { }
         }
-    }
-    awaitClose { }
-}
-
 }
