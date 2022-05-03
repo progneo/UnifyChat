@@ -1,2 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="prompt_phone">Номер телефона</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="prompt_code">Секретный код</string>
+    <string name="action_login">Вход</string>
+    <string name="login_text">Войдите в свой аккаунт</string>
+    <string name="enter_message_hint">Сообщение</string>
+    <string name="enter_phone_hint">+79*********</string>
+    <string name="enter_code_hint">Секретный код</string>
+    <string name="enter_password_hint">Пароль</string>
+    <string name="members">Участников: %1$s</string>
+    <string name="online">В сети</string>
+    <string name="last_seen">Был в сети: %1$s</string>
+    <integer name="com_vk_sdk_AppId">6121396</integer>
+    <integer name="telegram_api_id">18101985</integer>
+    <string name="sticker">Стикер</string>
+    <string name="photo">Фото</string>
+    <string name="wall">Запись со стены</string>
+    <string name="video">Видео</string>
+    <string name="doc">Файл</string>
+    <string name="link">Ссылка</string>
+    <string name="audio">Аудиозапись</string>
+    <string name="market">Товар</string>
+    <string name="market_album">Подборка товаров</string>
+    <string name="wall_reply">Комментарий на стене</string>
+    <string name="gift">Подарок</string>
+    <string name="attachment">Вложение</string>
+    <string name="action_next">Далее</string>
+    <string name="action_logout">Отмена</string>
+</resources>

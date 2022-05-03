@@ -2,6 +2,7 @@ package com.progcorp.unitedmessengers.ui.login.telegram
 
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
+import com.progcorp.unitedmessengers.data.Event
 import com.progcorp.unitedmessengers.ui.DefaultViewModel
 import com.progcorp.unitedmessengers.util.Authentication
 import kotlinx.coroutines.flow.onEach
@@ -20,10 +21,14 @@ class TelegramAuthViewModel : DefaultViewModel() {
         LOADING, INSERT_NUMBER, INSERT_CODE, INSERT_PASSWORD, AUTHENTICATED
     }
 
+    private val _restartEvent = MutableLiveData<Event<Unit>>()
+
     val layoutState = MediatorLiveData<LayoutState>()
     val phoneNumberText = MutableLiveData<String?>()
     val codeText = MutableLiveData<String?>()
     val passwordText = MutableLiveData<String?>()
+
+    val restartEvent: LiveData<Event<Unit>> = _restartEvent
 
     init {
         App.application.tgClient.authState.onEach {
@@ -58,6 +63,7 @@ class TelegramAuthViewModel : DefaultViewModel() {
         if (!codeText.value.isNullOrBlank()) {
             layoutState.value = LayoutState.LOADING
             App.application.tgClient.insertCode(codeText.value!!)
+            _restartEvent.value = Event(Unit)
         }
     }
 
@@ -66,5 +72,10 @@ class TelegramAuthViewModel : DefaultViewModel() {
             layoutState.value = LayoutState.LOADING
             App.application.tgClient.insertPassword(passwordText.value!!)
         }
+    }
+
+    fun logout() {
+        layoutState.value = LayoutState.LOADING
+        App.application.tgClient.logout()
     }
 }

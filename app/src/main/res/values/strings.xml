@@ -1,14 +1,14 @@
 <resources>
-    <string name="app_name">United Messengers</string>
-    <string name="telegram">Telegram</string>
-    <string name="vk">VK</string>
-    <string name="title_activity_login">Login</string>
-    <string name="prompt_email">Email</string>
+    <string name="app_name" translatable="false">United Messengers</string>
+    <string name="telegram" translatable="false">Telegram</string>
+    <string name="vk" translatable="false">VK</string>
+    <string name="prompt_email" translatable="false">Email</string>
     <string name="prompt_phone">Phone number</string>
     <string name="prompt_password">Password</string>
     <string name="prompt_code">Confirmation code</string>
-    <string name="action_sign_in">Login</string>
-    <string name="action_sign_in_short">Login</string>
+    <string name="action_login">Login</string>
+    <string name="action_logout">Cancel</string>
+    <string name="action_next">Next</string>
     <string name="login_text">Login to your account</string>
     <string name="enter_message_hint">Message…</string>
     <string name="enter_phone_hint">+79*********</string>
@@ -19,5 +19,17 @@
     <string name="last_seen">Was online at: %1$s</string>
     <integer name="com_vk_sdk_AppId">6121396</integer>
     <integer name="telegram_api_id">18101985</integer>
-    <string name="telegram_api_hash">267c7593ce626d6c0afcba3534e09d94</string>
+    <string name="telegram_api_hash" translatable="false">267c7593ce626d6c0afcba3534e09d94</string>
+    <string name="sticker">Sticker</string>
+    <string name="photo">Photo</string>
+    <string name="doc">File</string>
+    <string name="audio">Audio</string>
+    <string name="market_album">Selection of products</string>
+    <string name="gift">Gift</string>
+    <string name="wall">Post</string>
+    <string name="video">Video</string>
+    <string name="link">Link</string>
+    <string name="market">Product</string>
+    <string name="wall_reply">Comment</string>
+    <string name="attachment">Attachment</string>
 </resources>

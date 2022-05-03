@@ -292,7 +292,6 @@ data class Message(
             val sticker = ""
             var text = ""
 
-            tgMessage.content::class.simpleName?.let { Log.i("Message", it) }
             when (tgMessage.content::class.simpleName) {
                 "MessageText" -> text = (tgMessage.content as TdApi.MessageText).text.text
                 "MessagePhoto" -> text = "Photo"

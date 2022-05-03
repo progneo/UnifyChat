@@ -76,8 +76,6 @@ data class Conversation(
                 conversation = json
             }
             val peer = conversation.getJSONObject("peer")
-           // val limitMessage = 30
-
             val id = peer.optLong("id")
 
             val type = peer.optString("type")
@@ -96,7 +94,6 @@ data class Conversation(
             when {
                 type == "chat" && chatSettings != null -> {
                     title = chatSettings.optString("title")
-                    //title = fixText(chatSettings.optString("title"), limitMessage - 5)
                     val photoObject = chatSettings.optJSONObject("photo")
                     if (photoObject != null) {
                         photo = photoObject.optString("photo_100").toString()
@@ -120,7 +117,6 @@ data class Conversation(
                         val group = groups.getJSONObject(i)
                         if (group.getLong("id") == -id) {
                             title = group.getString("name")
-                            //title = fixText(group.getString("name"), limitMessage - 5)
                             photo = group.getString("photo_100")
                             break
                         }
@@ -140,7 +136,6 @@ data class Conversation(
             }
 
             var lastMessage = (if (out) "Вы: " else "") + lastMessageObject.getString("text")
-                //fixText((if (out) "Вы: " else "") + lastMessageObject.getString("text"), limitMessage)
             if (lastMessage == "" || lastMessage == "Вы: ") {
                 val attachments = lastMessageObject.getJSONArray("attachments")
                 val action = lastMessageObject.optJSONObject("action")
