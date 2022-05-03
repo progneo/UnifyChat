@@ -148,7 +148,6 @@ class TelegramConversationsViewModel() : DefaultViewModel(), Conversations.OnCon
     }
 
     fun goToLoginPressed() {
-        App.application.tgClient.startAuthentication()
         _loginEvent.value = Event(Unit)
     }
 

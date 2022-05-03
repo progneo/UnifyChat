@@ -10,13 +10,19 @@ import org.drinkless.td.libcore.telegram.TdApi
 
 @ExperimentalCoroutinesApi
 class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Client.ResultHandler {
-    val client = Client.create(this, null, null)!!
+    lateinit var client: Client
 
     private val _authState = MutableStateFlow(Authentication.UNKNOWN)
     val authState: StateFlow<Authentication> get() = _authState
 
     init {
+        setupClient()
+    }
+
+    private fun setupClient() {
+        client = Client.create(this, null, null)!!
         client.send(TdApi.SetLogVerbosityLevel(1), this)
+        client.send(TdApi.SetTdlibParameters(tdLibParameters), this)
         client.send(TdApi.GetAuthorizationState(), this)
     }
 
@@ -34,7 +40,6 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
         Log.d(TAG, "onResult: ${data::class.java.simpleName}")
         when (data.constructor) {
             TdApi.UpdateAuthorizationState.CONSTRUCTOR -> {
-                Log.d(TAG, "UpdateAuthorizationState")
                 onAuthorizationStateUpdated((data as TdApi.UpdateAuthorizationState).authorizationState)
             }
             TdApi.UpdateOption.CONSTRUCTOR -> {
@@ -45,14 +50,33 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
         }
     }
 
+    fun logout() {
+        client.send(TdApi.LogOut(), this)
+        setupClient()
+    }
+
     private fun doAsync(job: () -> Unit) {
         requestScope.launch { job() }
     }
 
     fun startAuthentication() {
         Log.d(TAG, "startAuthentication called")
-        if (_authState.value != Authentication.UNAUTHENTICATED && _authState.value != Authentication.UNKNOWN) {
-            Log.w(TAG, "Start authentication called but client already authenticated. State: ${_authState.value}.")
+        when (_authState.value) {
+            Authentication.AUTHENTICATED -> {
+                Log.w(TAG, "Start authentication called but client already authenticated. State: ${_authState.value}.")
+                return
+            }
+            Authentication.WAIT_FOR_CODE -> {
+                Log.w(TAG, "Restart authentication. State: ${_authState.value}.")
+                logout()
+            }
+            Authentication.WAIT_FOR_PASSWORD -> {
+                Log.w(TAG, "Restart authentication. State: ${_authState.value}.")
+                logout()
+            }
+            else -> {
+                Log.w(TAG, "Start authentication. State: ${_authState.value}.")
+            }
         }
 
         doAsync {

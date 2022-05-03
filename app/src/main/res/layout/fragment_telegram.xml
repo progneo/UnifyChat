@@ -66,7 +66,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_50sdp"
                             android:layout_marginTop="@dimen/_20sdp"
-                            android:text="@string/action_sign_in"
+                            android:text="@string/action_login"
                             android:textAlignment="center"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_13ssp"
@@ -76,6 +76,8 @@
 
                     </FrameLayout>
                 </LinearLayout>
+
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView

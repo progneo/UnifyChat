@@ -61,6 +61,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.vkAuthFragment -> {
                     navView.visibility = View.GONE
                 }
+                R.id.telegramAuthFragment -> {
+                    navView.visibility = View.GONE
+                }
                 else -> {
                     navView.visibility = View.VISIBLE
                 }
