@@ -104,18 +104,18 @@ class TelegramConversationsViewModel() : DefaultViewModel(), Conversations.OnCon
 
     private fun setupConversations() {
         startGetter()
-        loadConversations(0)
+        loadConversations()
     }
 
-    private fun loadConversations(offset: Long) {
+    private fun loadConversations() {
         _scope.launch {
-            _conversations.tgGetConversations(offset, false)
+            _conversations.tgGetConversations(false)
         }
     }
 
     private fun loadNewConversations() {
         _scope.launch {
-            _conversations.tgGetConversations(0, true)
+            _conversations.tgGetConversations(true)
         }
     }
 
@@ -128,10 +128,6 @@ class TelegramConversationsViewModel() : DefaultViewModel(), Conversations.OnCon
     }
 
     override fun showConversations(chats: ArrayList<Conversation>, isNew: Boolean) {
-        Log.i(TAG, "Got conversations: " + chats.size)
-        chats.sortByDescending {
-            it.date
-        }
         if (!isNew) {
             for (conversation in chats) {
                 _updatedConversation.value = conversation
@@ -142,13 +138,17 @@ class TelegramConversationsViewModel() : DefaultViewModel(), Conversations.OnCon
                 _newConversation.value = conversation
             }
         }
+        if (conversationsList.value != null) {
+            conversationsList.value!!.sortByDescending { it.date }
+        }
     }
 
     fun loadMoreConversations() {
-        loadConversations(conversationsList.value!!.size.toLong())
+        loadConversations()
     }
 
     fun goToLoginPressed() {
+        App.application.tgClient.startAuthentication()
         _loginEvent.value = Event(Unit)
     }
 

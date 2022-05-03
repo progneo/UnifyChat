@@ -2,16 +2,20 @@ package com.progcorp.unitedmessengers.data.db
 
 import android.util.Log
 import com.progcorp.unitedmessengers.App
+import com.progcorp.unitedmessengers.data.db.telegram.TgConversationsRepository
 import com.progcorp.unitedmessengers.data.db.vk.requests.VKConversationByIdRequest
 import com.progcorp.unitedmessengers.data.db.vk.requests.VKConversationsRequest
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONException
 import org.json.JSONObject
+import java.lang.Exception
 
 @ExperimentalCoroutinesApi
 class Conversations(private val onChatsFetched: OnConversationsFetched) {
@@ -59,41 +63,21 @@ class Conversations(private val onChatsFetched: OnConversationsFetched) {
         }
     }
 
-    private suspend fun tgGetConversationIds(offset: Long): Flow<LongArray> = callbackFlow {
-        App.application.tgClient.client.send(TdApi.GetChats(TdApi.ChatListMain(), 15)) {
-            when (it.constructor) {
-                TdApi.Chats.CONSTRUCTOR -> this.trySend((it as TdApi.Chats).chatIds).isSuccess
-                TdApi.Error.CONSTRUCTOR -> error("")
-                else -> error("")
-            }
-        }
-        awaitClose {}
-    }
-
-    suspend fun tgGetConversationById(id: Long) = callbackFlow {
-        App.application.tgClient.client.send(TdApi.GetChat(id)) {
-            when (it.constructor) {
-                TdApi.Chat.CONSTRUCTOR -> this.trySend(it as TdApi.Chat).isSuccess
-                TdApi.Error.CONSTRUCTOR -> error("")
-                else -> error("")
-            }
-        }
-        awaitClose {}
-    }
-
-    suspend fun tgGetConversations(offset: Long, isNew: Boolean) {
-        tgGetConversationIds(offset)
-            .map { ids -> ids.map { tgGetConversationById(it) } }
-            .flatMapLatest { chatsFlow ->
-                combine(chatsFlow) {
-                    chats -> chats.toList()
-                    val conversations: ArrayList<Conversation> = arrayListOf()
-                    for (chat in chats) {
-                        conversations.add(Conversation.tgParse(chat))
-                    }
-                    onChatsFetched.showConversations(conversations, false)
+    suspend fun tgGetConversations(isNew: Boolean) {
+        try {
+            MainScope().launch {
+                val response = TgConversationsRepository().getChats(1000)
+                val chats = response.first()
+                val conversations: ArrayList<Conversation> = arrayListOf()
+                for (chat in chats) {
+                    conversations.add(Conversation.tgParse(chat))
                 }
+                onChatsFetched.showConversations(conversations, isNew)
             }
+        }
+        catch (e: Exception) {
+            Log.e(TAG, e.stackTraceToString())
+        }
     }
 
     interface OnConversationsFetched {

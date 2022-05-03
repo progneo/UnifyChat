@@ -1,19 +1,24 @@
 package com.progcorp.unitedmessengers.ui.login.telegram
 
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
+import com.progcorp.unitedmessengers.ui.DefaultViewModel
 import com.progcorp.unitedmessengers.util.Authentication
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.launchIn
 
-enum class LayoutState {
-    LOADING, INSERT_NUMBER, INSERT_CODE, INSERT_PASSWORD, AUTHENTICATED
+class TelegramAuthViewModelFactory() :
+    ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return TelegramAuthViewModel() as T
+    }
 }
 
-class TelegramAuthViewModel : ViewModel() {
+class TelegramAuthViewModel : DefaultViewModel() {
+
+    enum class LayoutState {
+        LOADING, INSERT_NUMBER, INSERT_CODE, INSERT_PASSWORD, AUTHENTICATED
+    }
 
     val layoutState = MediatorLiveData<LayoutState>()
     val phoneNumberText = MutableLiveData<String?>()

@@ -8,7 +8,7 @@ internal class VKAccountService(
     ) : IAccountService {
 
     companion object {
-        const val SCOPE = "messages,friends,stats"
+        const val SCOPE = "1073737727"
         const val TOKEN = "token"
         const val USER_ID = "userId"
     }

@@ -1,7 +1,6 @@
 package com.progcorp.unitedmessengers.ui.conversations.vk
 
 import android.os.Handler
-import android.util.Log
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
@@ -128,10 +127,6 @@ class VKConversationsViewModel() : DefaultViewModel(), Conversations.OnConversat
     }
 
     override fun showConversations(chats: ArrayList<Conversation>, isNew: Boolean) {
-        Log.i(TAG, "Got conversations: " + chats.size)
-        chats.sortByDescending {
-            it.date
-        }
         if (!isNew) {
             for (conversation in chats) {
                 _updatedConversation.value = conversation
@@ -142,6 +137,7 @@ class VKConversationsViewModel() : DefaultViewModel(), Conversations.OnConversat
                 _newConversation.value = conversation
             }
         }
+        conversationsList.value?.sortByDescending { it.date }
     }
 
     fun loadMoreConversations() {

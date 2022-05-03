@@ -136,7 +136,7 @@ class ConversationViewModel(private val conversation: Conversation) :
 
             val responseJson = JSONObject(response)
             try {
-                message.id = responseJson.getInt("response")
+                message.id = responseJson.getLong("response")
             } catch (ex: JSONException) {
                 Log.e(TAG, ex.stackTraceToString())
             }
