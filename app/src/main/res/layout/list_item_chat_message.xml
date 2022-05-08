@@ -46,7 +46,6 @@
                 style="@style/layout_message_block"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/left_node_bg"
                 app:layout_constraintLeft_toRightOf="@id/photo_sender"
                 app:layout_constraintTop_toTopOf="parent">
 
