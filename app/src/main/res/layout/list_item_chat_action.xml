@@ -20,9 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/_4sdp"
-            android:layout_marginBottom="@dimen/_3sdp">
+            style="@style/layout_message">
 
             <TextView
                 android:id="@+id/text_action"

@@ -21,8 +21,7 @@
             android:id="@+id/dateText"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_20sdp"
-            android:gravity="center"
-            android:textSize="12sp"
+            style="@style/textview_date_text"
             app:bind_epochTimeMsToDate="@{message.date}"
             app:bind_message="@{message}"
             app:bind_message_viewModel="@{viewmodel}"
@@ -32,19 +31,13 @@
             android:id="@+id/layout_message_left"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="end"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/_4sdp"
-            android:layout_marginBottom="@dimen/_3sdp">
+            style="@style/layout_message">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo_sender"
-                android:layout_width="@dimen/_25sdp"
-                android:layout_height="@dimen/_25sdp"
-                android:layout_marginStart="@dimen/_10sdp"
+                style="@style/imageview_sender_photo"
                 app:layout_constraintBottom_toBottomOf="@+id/photo_sticker_left"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:shapeAppearanceOverlay="@style/circleImageView"
                 app:bind_image_url="@{message.senderPhoto}"
                 tools:src="@drawable/ic_baseline_account_circle_24" />
 
@@ -55,16 +48,12 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/photo_sticker_left"
-                android:layout_marginBottom="@dimen/_2sdp"
-                android:layout_marginStart="@dimen/_3sdp"
                 android:text="@{message.time}"
                 tools:text="11:50"/>
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo_sticker_left"
-                android:layout_width="@dimen/_100sdp"
-                android:layout_height="@dimen/_100sdp"
-                android:layout_marginStart="@dimen/_3sdp"
+                style="@style/imageview_sticker"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/photo_sender"
                 app:bind_image_url="@{message.sticker}"
