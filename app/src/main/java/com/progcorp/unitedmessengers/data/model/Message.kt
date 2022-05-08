@@ -3,6 +3,7 @@ package com.progcorp.unitedmessengers.data.model
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
+import com.progcorp.unitedmessengers.data.db.telegram.TgConversationsRepository
 import com.progcorp.unitedmessengers.data.db.telegram.TgUserRepository
 import com.progcorp.unitedmessengers.util.ConvertTime
 import kotlinx.coroutines.flow.first
@@ -18,12 +19,13 @@ data class Message(
     val fromId: Long = 0,
     val out: Boolean = false,
     val senderName: String = "",
-    val senderPhoto: String = "",
+    var senderPhoto: String = "",
     val action: String = "",
     val attachments: String = "",
-    val sticker: String = "",
+    var sticker: String = "",
     val text: String = "",
-    val type: Int = 0
+    val type: Int = 0,
+    val messenger: String = ""
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
@@ -39,7 +41,8 @@ data class Message(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
-        parcel.readInt()
+        parcel.readInt(),
+        parcel.readString()!!
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -56,6 +59,7 @@ data class Message(
         parcel.writeString(sticker)
         parcel.writeString(text)
         parcel.writeInt(type)
+        parcel.writeString(messenger)
     }
 
     override fun describeContents(): Int {
@@ -97,7 +101,7 @@ data class Message(
             val isDialog = fromId == peerId
 
             var fromName = "User"
-            var photo = "https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg"
+            var photo = ""
             var action = "message"
             var attachments = ""
             var sticker = ""
@@ -258,51 +262,193 @@ data class Message(
                 attachments,
                 sticker,
                 text,
-                type
+                type,
+                "vk"
             )
         }
 
-        suspend fun tgParse(tgMessage: TdApi.Message): Message {
+        suspend fun tgParse(tgMessage: TdApi.Message, tgConversation: TdApi.Chat): Message {
             val id = tgMessage.id
-            val timeStamp: Long = (tgMessage.date * 1000).toLong()
+            val timeStamp: Long = (tgMessage.date).toLong() * 1000
             val time = ConvertTime.toTime(timeStamp)
             val peerId = tgMessage.chatId
-            val sender: TdApi.User
             var fromId: Long = 0
+            val messageSender: TdApi.MessageSender
             var fromName = ""
             when (tgMessage.senderId::class.simpleName) {
                 "MessageSenderUser" -> {
-                    val senderId = tgMessage.senderId as TdApi.MessageSenderUser
-                    sender = TgUserRepository().getUser(senderId.userId).first()
+                    messageSender = tgMessage.senderId as TdApi.MessageSenderUser
+                    val sender = TgUserRepository().getUser(messageSender.userId).first()
                     fromId = sender.id
                     fromName = sender.firstName + " " + sender.lastName
                 }
                 else -> {
-                    val senderId = tgMessage.senderId as TdApi.MessageSenderChat
+                    messageSender = tgMessage.senderId as TdApi.MessageSenderChat
+                    val sender = TgConversationsRepository().getChat(messageSender.chatId).first()
+                    fromId = sender.id
+                    fromName = sender.title
                 }
             }
+            val isDialog = when(tgConversation.type.constructor) {
+                TdApi.ChatTypePrivate.CONSTRUCTOR -> true
+                TdApi.ChatTypeSecret.CONSTRUCTOR -> true
+                else -> false
+            }
 
-            //val out: Boolean = (fromId == TgUserRepository().getUser(null).first().id)
+            val out = tgMessage.isOutgoing
 
-            val out = false
-
-            val photo = "https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg"
+            val photo = ""
             val action = ""
-            val attachments = ""
+            var attachments = ""
             val sticker = ""
             var text = ""
-
+            var type = 0
             when (tgMessage.content::class.simpleName) {
                 "MessageText" -> text = (tgMessage.content as TdApi.MessageText).text.text
-                "MessagePhoto" -> text = "Photo"
-                else -> text = ""
-            }
-            val type: Int = when {
-                out -> {
-                    MESSAGE_OUT
+                "MessageAnimation" -> attachments = "GIF"
+                "MessageAudio" -> {
+                    text = (tgMessage.content as TdApi.MessageAudio).caption.text
+                    attachments = "Аудиозапись"
                 }
-                else -> {
-                    CHAT_MESSAGE
+                "MessageDocument" -> {
+                    text = (tgMessage.content as TdApi.MessageDocument).caption.text
+                    attachments = "Документ"
+                }
+                "MessagePhoto" -> {
+                    text = (tgMessage.content as TdApi.MessagePhoto).caption.text
+                    attachments = "Фото"
+                }
+                "MessageExpiredPhoto" -> attachments = "Удалённое фото"
+                "MessageSticker" -> {
+                    attachments = if (!(tgMessage.content as TdApi.MessageSticker).sticker.isAnimated) {
+                        "Стикер"
+                    } else {
+                        "Анимированный стикер"
+                    }
+                }
+                "MessageVideo" -> {
+                    text = (tgMessage.content as TdApi.MessageVideo).caption.text
+                    attachments = "Видео"
+                }
+                "MessageExpiredVideo" -> attachments = "Удалённое видео"
+                "MessageVideoNote" -> attachments = "Видео-сообщение"
+                "MessageVoiceNote" -> attachments = "Голосовое сообщение"
+                "MessageLocation" -> attachments = "Место на карте"
+                "MessageVenue" -> attachments = "Место встречи"
+                "MessageContact" -> attachments = "Контакт"
+                "MessageAnimatedEmoji" -> text = (tgMessage.content as TdApi.MessageAnimatedEmoji).emoji
+                "MessageDice" -> attachments = "Кости"
+                "MessageGame" -> attachments = "Игра"
+                "MessagePoll" -> attachments = "Голосование"
+                "MessageInvoice" -> attachments = "Счёт"
+                "MessageCall" -> attachments = "Звонок"
+                "MessageVideoChatScheduled" -> attachments = "Запланированный видеозвонок"
+                "MessageVideoChatStarted" -> attachments = "Видеозвонок начат"
+                "MessageVideoChatEnded" -> attachments = "Видеозвонок окончен"
+                "MessageInviteVideoChatParticipants" -> attachments = "Приглашение в видеозвонок"
+                "MessageChatChangeTitle" -> {
+                    text = "Чат сменил название"
+                    type = CHAT_ACTION
+                }
+                "MessageChatChangePhoto" -> {
+                    text = "Чат сменил фото"
+                    type = CHAT_ACTION
+                }
+                "MessageChatDeletePhoto" -> {
+                    text = "Чат удалил фото"
+                    type = CHAT_ACTION
+                }
+                "MessageChatAddMembers" -> {
+                    text = "Новый участник"
+                    type = CHAT_ACTION
+                }
+                "MessageChatJoinByLink" -> {
+                    text = "Новый участник присоеденился по ссылке"
+                    type = CHAT_ACTION
+                }
+                "MessageChatJoinByRequest" -> {
+                    text = "Новый участник"
+                    type = CHAT_ACTION
+                }
+                "MessageChatDeleteMember" -> {
+                    text = "Участник покинул чат"
+                    type = CHAT_ACTION
+                }
+                "MessageChatUpgradeTo" -> {
+                    text = "Группа стала супергруппой (?)"
+                    type = CHAT_ACTION
+                }
+                "MessageChatUpgradeFrom" -> {
+                    text = "Группа стала супергруппой (?)"
+                    type = CHAT_ACTION
+                }
+                "MessagePinMessage" -> {
+                    text = "Закреплено сообщение"
+                    type = CHAT_ACTION
+                }
+                "MessageScreenshotTaken" -> {
+                    text = "Был сделан скриншот чата"
+                    type = CHAT_ACTION
+                }
+                "MessageChatSetTheme" -> {
+                    text = "Изменена тема чата"
+                    type = CHAT_ACTION
+                }
+                "MessageChatSetTtl" -> {
+                    text = "Время жизни сообщений изменено"
+                    type = CHAT_ACTION
+                }
+                "MessageCustomServiceAction" -> {
+                    text = "Что-то произошло"
+                    type = CHAT_ACTION
+                }
+                "MessageGameScore" -> {
+                    text = "В игре побит рекорд"
+                    type = CHAT_ACTION
+                }
+                "MessagePaymentSuccessful" -> {
+                    text = "Успешная оплата"
+                    type = CHAT_ACTION
+                }
+                "MessagePaymentSuccessfulBot" -> {
+                    text = "Успешная оплата"
+                    type = CHAT_ACTION
+                }
+                "MessageContactRegistered" -> {
+                    text = "Присоединился к Telegram"
+                    type = CHAT_ACTION
+                }
+                else -> attachments = "Какое-то действие"
+            }
+            if (type != CHAT_ACTION) {
+                when {
+                    attachments != "" -> {
+                        type = when {
+                            out -> {
+                                ATTACHMENT_OUT
+                            }
+                            isDialog -> {
+                                DIALOG_ATTACHMENT
+                            }
+                            else -> {
+                                CHAT_ATTACHMENT
+                            }
+                        }
+                    }
+
+                    else -> {
+                        type = when {
+                            out -> {
+                                MESSAGE_OUT
+                            }
+                            isDialog -> {
+                                DIALOG_MESSAGE
+                            }
+                            else -> {
+                                CHAT_MESSAGE
+                            }
+                        }
+                    }
                 }
             }
 
@@ -319,7 +465,8 @@ data class Message(
                 attachments,
                 sticker,
                 text,
-                type
+                type,
+                "tg"
             )
         }
     }

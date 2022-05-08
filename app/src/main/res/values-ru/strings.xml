@@ -28,4 +28,8 @@
     <string name="attachment">Вложение</string>
     <string name="action_next">Далее</string>
     <string name="action_logout">Отмена</string>
+    <string name="recently">недавно</string>
+    <string name="unknown">неизвестно</string>
+    <string name="last_month">в этом месяце</string>
+    <string name="last_week">на этой неделе</string>
 </resources>

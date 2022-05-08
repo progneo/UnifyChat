@@ -30,6 +30,7 @@
             android:layout_width="@dimen/_50sdp"
             android:layout_height="@dimen/_50sdp"
             android:padding="@dimen/_3sdp"
+            app:bind_conversation="@{conversation}"
             app:bind_image_url="@{conversation.photo}"
             app:shapeAppearanceOverlay="@style/circleImageView"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -32,4 +32,8 @@
     <string name="market">Product</string>
     <string name="wall_reply">Comment</string>
     <string name="attachment">Attachment</string>
+    <string name="recently">recently</string>
+    <string name="unknown">unknown</string>
+    <string name="last_month">last month</string>
+    <string name="last_week">last week</string>
 </resources>

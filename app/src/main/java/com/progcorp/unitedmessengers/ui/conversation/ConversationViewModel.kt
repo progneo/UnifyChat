@@ -71,7 +71,6 @@ class ConversationViewModel(private val conversation: Conversation) :
             }
         }
         _conversation.value = conversation
-        loadSelectedMessages(0)
         startListeners()
     }
 
@@ -94,6 +93,18 @@ class ConversationViewModel(private val conversation: Conversation) :
                     _messages.vkGetMessages(conversation, offset, 20, false)
                 }
             }
+            "tg" -> {
+                if (messagesList.value != null) {
+                    _scope.launch(Dispatchers.Main) {
+                        _messages.tgGetMessages(
+                            conversation.id,
+                            messagesList.value!![offset].id,
+                            20,
+                            false
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -102,6 +113,17 @@ class ConversationViewModel(private val conversation: Conversation) :
             "vk" -> {
                 _scope.launch(Dispatchers.Main) {
                     _messages.vkGetMessages(conversation, 0, 20, true)
+                }
+            }
+
+            "tg" -> {
+                _scope.launch(Dispatchers.Main) {
+                    _messages.tgGetMessages(
+                        conversation.id,
+                        0,
+                        20,
+                        false
+                    )
                 }
             }
         }
@@ -118,14 +140,19 @@ class ConversationViewModel(private val conversation: Conversation) :
                 _newMessage.value = message
             }
         }
+        if (messagesList.value != null) {
+            messagesList.value!!.sortByDescending {
+                it.date
+            }
+        }
     }
 
     fun sendMessagePressed() {
         _scope.launch {
         if (!newMessageText.value.isNullOrBlank()) {
             val message = Message(
-                date = Date().time / 1000,
-                time = ConvertTime.toTime(Date().time / 1000),
+                date = Date().time,
+                time = ConvertTime.toTime(Date().time),
                 peerId = conversation.id,
                 out = true,
                 text = newMessageText.value!!,
@@ -151,6 +178,9 @@ class ConversationViewModel(private val conversation: Conversation) :
                     } catch (ex: JSONException) {
                         Log.e(TAG, ex.stackTraceToString())
                     }
+                }
+                "tg" -> {
+
                 }
             }
 

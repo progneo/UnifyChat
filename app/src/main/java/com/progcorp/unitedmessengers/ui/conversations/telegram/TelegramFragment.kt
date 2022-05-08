@@ -69,9 +69,10 @@ class TelegramFragment : Fragment() {
     private fun navigateToChat(conversation: Conversation) {
         when (conversation.type) {
             "basicgroup" -> {
-                Toast.makeText(
-                    context, "Basicgroups are not supported", Toast.LENGTH_SHORT
-                ).show()
+                val bundle = bundleOf(
+                    ChatFragment.ARGS_CONVERSATION to conversation
+                )
+                findNavController().navigate(R.id.action_navigation_chats_to_chatFragment, bundle)
             }
             "supergroup" -> {
                 val bundle = bundleOf(

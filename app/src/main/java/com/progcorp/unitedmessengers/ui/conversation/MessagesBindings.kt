@@ -2,14 +2,19 @@
 
 package com.progcorp.unitedmessengers.ui.conversation
 
+import android.graphics.BitmapFactory
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
+import com.progcorp.unitedmessengers.util.Constants
 import com.progcorp.unitedmessengers.util.ConvertTime
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.fragment_dialog.view.*
 
 @BindingAdapter("bind_messages_list")
 fun bindMessagesList(listView: RecyclerView, items: List<Message>?) {
@@ -24,7 +29,23 @@ fun TextView.bindOnlineText(conversation: Conversation) {
         resources.getString(R.string.online)
     }
     else {
-        resources.getString(R.string.last_seen, ConvertTime.toDateTime(conversation.last_online))
+        when (conversation.last_online) {
+            Constants.LastSeen.unknown -> {
+                resources.getString(R.string.last_seen, resources.getString(R.string.unknown))
+            }
+            Constants.LastSeen.lastWeek -> {
+                resources.getString(R.string.last_seen, resources.getString(R.string.last_week))
+            }
+            Constants.LastSeen.lastMonth -> {
+                resources.getString(R.string.last_seen, resources.getString(R.string.last_month))
+            }
+            Constants.LastSeen.recently -> {
+                resources.getString(R.string.last_seen, resources.getString(R.string.recently))
+            }
+            else -> {
+                resources.getString(R.string.last_seen, ConvertTime.toDateTime(conversation.last_online))
+            }
+        }
     }
 }
 

@@ -6,6 +6,7 @@ import android.text.format.DateUtils
 import com.progcorp.unitedmessengers.data.db.telegram.TgConversationsRepository
 import com.progcorp.unitedmessengers.data.db.telegram.TgMessagesRepository
 import com.progcorp.unitedmessengers.data.db.telegram.TgUserRepository
+import com.progcorp.unitedmessengers.util.Constants
 import kotlinx.coroutines.flow.first
 import org.drinkless.td.libcore.telegram.TdApi.*
 import org.drinkless.td.libcore.telegram.TdApi.Date
@@ -84,7 +85,7 @@ data class Conversation(
             val canWrite = conversation.getJSONObject("can_write").getBoolean("allowed")
 
             var title = "User"
-            var photo = "https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg"
+            var photo = ""
             var lastOnline: Long = 0
             var isOnline = false
 
@@ -201,13 +202,17 @@ data class Conversation(
             val unreadCount = conversation.unreadCount
             val canWrite = conversation.permissions.canSendMessages
             val title = conversation.title
-            val photo = "https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg"
+            val photo = ""
             var lastMessage = ""
 
             if (conversation.lastMessage != null) {
                 val tgMessage = TgMessagesRepository().getMessage(id, conversation.lastMessage!!.id).first()
-                val message = Message.tgParse(tgMessage)
-                lastMessage = message.text
+                val message = Message.tgParse(tgMessage, conversation)
+                lastMessage = if (message.text == "") {
+                    message.attachments
+                } else {
+                    message.text
+                }
             }
 
             val membersCount: Int = when (type) {
@@ -225,31 +230,28 @@ data class Conversation(
             var lastOnline: Long = 0
             var isOnline = false
             if (type == "user") {
-                val cal: Calendar = Calendar.getInstance()
                 val user = TgUserRepository().getUser(id).first()
                 when (user.status.constructor) {
                     UserStatusEmpty.CONSTRUCTOR -> {
-                        lastOnline = 0
+                        lastOnline = Constants.LastSeen.unknown
                     }
                     UserStatusLastMonth.CONSTRUCTOR -> {
-                        lastOnline = 1
+                        lastOnline = Constants.LastSeen.lastMonth
                     }
                     UserStatusLastWeek.CONSTRUCTOR -> {
-                        cal.add(Calendar.DAY_OF_YEAR, -7)
-                        lastOnline = 2
+                        lastOnline = Constants.LastSeen.lastWeek
                     }
                     UserStatusOffline.CONSTRUCTOR -> {
-                        lastOnline = ((user.status as UserStatusOffline).wasOnline * 1000).toLong()
+                        lastOnline = ((user.status as UserStatusOffline).wasOnline).toLong() * 1000
                     }
                     UserStatusOnline.CONSTRUCTOR -> {
-                        lastOnline = 0
+                        lastOnline = Constants.LastSeen.unknown
                         isOnline = true
                     }
                     UserStatusRecently.CONSTRUCTOR -> {
-                        lastOnline = 3
+                        lastOnline = Constants.LastSeen.recently
                     }
                 }
-                //TODO: Создать класс с типами скрытых онлайнов
             }
 
 

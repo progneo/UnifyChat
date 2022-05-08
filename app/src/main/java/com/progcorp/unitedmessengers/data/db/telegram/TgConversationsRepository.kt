@@ -37,7 +37,7 @@ class TgConversationsRepository {
                 }
             }
 
-    private fun getChat(chatId: Long): Flow<TdApi.Chat> = callbackFlow {
+    fun getChat(chatId: Long): Flow<TdApi.Chat> = callbackFlow {
         App.application.tgClient.client.send(TdApi.GetChat(chatId)) {
             when (it.constructor) {
                 TdApi.Chat.CONSTRUCTOR -> {
@@ -47,7 +47,7 @@ class TgConversationsRepository {
                     Log.e("getChat", "${(it as TdApi.Error).message}. ID: $chatId")
                 }
                 else -> {
-                    Log.e("getBasicGroup", "Something went wrong")
+                    Log.e("getChat", "Something went wrong")
                 }
             }
         }
@@ -73,7 +73,7 @@ class TgConversationsRepository {
                         Log.e("getSupergroup", "${(it as TdApi.Error).message}. ID: $chatId")
                     }
                     else -> {
-                        Log.e("getBasicGroup", "Something went wrong")
+                        Log.e("getSupergroup", "Something went wrong")
                     }
                 }
             }

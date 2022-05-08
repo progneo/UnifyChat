@@ -19,10 +19,10 @@ class TgMessagesRepository {
                         trySend((it as TdApi.Messages).messages.toList()).isSuccess
                     }
                     TdApi.Error.CONSTRUCTOR -> {
-                        error("")
+                        Log.e("getMessages", "${(it as TdApi.Error).message}. ID: $chatId")
                     }
                     else -> {
-                        error("")
+                        Log.e("getMessages", "Something went wrong")
                     }
                 }
             }
@@ -40,7 +40,7 @@ class TgMessagesRepository {
                         Log.e("getMessage", "${(it as TdApi.Error).message}. ID: $chatId")
                     }
                     else -> {
-                        error("Something went wrong")
+                        Log.e("getMessage", "Something went wrong")
                     }
                 }
             }

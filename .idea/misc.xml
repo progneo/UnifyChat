@@ -51,9 +51,20 @@
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/toolbar_addon_dialog.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/toolbar_main.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/menu/bottom_nav_menu.xml" value="0.1" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/activity_main.xml" value="0.5415384615384615" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/fragment_chat.xml" value="0.5415384615384615" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/fragment_dialog.xml" value="0.4148148148148148" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/fragment_telegram.xml" value="0.36770833333333336" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/fragment_telegram_auth.xml" value="0.36770833333333336" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/fragment_vk.xml" value="0.4046296296296296" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_chat_attachment.xml" value="0.4148148148148148" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_chat_message.xml" value="0.55" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_chat_out_attachment.xml" value="0.55" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_chat_out_message.xml" value="0.55" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_chat_out_sticker.xml" value="0.55" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_chat_sticker.xml" value="0.55" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_dialog_out_sticker.xml" value="0.55" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_dialog_sticker.xml" value="0.55" />
       </map>
     </option>
   </component>
