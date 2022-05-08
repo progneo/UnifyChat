@@ -60,7 +60,9 @@ class ChatFragment : Fragment() {
         if (viewModel != null) {
             listAdapterObserver = (object : RecyclerView.AdapterDataObserver() {
                 override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                    recycler_view.scrollToPosition(positionStart)
+                    if (positionStart == 0) {
+                        recycler_view.scrollToPosition(positionStart)
+                    }
                 }
             })
             listAdapter = MessagesListAdapter(viewModel)

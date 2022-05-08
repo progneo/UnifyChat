@@ -70,7 +70,16 @@ class Conversations(private val onChatsFetched: OnConversationsFetched) {
                 val chats = response.first()
                 val conversations: ArrayList<Conversation> = arrayListOf()
                 for (chat in chats) {
-                    conversations.add(Conversation.tgParse(chat))
+                    val conversation = Conversation.tgParse(chat)
+                    conversations.add(conversation)
+                    if (chat.photo != null) {
+                        launch {
+                            val photo = App.application.tgClient.downloadableFile(chat.photo!!.small).first()
+                            if (photo != null) {
+                                conversation.photo = photo
+                            }
+                        }
+                    }
                 }
                 onChatsFetched.showConversations(conversations, isNew)
             }

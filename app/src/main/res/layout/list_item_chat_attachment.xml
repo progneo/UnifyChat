@@ -44,6 +44,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/linear_layout_message_left"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:shapeAppearanceOverlay="@style/circleImageView"
+                app:bind_conversation="@{viewmodel.chat}"
                 app:bind_image_url="@{message.senderPhoto}"
                 tools:src="@drawable/ic_baseline_account_circle_24"/>
 
