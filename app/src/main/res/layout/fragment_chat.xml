@@ -98,10 +98,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_above="@+id/bottomLine"
+                app:bind_disable_item_animator="@{false}"
                 app:bind_messages_list="@{viewmodel.messagesList}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:reverseLayout="true"
-                app:bind_disable_item_animator="@{false}"
                 tools:listitem="@layout/list_item_chat_sticker" />
 
             <View
