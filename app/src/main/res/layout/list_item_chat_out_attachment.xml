@@ -36,7 +36,7 @@
 
             <TextView
                 android:id="@+id/text_time_right"
-                style="@style/info_text_views"
+                style="@style/info_text_views_out"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -49,7 +49,6 @@
                 style="@style/layout_message_out_block"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/right_node_bg"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
