@@ -1,9 +1,6 @@
 package com.progcorp.unitedmessengers.ui.main
 
-import android.content.Context
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.AttributeSet
 import android.view.View
 import android.widget.ProgressBar
 import androidx.activity.viewModels
@@ -47,7 +44,6 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
 
-        //val navController = findNavController(R.id.nav_host_fragment)
         val navController = findNavController(R.id.nav_host_fragment)
         navController.addOnDestinationChangedListener { _, destination, _ ->
 

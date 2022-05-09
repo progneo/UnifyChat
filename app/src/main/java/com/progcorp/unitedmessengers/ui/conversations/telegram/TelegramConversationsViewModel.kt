@@ -1,7 +1,6 @@
 package com.progcorp.unitedmessengers.ui.conversations.telegram
 
 import android.os.Handler
-import android.util.Log
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
@@ -13,7 +12,7 @@ import com.progcorp.unitedmessengers.util.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-class TelegramConversationsViewModelFactory() :
+class TelegramConversationsViewModelFactory :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return TelegramConversationsViewModel() as T
@@ -24,7 +23,7 @@ enum class LayoutState {
     LOGGED_ID, NEED_TO_LOGIN
 }
 
-class TelegramConversationsViewModel() : DefaultViewModel(), Conversations.OnConversationsFetched, IConversationsViewModel {
+class TelegramConversationsViewModel : DefaultViewModel(), Conversations.OnConversationsFetched, IConversationsViewModel {
 
     private val _scope = MainScope()
 
@@ -91,6 +90,7 @@ class TelegramConversationsViewModel() : DefaultViewModel(), Conversations.OnCon
         if (_loginState.value == true) {
             setupConversations()
         }
+        App.application.tgClient.conversationsViewModel = this
     }
 
     private fun updateLayoutState(loginState: Boolean?) {

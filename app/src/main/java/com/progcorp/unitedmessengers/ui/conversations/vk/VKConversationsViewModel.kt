@@ -26,7 +26,7 @@ enum class LayoutState {
     LOGGED_ID, NEED_TO_LOGIN
 }
 
-class VKConversationsViewModel() : DefaultViewModel(), Conversations.OnConversationsFetched, IConversationsViewModel {
+class VKConversationsViewModel : DefaultViewModel(), Conversations.OnConversationsFetched, IConversationsViewModel {
 
     private val _scope = MainScope()
 

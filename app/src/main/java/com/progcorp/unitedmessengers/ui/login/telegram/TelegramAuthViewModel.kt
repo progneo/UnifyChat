@@ -8,7 +8,7 @@ import com.progcorp.unitedmessengers.util.Authentication
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.launchIn
 
-class TelegramAuthViewModelFactory() :
+class TelegramAuthViewModelFactory :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return TelegramAuthViewModel() as T

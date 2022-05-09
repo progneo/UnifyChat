@@ -10,7 +10,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.*
 
-@ExperimentalCoroutinesApi
 class App : Application() {
     lateinit var vkAccountService: IAccountService
     lateinit var vkRetrofit: Retrofit
