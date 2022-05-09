@@ -7,17 +7,13 @@ import com.progcorp.unitedmessengers.data.db.vk.requests.VKConversationByIdReque
 import com.progcorp.unitedmessengers.data.db.vk.requests.VKConversationsRequest
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONException
 import org.json.JSONObject
 import java.lang.Exception
 
-@ExperimentalCoroutinesApi
 class Conversations(private val onChatsFetched: OnConversationsFetched) {
     suspend fun vkGetConversations(offset: Int, isNew: Boolean) {
         val response = App.application.vkRetrofit.create(VKConversationsRequest::class.java)

@@ -1,11 +1,13 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.progcorp.unitedmessengers.data.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import android.util.Log
 import com.progcorp.unitedmessengers.data.db.telegram.TgConversationsRepository
 import com.progcorp.unitedmessengers.data.db.telegram.TgUserRepository
 import com.progcorp.unitedmessengers.util.ConvertTime
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONArray
@@ -272,9 +274,9 @@ data class Message(
             val timeStamp: Long = (tgMessage.date).toLong() * 1000
             val time = ConvertTime.toTime(timeStamp)
             val peerId = tgMessage.chatId
-            var fromId: Long = 0
+            val fromId: Long
             val messageSender: TdApi.MessageSender
-            var fromName = ""
+            val fromName: String
             when (tgMessage.senderId::class.simpleName) {
                 "MessageSenderUser" -> {
                     messageSender = tgMessage.senderId as TdApi.MessageSenderUser

@@ -1,6 +1,7 @@
 package com.progcorp.unitedmessengers.data
 
 import android.util.Log
+import com.progcorp.unitedmessengers.ui.conversations.telegram.TelegramConversationsViewModel
 import com.progcorp.unitedmessengers.util.Authentication
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
@@ -8,12 +9,14 @@ import kotlinx.coroutines.flow.*
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 
-@ExperimentalCoroutinesApi
+@OptIn(ExperimentalCoroutinesApi::class)
 class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Client.ResultHandler {
     lateinit var client: Client
 
     private val _authState = MutableStateFlow(Authentication.UNKNOWN)
     val authState: StateFlow<Authentication> get() = _authState
+
+    var conversationsViewModel: TelegramConversationsViewModel? = null
 
     init {
         setupClient()
@@ -42,6 +45,13 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
             TdApi.UpdateAuthorizationState.CONSTRUCTOR -> {
                 onAuthorizationStateUpdated((data as TdApi.UpdateAuthorizationState).authorizationState)
             }
+
+            TdApi.UpdateUserStatus.CONSTRUCTOR -> {
+                if (conversationsViewModel != null) {
+
+                }
+            }
+
             TdApi.UpdateOption.CONSTRUCTOR -> {
 
             }
@@ -229,7 +239,7 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
                     error("")
                 }
                 else -> {
-                    offer(it)
+                    trySend(it).isSuccess
                 }
             }
         }

@@ -7,7 +7,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import org.drinkless.td.libcore.telegram.TdApi
 
-@ExperimentalCoroutinesApi
+@OptIn(ExperimentalCoroutinesApi::class)
 class TgConversationsRepository {
 
     private fun getChatIds(limit: Int): Flow<LongArray> =
@@ -53,13 +53,6 @@ class TgConversationsRepository {
         }
         awaitClose { }
     }
-
-    fun chatImage(chat: TdApi.Chat): Flow<String?> =
-        chat.photo?.small?.takeIf {
-            it.local?.isDownloadingCompleted == false
-        }?.id?.let { fileId ->
-            App.application.tgClient.downloadFile(fileId).map { chat.photo?.small?.local?.path }
-        } ?: flowOf(chat.photo?.small?.local?.path)
 
 
     fun getSupergroup(chatId: Long): Flow<TdApi.Supergroup> =

@@ -21,7 +21,7 @@ class TelegramAuthFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         viewDataBinding =
             FragmentTelegramAuthBinding.inflate(inflater, container, false).apply { viewmodel = viewModel }
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner

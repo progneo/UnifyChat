@@ -1,19 +1,18 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.progcorp.unitedmessengers.data.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import android.text.format.DateUtils
 import com.progcorp.unitedmessengers.data.db.telegram.TgConversationsRepository
 import com.progcorp.unitedmessengers.data.db.telegram.TgMessagesRepository
 import com.progcorp.unitedmessengers.data.db.telegram.TgUserRepository
 import com.progcorp.unitedmessengers.util.Constants
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import org.drinkless.td.libcore.telegram.TdApi.*
-import org.drinkless.td.libcore.telegram.TdApi.Date
 import org.json.JSONArray
 import org.json.JSONObject
-import java.lang.Math.round
-import java.util.*
 
 data class Conversation(
     val id: Long = 0,
