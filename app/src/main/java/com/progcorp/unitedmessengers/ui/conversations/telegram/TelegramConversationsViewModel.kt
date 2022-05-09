@@ -1,6 +1,5 @@
 package com.progcorp.unitedmessengers.ui.conversations.telegram
 
-import android.os.Handler
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
@@ -10,7 +9,9 @@ import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
 import com.progcorp.unitedmessengers.ui.DefaultViewModel
 import com.progcorp.unitedmessengers.util.*
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.drinkless.td.libcore.telegram.TdApi
 
 class TelegramConversationsViewModelFactory :
     ViewModelProvider.Factory {
@@ -26,9 +27,6 @@ enum class LayoutState {
 class TelegramConversationsViewModel : DefaultViewModel(), Conversations.OnConversationsFetched, IConversationsViewModel {
 
     private val _scope = MainScope()
-
-    private var _handler = Handler()
-    private var _conversationsGetter: Runnable = Runnable {  }
 
     private val _conversations: Conversations = Conversations(this)
 
@@ -103,7 +101,6 @@ class TelegramConversationsViewModel : DefaultViewModel(), Conversations.OnConve
     }
 
     private fun setupConversations() {
-        startGetter()
         loadConversations()
     }
 
@@ -113,42 +110,106 @@ class TelegramConversationsViewModel : DefaultViewModel(), Conversations.OnConve
         }
     }
 
-    private fun loadNewConversations() {
-        _scope.launch {
-            _conversations.tgGetConversations(true)
-        }
-    }
-
-    private fun startGetter() {
-        _conversationsGetter = Runnable {
-            loadNewConversations()
-            _handler.postDelayed(_conversationsGetter, 5000)
-        }
-        _handler.postDelayed(_conversationsGetter, 0)
-    }
-
     override fun showConversations(chats: ArrayList<Conversation>, isNew: Boolean) {
-        if (!isNew) {
-            for (conversation in chats) {
-                _updatedConversation.value = conversation
+        MainScope().launch {
+            if (!isNew) {
+                for (conversation in chats) {
+                    _updatedConversation.value = conversation
+                }
+            }
+            else {
+                for (conversation in chats) {
+                    _newConversation.value = conversation
+                }
+            }
+            if (conversationsList.value != null) {
+                conversationsList.value!!.sortByDescending { it.date }
             }
         }
-        else {
-            for (conversation in chats) {
-                _newConversation.value = conversation
-            }
-        }
-        if (conversationsList.value != null) {
-            conversationsList.value!!.sortByDescending { it.date }
-        }
-    }
-
-    fun loadMoreConversations() {
-        loadConversations()
     }
 
     fun goToLoginPressed() {
         _loginEvent.value = Event(Unit)
+    }
+
+    fun addNewChat(update: TdApi.UpdateNewChat) {
+        MainScope().launch {
+            if (conversationsList.value != null) {
+                val conversation = conversationsList.value!!.find {
+                    it.user_id == update.chat.id
+                }
+                if (conversation == null) {
+                    val newConversation = Conversation.tgParse(update.chat)
+                    if (newConversation != null) {
+                        _newConversation.value = newConversation!!
+                        if (update.chat.photo != null) {
+                            val photo =
+                                App.application.tgClient.downloadableFile(update.chat.photo!!.small)
+                                    .first()
+                            if (photo != null) {
+                                newConversation.photo = photo
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateOnline(update: TdApi.UpdateUserStatus) {
+        MainScope().launch {
+            if (conversationsList.value != null) {
+                val conversation = conversationsList.value!!.find {
+                    it.user_id == update.userId
+                }?.copy()
+                if (conversation != null) {
+                    Conversation.tgParseOnlineStatus(conversation, update)
+                    _newConversation.value = conversation!!
+                }
+            }
+        }
+    }
+
+    fun updateLastMessage(update: TdApi.UpdateChatLastMessage) {
+        MainScope().launch {
+            if (conversationsList.value != null) {
+                val conversation = conversationsList.value!!.find {
+                    it.id == update.chatId
+                }?.copy()
+                if (conversation != null) {
+                    Conversation.tgParseLastMessage(conversation, update)
+                    _newConversation.value = conversation!!
+                }
+            }
+        }
+    }
+
+    fun updateNewMessage(update: TdApi.UpdateNewMessage) {
+        MainScope().launch {
+            if (conversationsList.value != null) {
+                val conversation = conversationsList.value!!.find {
+                    it.id == update.message.chatId
+                }?.copy()
+                if (conversation != null) {
+                    Conversation.tgParseNewMessage(conversation, update)
+                    _newConversation.value = conversation!!
+                }
+            }
+        }
+    }
+
+    fun updateReadInbox(update: TdApi.UpdateChatReadInbox) {
+        MainScope().launch {
+            if (conversationsList.value != null) {
+                val conversation = conversationsList.value!!.find {
+                    it.id == update.chatId
+                }?.copy()
+                if (conversation != null) {
+                    conversation.unread_count = update.unreadCount
+                    _newConversation.value = conversation!!
+                }
+            }
+        }
     }
 
     override fun selectConversationPressed(conversation: Conversation) {

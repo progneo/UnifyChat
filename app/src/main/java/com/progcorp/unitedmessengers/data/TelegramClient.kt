@@ -47,9 +47,31 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
             }
 
             TdApi.UpdateUserStatus.CONSTRUCTOR -> {
-                if (conversationsViewModel != null) {
+                conversationsViewModel?.updateOnline(data as TdApi.UpdateUserStatus)
+            }
 
-                }
+            TdApi.UpdateChatLastMessage.CONSTRUCTOR -> {
+                conversationsViewModel?.updateLastMessage(data as TdApi.UpdateChatLastMessage)
+            }
+
+            TdApi.UpdateChatReadInbox.CONSTRUCTOR -> {
+                conversationsViewModel?.updateReadInbox(data as TdApi.UpdateChatReadInbox)
+            }
+
+            TdApi.UpdateNewChat.CONSTRUCTOR -> {
+                conversationsViewModel?.addNewChat(data as TdApi.UpdateNewChat)
+            }
+
+            TdApi.UpdateNewMessage.CONSTRUCTOR -> {
+                conversationsViewModel?.updateNewMessage(data as TdApi.UpdateNewMessage)
+            }
+
+            TdApi.UpdateSupergroupFullInfo.CONSTRUCTOR -> {
+
+            }
+
+            TdApi.UpdateUser.CONSTRUCTOR -> {
+
             }
 
             TdApi.UpdateOption.CONSTRUCTOR -> {
