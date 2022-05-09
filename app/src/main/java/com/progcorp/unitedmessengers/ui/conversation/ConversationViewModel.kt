@@ -87,7 +87,7 @@ class ConversationViewModel(private val conversation: Conversation) :
     }
 
     private fun loadSelectedMessages(offset: Int) {
-        when (conversation.from) {
+        when (conversation.messenger) {
             "vk" -> {
                 _scope.launch(Dispatchers.Main) {
                     _messages.vkGetMessages(conversation, offset, 20, false)
@@ -109,7 +109,7 @@ class ConversationViewModel(private val conversation: Conversation) :
     }
 
     private fun loadNewMessages() {
-        when (conversation.from) {
+        when (conversation.messenger) {
             "vk" -> {
                 _scope.launch(Dispatchers.Main) {
                     _messages.vkGetMessages(conversation, 0, 20, true)
@@ -160,7 +160,7 @@ class ConversationViewModel(private val conversation: Conversation) :
             )
             _newMessage.value = message
 
-            when (conversation.from) {
+            when (conversation.messenger) {
                 "vk" -> {
                     val response =
                         App.application.vkRetrofit.create(VKSendMessageRequest::class.java)

@@ -30,7 +30,7 @@ fun bindConversationImageWithPicasso(imageView: ImageView, conversation: Convers
         null -> Unit
         "" -> Picasso.get().load("https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg").error(R.drawable.ic_baseline_account_circle_24).into(imageView)
         else -> {
-            when (conversation.from) {
+            when (conversation.messenger) {
                 "tg" -> {
                     val bitmap = BitmapFactory.decodeFile(path)
                     imageView.setImageBitmap(bitmap)

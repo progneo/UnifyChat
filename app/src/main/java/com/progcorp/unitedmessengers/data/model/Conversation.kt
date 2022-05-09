@@ -17,16 +17,18 @@ import org.json.JSONObject
 data class Conversation(
     val id: Long = 0,
     val type: String = "",
-    val date: Long = 0,
-    val unread_count: Int = 0,
+    var date: Long = 0,
+    var unread_count: Int = 0,
     val can_write: Boolean = true,
     var title: String = "",
     var photo: String = "",
-    val last_message: String = "",
+    var last_message: String = "",
     val members_count: Int = 2,
-    val last_online: Long = 0,
-    val is_online: Boolean = false,
-    val from: String = "") : Parcelable {
+    var last_online: Long = 0,
+    var is_online: Boolean = false,
+    val messenger: String = "",
+    val user_id: Long = 0
+) : Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
@@ -39,7 +41,9 @@ data class Conversation(
         parcel.readString()!!,
         parcel.readInt(),
         parcel.readLong(),
-        parcel.readByte() != 0.toByte()
+        parcel.readByte() != 0.toByte(),
+        parcel.readString()!!,
+        parcel.readLong()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -54,6 +58,8 @@ data class Conversation(
         parcel.writeInt(members_count)
         parcel.writeLong(last_online)
         parcel.writeByte(if (is_online) 1 else 0)
+        parcel.writeString(messenger)
+        parcel.writeLong(user_id)
     }
 
     override fun describeContents(): Int {
@@ -175,15 +181,24 @@ data class Conversation(
                 }
             }
 
-            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline, "vk")
+            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline, "vk", 0)
         }
 
-        suspend fun tgParse(conversation: Chat): Conversation {
+        suspend fun tgParse(conversation: Chat): Conversation? {
+            if (conversation.positions.isEmpty()) {
+                return null
+            }
             val id = conversation.id
+            var userId: Long = 0
             val type = when(conversation.type.constructor) {
-                ChatTypePrivate.CONSTRUCTOR -> "user"
+                ChatTypePrivate.CONSTRUCTOR -> {
+                    userId = (conversation.type as ChatTypePrivate).userId
+                    "user"
+                }
                 ChatTypeBasicGroup.CONSTRUCTOR -> "basicgroup"
-                ChatTypeSupergroup.CONSTRUCTOR -> "supergroup"
+                ChatTypeSupergroup.CONSTRUCTOR -> {
+                    "supergroup"
+                }
                 ChatTypeSecret.CONSTRUCTOR -> "secret"
                 else -> "group"
             }
@@ -254,8 +269,79 @@ data class Conversation(
             }
 
 
-            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline, "tg")
+            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline, "tg", userId)
+        }
+
+        suspend fun tgParseLastMessage(conversation: Conversation, update: UpdateChatLastMessage) {
+            if (update.lastMessage != null) {
+                val tgMessage = TgMessagesRepository().getMessage(
+                    update.lastMessage!!.chatId, update.lastMessage!!.id
+                ).first()
+                val tgConversation = TgConversationsRepository().getChat(
+                    update.lastMessage!!.chatId
+                ).first()
+                val message = Message.tgParse(tgMessage, tgConversation)
+
+                conversation.last_message = if (message.text == "") {
+                    message.attachments
+                } else {
+                    message.text
+                }
+
+                conversation.date = message.date
+                conversation.unread_count = tgConversation.unreadCount
+            }
+        }
+
+        suspend fun tgParseNewMessage(conversation: Conversation, update: UpdateNewMessage) {
+            if (update.message != null) {
+                val tgMessage = TgMessagesRepository().getMessage(
+                    update.message!!.chatId, update.message!!.id
+                ).first()
+                val tgConversation = TgConversationsRepository().getChat(
+                    update.message!!.chatId
+                ).first()
+                val message = Message.tgParse(tgMessage, tgConversation)
+
+                conversation.last_message = if (message.text == "") {
+                    message.attachments
+                } else {
+                    message.text
+                }
+
+                conversation.date = message.date
+                conversation.unread_count = tgConversation.unreadCount
+            }
+        }
+
+        suspend fun tgParseOnlineStatus(
+            conversation: Conversation,
+            update: UpdateUserStatus
+        ) {
+            val user = TgUserRepository().getUser(update.userId).first()
+            conversation.is_online = false
+            when (user.status.constructor) {
+                UserStatusEmpty.CONSTRUCTOR -> {
+                    conversation.last_online = Constants.LastSeen.unknown
+                }
+                UserStatusLastMonth.CONSTRUCTOR -> {
+                    conversation.last_online = Constants.LastSeen.lastMonth
+                }
+                UserStatusLastWeek.CONSTRUCTOR -> {
+                    conversation.last_online = Constants.LastSeen.lastWeek
+                }
+                UserStatusOffline.CONSTRUCTOR -> {
+                    conversation.last_online =
+                        ((user.status as UserStatusOffline).wasOnline).toLong() * 1000
+                }
+                UserStatusOnline.CONSTRUCTOR -> {
+                    conversation.last_online = Constants.LastSeen.unknown
+                    conversation.is_online = true
+                }
+                UserStatusRecently.CONSTRUCTOR -> {
+                    conversation.last_online = Constants.LastSeen.recently
+                }
+            }
         }
     }
-
 }

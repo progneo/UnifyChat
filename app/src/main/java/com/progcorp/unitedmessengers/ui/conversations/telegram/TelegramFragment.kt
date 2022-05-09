@@ -47,15 +47,6 @@ class TelegramFragment : Fragment() {
         if (viewModel != null) {
             listAdapter = ConversationsListAdapter(viewModel)
             viewDataBinding.recyclerView.adapter = listAdapter
-
-            viewDataBinding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    if (!recyclerView.canScrollVertically(1)) {
-                        viewModel.loadMoreConversations()
-                    }
-                    super.onScrolled(recyclerView, dx, dy)
-                }
-            })
         }
         else {
             throw Exception("The viewmodel is not initialized")
