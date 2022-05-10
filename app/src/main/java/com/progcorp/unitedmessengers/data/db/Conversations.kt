@@ -61,28 +61,26 @@ class Conversations(private val onChatsFetched: OnConversationsFetched) {
 
     suspend fun tgGetConversations(isNew: Boolean) {
         try {
-            MainScope().launch {
-                val response = TgConversationsRepository().getChats(1000)
-                val chats = response.first()
-                val conversations: ArrayList<Conversation> = arrayListOf()
-                for (chat in chats) {
-                    if (chat.positions.isNotEmpty()) {
-                        val conversation = Conversation.tgParse(chat)
-                        if (conversation != null) {
-                            conversations.add(conversation)
-                            if (chat.photo != null) {
-                                val photo =
-                                    App.application.tgClient.downloadableFile(chat.photo!!.small)
-                                        .first()
-                                if (photo != null) {
-                                    conversation.photo = photo
-                                }
+            val response = TgConversationsRepository().getChats(1000)
+            val chats = response.first()
+            val conversations: ArrayList<Conversation> = arrayListOf()
+            for (chat in chats) {
+                if (chat.positions.isNotEmpty()) {
+                    val conversation = Conversation.tgParse(chat)
+                    if (conversation != null) {
+                        conversations.add(conversation)
+                        if (chat.photo != null) {
+                            val photo =
+                                App.application.tgClient.downloadableFile(chat.photo!!.small)
+                                    .first()
+                            if (photo != null) {
+                                conversation.photo = photo
                             }
                         }
                     }
                 }
-                onChatsFetched.showConversations(conversations, isNew)
             }
+            onChatsFetched.showConversations(conversations, isNew)
         }
         catch (e: Exception) {
             Log.e(TAG, e.stackTraceToString())

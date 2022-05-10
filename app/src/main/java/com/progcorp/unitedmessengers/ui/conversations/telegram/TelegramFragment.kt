@@ -57,6 +57,7 @@ class TelegramFragment : Fragment() {
         viewModel.selectedConversation.observe(viewLifecycleOwner, EventObserver { navigateToChat(it) } )
         viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver { navigateToLogin() })
     }
+
     private fun navigateToChat(conversation: Conversation) {
         when (conversation.type) {
             "basicgroup" -> {
