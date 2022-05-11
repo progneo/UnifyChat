@@ -10,6 +10,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.progcorp.unitedmessengers.data.EventObserver
 import com.progcorp.unitedmessengers.databinding.FragmentTelegramAuthBinding
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class TelegramAuthFragment : Fragment() {
 
@@ -39,15 +42,18 @@ class TelegramAuthFragment : Fragment() {
 
     private fun restartActivity() {
         Handler().post {
-            val intent = requireActivity().intent
-            intent.addFlags(
-                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                        or Intent.FLAG_ACTIVITY_NO_ANIMATION
-            )
-            requireActivity().overridePendingTransition(0, 0)
-            requireActivity().finish()
-            requireActivity().overridePendingTransition(0, 0)
-            startActivity(intent)
+            MainScope().launch {
+                delay(300)
+                val intent = requireActivity().intent
+                intent.addFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                            or Intent.FLAG_ACTIVITY_NO_ANIMATION
+                )
+                requireActivity().overridePendingTransition(0, 0)
+                requireActivity().finish()
+                requireActivity().overridePendingTransition(0, 0)
+                startActivity(intent)
+            }
         }
     }
 }

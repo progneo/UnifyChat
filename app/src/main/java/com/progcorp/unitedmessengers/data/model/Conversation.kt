@@ -10,7 +10,7 @@ import com.progcorp.unitedmessengers.data.db.telegram.TgUserRepository
 import com.progcorp.unitedmessengers.util.Constants
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import org.drinkless.td.libcore.telegram.TdApi.*
+import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -27,7 +27,8 @@ data class Conversation(
     var last_online: Long = 0,
     var is_online: Boolean = false,
     val messenger: String = "",
-    val user_id: Long = 0
+    val user_id: Long = 0,
+    val data: Any? = null
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
@@ -184,28 +185,28 @@ data class Conversation(
             return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline, "vk", 0)
         }
 
-        suspend fun tgParse(conversation: Chat): Conversation? {
+        suspend fun tgParse(conversation: TdApi.Chat): Conversation? {
             if (conversation.positions.isEmpty()) {
                 return null
             }
             val id = conversation.id
             var userId: Long = 0
             val type = when(conversation.type.constructor) {
-                ChatTypePrivate.CONSTRUCTOR -> {
-                    userId = (conversation.type as ChatTypePrivate).userId
+                TdApi.ChatTypePrivate.CONSTRUCTOR -> {
+                    userId = (conversation.type as TdApi.ChatTypePrivate).userId
                     "user"
                 }
-                ChatTypeBasicGroup.CONSTRUCTOR -> "basicgroup"
-                ChatTypeSupergroup.CONSTRUCTOR -> {
+                TdApi.ChatTypeBasicGroup.CONSTRUCTOR -> "basicgroup"
+                TdApi.ChatTypeSupergroup.CONSTRUCTOR -> {
                     "supergroup"
                 }
-                ChatTypeSecret.CONSTRUCTOR -> "secret"
+                TdApi.ChatTypeSecret.CONSTRUCTOR -> "secret"
                 else -> "group"
             }
 
             val extraId: Long = when (type) {
-                "supergroup" -> (conversation.type as ChatTypeSupergroup).supergroupId
-                "basicgroup" -> (conversation.type as ChatTypeBasicGroup).basicGroupId
+                "supergroup" -> (conversation.type as TdApi.ChatTypeSupergroup).supergroupId
+                "basicgroup" -> (conversation.type as TdApi.ChatTypeBasicGroup).basicGroupId
                 else -> 0
             }
 
@@ -246,33 +247,36 @@ data class Conversation(
             if (type == "user") {
                 val user = TgUserRepository().getUser(id).first()
                 when (user.status.constructor) {
-                    UserStatusEmpty.CONSTRUCTOR -> {
+                    TdApi.UserStatusEmpty.CONSTRUCTOR -> {
                         lastOnline = Constants.LastSeen.unknown
                     }
-                    UserStatusLastMonth.CONSTRUCTOR -> {
+                    TdApi.UserStatusLastMonth.CONSTRUCTOR -> {
                         lastOnline = Constants.LastSeen.lastMonth
                     }
-                    UserStatusLastWeek.CONSTRUCTOR -> {
+                    TdApi.UserStatusLastWeek.CONSTRUCTOR -> {
                         lastOnline = Constants.LastSeen.lastWeek
                     }
-                    UserStatusOffline.CONSTRUCTOR -> {
-                        lastOnline = ((user.status as UserStatusOffline).wasOnline).toLong() * 1000
+                    TdApi.UserStatusOffline.CONSTRUCTOR -> {
+                        lastOnline = ((user.status as TdApi.UserStatusOffline).wasOnline).toLong() * 1000
                     }
-                    UserStatusOnline.CONSTRUCTOR -> {
+                    TdApi.UserStatusOnline.CONSTRUCTOR -> {
                         lastOnline = Constants.LastSeen.unknown
                         isOnline = true
                     }
-                    UserStatusRecently.CONSTRUCTOR -> {
+                    TdApi.UserStatusRecently.CONSTRUCTOR -> {
                         lastOnline = Constants.LastSeen.recently
                     }
                 }
             }
+            var data: Any? = null
+            if (conversation.photo != null) {
+                data = conversation.photo!!.small
+            }
 
-
-            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline, "tg", userId)
+            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline, "tg", userId, data)
         }
 
-        suspend fun tgParseLastMessage(conversation: Conversation, update: UpdateChatLastMessage) {
+        suspend fun tgParseLastMessage(conversation: Conversation, update: TdApi.UpdateChatLastMessage) {
             if (update.lastMessage != null) {
                 val tgMessage = TgMessagesRepository().getMessage(
                     update.lastMessage!!.chatId, update.lastMessage!!.id
@@ -293,7 +297,7 @@ data class Conversation(
             }
         }
 
-        suspend fun tgParseNewMessage(conversation: Conversation, update: UpdateNewMessage) {
+        suspend fun tgParseNewMessage(conversation: Conversation, update: TdApi.UpdateNewMessage) {
             if (update.message != null) {
                 val tgMessage = TgMessagesRepository().getMessage(
                     update.message!!.chatId, update.message!!.id
@@ -316,29 +320,29 @@ data class Conversation(
 
         suspend fun tgParseOnlineStatus(
             conversation: Conversation,
-            update: UpdateUserStatus
+            update: TdApi.UpdateUserStatus
         ) {
             val user = TgUserRepository().getUser(update.userId).first()
             conversation.is_online = false
             when (user.status.constructor) {
-                UserStatusEmpty.CONSTRUCTOR -> {
+                TdApi.UserStatusEmpty.CONSTRUCTOR -> {
                     conversation.last_online = Constants.LastSeen.unknown
                 }
-                UserStatusLastMonth.CONSTRUCTOR -> {
+                TdApi.UserStatusLastMonth.CONSTRUCTOR -> {
                     conversation.last_online = Constants.LastSeen.lastMonth
                 }
-                UserStatusLastWeek.CONSTRUCTOR -> {
+                TdApi.UserStatusLastWeek.CONSTRUCTOR -> {
                     conversation.last_online = Constants.LastSeen.lastWeek
                 }
-                UserStatusOffline.CONSTRUCTOR -> {
+                TdApi.UserStatusOffline.CONSTRUCTOR -> {
                     conversation.last_online =
-                        ((user.status as UserStatusOffline).wasOnline).toLong() * 1000
+                        ((user.status as TdApi.UserStatusOffline).wasOnline).toLong() * 1000
                 }
-                UserStatusOnline.CONSTRUCTOR -> {
+                TdApi.UserStatusOnline.CONSTRUCTOR -> {
                     conversation.last_online = Constants.LastSeen.unknown
                     conversation.is_online = true
                 }
-                UserStatusRecently.CONSTRUCTOR -> {
+                TdApi.UserStatusRecently.CONSTRUCTOR -> {
                     conversation.last_online = Constants.LastSeen.recently
                 }
             }

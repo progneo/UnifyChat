@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.progcorp.unitedmessengers.ui.conversation
 
 import android.os.Handler
@@ -6,6 +8,8 @@ import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
 import com.progcorp.unitedmessengers.data.db.Messages
+import com.progcorp.unitedmessengers.data.db.telegram.TgConversationsRepository
+import com.progcorp.unitedmessengers.data.db.telegram.TgMessagesRepository
 import com.progcorp.unitedmessengers.data.db.vk.requests.VKSendMessageRequest
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
@@ -15,8 +19,11 @@ import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.addNewItem
 import com.progcorp.unitedmessengers.util.updateItemAt
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
@@ -75,15 +82,30 @@ class ConversationViewModel(private val conversation: Conversation) :
     }
 
     private fun startListeners() {
-        _messagesGetter = Runnable {
-            loadNewMessages()
-            _handler.postDelayed(_messagesGetter, 3000)
+        when (conversation.messenger) {
+            "vk" -> {
+                _messagesGetter = Runnable {
+                    loadNewMessages()
+                    _handler.postDelayed(_messagesGetter, 3000)
+                }
+                _handler.postDelayed(_messagesGetter, 0)
+            }
+            "tg" -> {
+                App.application.tgClient.conversationViewModel = this
+            }
         }
-        _handler.postDelayed(_messagesGetter, 0)
+        loadNewMessages()
     }
 
     fun stopListeners() {
-        _handler.removeCallbacks(_messagesGetter)
+        when (conversation.messenger) {
+            "vk" -> {
+                _handler.removeCallbacks(_messagesGetter)
+            }
+            "tg" -> {
+                App.application.tgClient.conversationViewModel = null
+            }
+        }
     }
 
     private fun loadSelectedMessages(offset: Int) {
@@ -158,10 +180,10 @@ class ConversationViewModel(private val conversation: Conversation) :
                 text = newMessageText.value!!,
                 type = Message.MESSAGE_OUT
             )
-            _newMessage.value = message
 
             when (conversation.messenger) {
                 "vk" -> {
+                    _newMessage.value = message
                     val response =
                         App.application.vkRetrofit.create(VKSendMessageRequest::class.java)
                             .messageSend(
@@ -180,7 +202,11 @@ class ConversationViewModel(private val conversation: Conversation) :
                     }
                 }
                 "tg" -> {
+                    val response =
+                        TgMessagesRepository().sendMessage(chat.value!!.id, newMessageText.value!!).first()
 
+                    message.id = response.id
+                    _newMessage.value = message
                 }
             }
 
@@ -195,6 +221,31 @@ class ConversationViewModel(private val conversation: Conversation) :
 
     fun loadMoreMessages() {
         loadSelectedMessages(messagesList.value!!.size - 1)
+    }
+
+    fun updateOnline(data: TdApi.UpdateUserStatus) {
+        if (data.userId == chat.value!!.user_id) {
+            _scope.launch {
+                val conversation = _conversation.value!!.copy()
+
+                Conversation.tgParseOnlineStatus(conversation, data)
+                _conversation.value = conversation
+            }
+        }
+    }
+
+    fun newMessage(data: TdApi.UpdateNewMessage) {
+        if (data.message.chatId == chat.value!!.user_id) {
+            _scope.launch {
+                val tgMessage = TgMessagesRepository().getMessage(
+                    data.message!!.chatId, data.message!!.id
+                ).first()
+                val tgConversation = TgConversationsRepository().getChat(
+                    data.message!!.chatId
+                ).first()
+                _newMessage.value = Message.tgParse(tgMessage, tgConversation)
+            }
+        }
     }
 
     companion object {

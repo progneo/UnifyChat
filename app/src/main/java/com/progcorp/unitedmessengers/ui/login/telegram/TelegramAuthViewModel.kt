@@ -40,7 +40,7 @@ class TelegramAuthViewModel : DefaultViewModel() {
                     layoutState.value = LayoutState.INSERT_NUMBER
                 }
                 Authentication.WAIT_FOR_CODE -> {
-                    layoutState.value =LayoutState.INSERT_CODE
+                    layoutState.value = LayoutState.INSERT_CODE
                 }
                 Authentication.WAIT_FOR_PASSWORD -> {
                     layoutState.value = LayoutState.INSERT_PASSWORD
