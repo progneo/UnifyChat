@@ -7,14 +7,16 @@ import com.progcorp.unitedmessengers.data.db.vk.requests.VKConversationByIdReque
 import com.progcorp.unitedmessengers.data.db.vk.requests.VKConversationsRequest
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONException
 import org.json.JSONObject
 import java.lang.Exception
 
-class Conversations(private val onChatsFetched: OnConversationsFetched) {
+class Conversations(
+        private val onChatsFetched: OnConversationsFetched
+    ) {
     suspend fun vkGetConversations(offset: Int, isNew: Boolean) {
         val response = App.application.vkRetrofit.create(VKConversationsRequest::class.java)
             .conversationsGet(
@@ -59,28 +61,22 @@ class Conversations(private val onChatsFetched: OnConversationsFetched) {
         }
     }
 
-    suspend fun tgGetConversations(isNew: Boolean) {
+    suspend fun tgGetConversations() {
         try {
-            val response = TgConversationsRepository().getChats(1000)
-            val chats = response.first()
-            val conversations: ArrayList<Conversation> = arrayListOf()
-            for (chat in chats) {
-                if (chat.positions.isNotEmpty()) {
-                    val conversation = Conversation.tgParse(chat)
-                    if (conversation != null) {
-                        conversations.add(conversation)
-                        if (chat.photo != null) {
-                            val photo =
-                                App.application.tgClient.downloadableFile(chat.photo!!.small)
-                                    .first()
-                            if (photo != null) {
-                                conversation.photo = photo
-                            }
+            MainScope().launch {
+                val response = TgConversationsRepository().getChats(1000)
+                val chats = response.first()
+                val conversations: ArrayList<Conversation> = arrayListOf()
+                for (chat in chats) {
+                    if (chat.positions.isNotEmpty()) {
+                        val conversation = Conversation.tgParse(chat)
+                        if (conversation != null) {
+                            conversations.add(conversation)
                         }
                     }
                 }
+                onChatsFetched.showConversations(conversations, false)
             }
-            onChatsFetched.showConversations(conversations, isNew)
         }
         catch (e: Exception) {
             Log.e(TAG, e.stackTraceToString())

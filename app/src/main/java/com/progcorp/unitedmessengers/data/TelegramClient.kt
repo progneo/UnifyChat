@@ -1,8 +1,7 @@
 package com.progcorp.unitedmessengers.data
 
 import android.util.Log
-import com.progcorp.unitedmessengers.App
-import com.progcorp.unitedmessengers.data.model.ConversationsList
+import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
 import com.progcorp.unitedmessengers.ui.conversations.telegram.TelegramConversationsViewModel
 import com.progcorp.unitedmessengers.util.Authentication
 import kotlinx.coroutines.*
@@ -17,6 +16,9 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
 
     private val _authState = MutableStateFlow(Authentication.UNKNOWN)
     val authState: StateFlow<Authentication> get() = _authState
+
+    var conversationsViewModel: TelegramConversationsViewModel? = null
+    var conversationViewModel: ConversationViewModel? = null
 
     init {
         setupClient()
@@ -37,9 +39,6 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
 
     private fun setAuth(auth: Authentication) {
         _authState.value = auth
-        if (auth == Authentication.AUTHENTICATED) {
-            App.application.tgConversationsList = ConversationsList()
-        }
     }
 
     override fun onResult(data: TdApi.Object) {
@@ -50,24 +49,25 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
             }
 
             TdApi.UpdateUserStatus.CONSTRUCTOR -> {
-                App.application.tgConversationsList.updateOnline(data as TdApi.UpdateUserStatus)
-
+                conversationsViewModel?.updateOnline(data as TdApi.UpdateUserStatus)
+                conversationViewModel?.updateOnline(data as TdApi.UpdateUserStatus)
             }
 
             TdApi.UpdateChatLastMessage.CONSTRUCTOR -> {
-                App.application.tgConversationsList.updateLastMessage(data as TdApi.UpdateChatLastMessage)
+                conversationsViewModel?.updateLastMessage(data as TdApi.UpdateChatLastMessage)
             }
 
             TdApi.UpdateChatReadInbox.CONSTRUCTOR -> {
-                App.application.tgConversationsList.updateReadInbox(data as TdApi.UpdateChatReadInbox)
+                conversationsViewModel?.updateReadInbox(data as TdApi.UpdateChatReadInbox)
             }
 
             TdApi.UpdateNewChat.CONSTRUCTOR -> {
-                App.application.tgConversationsList.addNewChat(data as TdApi.UpdateNewChat)
+                conversationsViewModel?.addNewChat(data as TdApi.UpdateNewChat)
             }
 
             TdApi.UpdateNewMessage.CONSTRUCTOR -> {
-                App.application.tgConversationsList.updateNewMessage(data as TdApi.UpdateNewMessage)
+                conversationsViewModel?.updateNewMessage(data as TdApi.UpdateNewMessage)
+                conversationViewModel?.newMessage(data as TdApi.UpdateNewMessage)
             }
 
             TdApi.UpdateSupergroupFullInfo.CONSTRUCTOR -> {
@@ -243,7 +243,7 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
             downloadFile(fileId).map { file.local?.path }
         } ?: flowOf(file.local?.path)
 
-    fun downloadFile(fileId: Int): Flow<Unit> = callbackFlow {
+    private fun downloadFile(fileId: Int): Flow<Unit> = callbackFlow {
         client.send(TdApi.DownloadFile(fileId, 1, 0, 0, true)) {
             when (it.constructor) {
                 TdApi.Ok.CONSTRUCTOR -> {

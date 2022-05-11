@@ -33,14 +33,15 @@ class ConversationsListAdapter internal constructor(private val viewModel: IConv
 }
 
 class ConversationDiffCallback : DiffUtil.ItemCallback<Conversation>() {
-    override fun areItemsTheSame(oldItem: Conversation, itemWithUserInfo: Conversation): Boolean {
-        return oldItem.id == itemWithUserInfo.id
+    override fun areItemsTheSame(oldItem: Conversation, newItem: Conversation): Boolean {
+        return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: Conversation, itemWithUserInfo: Conversation): Boolean {
-        return oldItem.last_message == itemWithUserInfo.last_message &&
-                oldItem.unread_count == itemWithUserInfo.unread_count &&
-                oldItem.last_online == itemWithUserInfo.last_online &&
-                oldItem.photo == itemWithUserInfo.photo
+    override fun areContentsTheSame(oldItem: Conversation, newItem: Conversation): Boolean {
+        return oldItem.last_message == newItem.last_message &&
+                oldItem.unread_count == newItem.unread_count &&
+                oldItem.last_online == newItem.last_online &&
+                oldItem.photo == newItem.photo &&
+                oldItem == newItem
     }
 }

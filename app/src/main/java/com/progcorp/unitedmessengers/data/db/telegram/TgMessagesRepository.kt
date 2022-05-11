@@ -46,4 +46,30 @@ class TgMessagesRepository {
             }
             awaitClose { }
         }
+
+    fun sendMessage(chatId: Long, message: String): Flow<TdApi.Message> =
+        callbackFlow {
+            val text = TdApi.FormattedText(message, arrayOf(TdApi.TextEntity()))
+            val input = TdApi.InputMessageText(text, true, false)
+            App.application.tgClient.client.send(TdApi.SendMessage(
+                chatId,
+                0,
+                0,
+                null,
+                null,
+                input)) {
+                when (it.constructor) {
+                    TdApi.Message.CONSTRUCTOR -> {
+                        trySend(it as TdApi.Message).isSuccess
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+                        Log.e("sendMessage", "${(it as TdApi.Error).message}. ID: $chatId")
+                    }
+                    else -> {
+                        Log.e("sendMessage", "Something went wrong")
+                    }
+                }
+            }
+            awaitClose { }
+        }
 }

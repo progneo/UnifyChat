@@ -91,6 +91,11 @@ class TelegramFragment : Fragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModel.loadConversations()
+    }
+
     private fun navigateToLogin() {
         findNavController().navigate(R.id.action_navigation_chats_to_telegramAuthFragment)
     }
