@@ -84,6 +84,13 @@ class TelegramConversationsViewModel : DefaultViewModel(),
         }
     }
 
+    fun refreshConversations() {
+        conversationsList.value = mutableListOf<Conversation>()
+        _scope.launch {
+            _conversations.tgGetConversations()
+        }
+    }
+
     fun loadConversations() {
         _scope.launch {
             _conversations.tgGetConversations()
