@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.EventObserver
 import com.progcorp.unitedmessengers.data.model.Conversation
@@ -19,7 +20,7 @@ import com.progcorp.unitedmessengers.ui.conversation.dialog.DialogFragment
 import com.progcorp.unitedmessengers.ui.conversations.ConversationsListAdapter
 import java.lang.Exception
 
-class TelegramFragment : Fragment() {
+class TelegramFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private val viewModel: TelegramConversationsViewModel by viewModels { TelegramConversationsViewModelFactory() }
 
     private lateinit var viewDataBinding: FragmentTelegramBinding
@@ -33,6 +34,7 @@ class TelegramFragment : Fragment() {
         viewDataBinding =
             FragmentTelegramBinding.inflate(inflater, container, false).apply { viewmodel = viewModel }
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
+        viewDataBinding.swipeRefreshLayout.setOnRefreshListener(this)
         return viewDataBinding.root
     }
 
@@ -98,5 +100,10 @@ class TelegramFragment : Fragment() {
 
     private fun navigateToLogin() {
         findNavController().navigate(R.id.action_navigation_chats_to_telegramAuthFragment)
+    }
+
+    override fun onRefresh() {
+        viewModel.refreshConversations()
+        viewDataBinding.swipeRefreshLayout.isRefreshing = false
     }
 }
