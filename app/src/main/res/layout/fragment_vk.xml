@@ -27,7 +27,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="@{viewmodel.layoutState == viewmodel.layoutState.LOGGED_ID ? View.GONE : View.VISIBLE}"
-                android:padding="@dimen/_24sdp">
+                android:padding="@dimen/_24sdp"
+                tools:visibility="invisible">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -100,7 +101,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0"
-                tools:visibility="invisible"
+                tools:visibility="visible"
                 tools:listitem="@layout/list_item_conversation" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
