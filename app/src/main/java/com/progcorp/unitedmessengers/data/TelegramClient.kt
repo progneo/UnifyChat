@@ -3,7 +3,7 @@ package com.progcorp.unitedmessengers.data
 import android.util.Log
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
 import com.progcorp.unitedmessengers.ui.conversations.telegram.TelegramConversationsViewModel
-import com.progcorp.unitedmessengers.util.Authentication
+import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
@@ -14,8 +14,8 @@ import org.drinkless.td.libcore.telegram.TdApi
 class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Client.ResultHandler {
     lateinit var client: Client
 
-    private val _authState = MutableStateFlow(Authentication.UNKNOWN)
-    val authState: StateFlow<Authentication> get() = _authState
+    private val _authState = MutableStateFlow(TelegramAuthStatus.UNKNOWN)
+    val authState: StateFlow<TelegramAuthStatus> get() = _authState
 
     var conversationsViewModel: TelegramConversationsViewModel? = null
     var conversationViewModel: ConversationViewModel? = null
@@ -37,7 +37,7 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
 
     private val requestScope = CoroutineScope(Dispatchers.IO)
 
-    private fun setAuth(auth: Authentication) {
+    private fun setAuth(auth: TelegramAuthStatus) {
         _authState.value = auth
     }
 
@@ -98,15 +98,15 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
     fun startAuthentication() {
         Log.d(TAG, "startAuthentication called")
         when (_authState.value) {
-            Authentication.AUTHENTICATED -> {
+            TelegramAuthStatus.AUTHENTICATED -> {
                 Log.w(TAG, "Start authentication called but client already authenticated. State: ${_authState.value}.")
                 return
             }
-            Authentication.WAIT_FOR_CODE -> {
+            TelegramAuthStatus.WAIT_FOR_CODE -> {
                 Log.w(TAG, "Restart authentication. State: ${_authState.value}.")
                 logout()
             }
-            Authentication.WAIT_FOR_PASSWORD -> {
+            TelegramAuthStatus.WAIT_FOR_PASSWORD -> {
                 Log.w(TAG, "Restart authentication. State: ${_authState.value}.")
                 logout()
             }
@@ -191,7 +191,7 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
                     TAG,
                     "onResult: AuthorizationStateWaitTdlibParameters -> state = UNAUTHENTICATED"
                 )
-                setAuth(Authentication.UNAUTHENTICATED)
+                setAuth(TelegramAuthStatus.UNAUTHENTICATED)
             }
             TdApi.AuthorizationStateWaitEncryptionKey.CONSTRUCTOR -> {
                 Log.d(TAG, "onResult: AuthorizationStateWaitEncryptionKey")
@@ -208,23 +208,23 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
             }
             TdApi.AuthorizationStateWaitPhoneNumber.CONSTRUCTOR -> {
                 Log.d(TAG, "onResult: AuthorizationStateWaitPhoneNumber -> state = WAIT_FOR_NUMBER")
-                setAuth(Authentication.WAIT_FOR_NUMBER)
+                setAuth(TelegramAuthStatus.WAIT_FOR_NUMBER)
             }
             TdApi.AuthorizationStateWaitCode.CONSTRUCTOR -> {
                 Log.d(TAG, "onResult: AuthorizationStateWaitCode -> state = WAIT_FOR_CODE")
-                setAuth(Authentication.WAIT_FOR_CODE)
+                setAuth(TelegramAuthStatus.WAIT_FOR_CODE)
             }
             TdApi.AuthorizationStateWaitPassword.CONSTRUCTOR -> {
                 Log.d(TAG, "onResult: AuthorizationStateWaitPassword")
-                setAuth(Authentication.WAIT_FOR_PASSWORD)
+                setAuth(TelegramAuthStatus.WAIT_FOR_PASSWORD)
             }
             TdApi.AuthorizationStateReady.CONSTRUCTOR -> {
                 Log.d(TAG, "onResult: AuthorizationStateReady -> state = AUTHENTICATED")
-                setAuth(Authentication.AUTHENTICATED)
+                setAuth(TelegramAuthStatus.AUTHENTICATED)
             }
             TdApi.AuthorizationStateLoggingOut.CONSTRUCTOR -> {
                 Log.d(TAG, "onResult: AuthorizationStateLoggingOut")
-                setAuth(Authentication.UNAUTHENTICATED)
+                setAuth(TelegramAuthStatus.UNAUTHENTICATED)
             }
             TdApi.AuthorizationStateClosing.CONSTRUCTOR -> {
                 Log.d(TAG, "onResult: AuthorizationStateClosing")

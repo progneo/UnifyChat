@@ -1,6 +1,6 @@
-package com.progcorp.unitedmessengers.util
+package com.progcorp.unitedmessengers.enums
 
-enum class Authentication {
+enum class TelegramAuthStatus {
     UNAUTHENTICATED,
     WAIT_FOR_NUMBER,
     WAIT_FOR_CODE,

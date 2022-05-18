@@ -6,7 +6,7 @@ import android.view.inputmethod.InputMethodManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.progcorp.unitedmessengers.util.VKAccountService
-import com.progcorp.unitedmessengers.util.VKAuthStatus
+import com.progcorp.unitedmessengers.enums.VKAuthStatus
 import java.net.URLEncoder
 
 class AuthWebViewClient(

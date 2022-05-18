@@ -10,7 +10,7 @@ import com.progcorp.unitedmessengers.data.Event
 import com.progcorp.unitedmessengers.data.db.Messages
 import com.progcorp.unitedmessengers.data.db.telegram.TgConversationsRepository
 import com.progcorp.unitedmessengers.data.db.telegram.TgMessagesRepository
-import com.progcorp.unitedmessengers.data.db.vk.requests.VKSendMessageRequest
+import com.progcorp.unitedmessengers.interfaces.requests.VKSendMessageRequest
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.ui.DefaultViewModel

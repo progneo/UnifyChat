@@ -4,7 +4,7 @@ import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
 import com.progcorp.unitedmessengers.ui.DefaultViewModel
-import com.progcorp.unitedmessengers.util.Authentication
+import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.launchIn
 
@@ -33,19 +33,19 @@ class TelegramAuthViewModel : DefaultViewModel() {
     init {
         App.application.tgClient.authState.onEach {
             when (it) {
-                Authentication.UNAUTHENTICATED, Authentication.UNKNOWN -> {
+                TelegramAuthStatus.UNAUTHENTICATED, TelegramAuthStatus.UNKNOWN -> {
                     layoutState.value = LayoutState.LOADING
                 }
-                Authentication.WAIT_FOR_NUMBER -> {
+                TelegramAuthStatus.WAIT_FOR_NUMBER -> {
                     layoutState.value = LayoutState.INSERT_NUMBER
                 }
-                Authentication.WAIT_FOR_CODE -> {
+                TelegramAuthStatus.WAIT_FOR_CODE -> {
                     layoutState.value = LayoutState.INSERT_CODE
                 }
-                Authentication.WAIT_FOR_PASSWORD -> {
+                TelegramAuthStatus.WAIT_FOR_PASSWORD -> {
                     layoutState.value = LayoutState.INSERT_PASSWORD
                 }
-                Authentication.AUTHENTICATED -> {
+                TelegramAuthStatus.AUTHENTICATED -> {
                     layoutState.value = LayoutState.AUTHENTICATED
                 }
             }

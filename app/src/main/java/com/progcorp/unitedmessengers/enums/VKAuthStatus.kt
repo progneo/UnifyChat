@@ -1,4 +1,4 @@
-package com.progcorp.unitedmessengers.util
+package com.progcorp.unitedmessengers.enums
 
 enum class VKAuthStatus {
     AUTH,

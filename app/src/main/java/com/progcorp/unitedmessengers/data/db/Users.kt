@@ -3,7 +3,7 @@ package com.progcorp.unitedmessengers.data.db
 import android.util.Log
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.db.telegram.TgUserRepository
-import com.progcorp.unitedmessengers.data.db.vk.requests.VKUsersRequest
+import com.progcorp.unitedmessengers.interfaces.requests.VKUsersRequest
 import com.progcorp.unitedmessengers.data.model.User
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,24 +14,7 @@ import java.lang.Exception
 
 @ExperimentalCoroutinesApi
 class Users(private val onUsersFetched: OnUsersFetched) {
-    suspend fun vkGetUsers() {
-        val response = App.application.vkRetrofit.create(VKUsersRequest::class.java)
-            .usersGet(
-                App.application.vkAccountService.token!!, "5.131", "photo_100", 0
-            )
-        val responseJson = JSONObject(response)
-        try {
-            val ja = responseJson.getJSONArray("response")
-            val r = ArrayList<User>(ja.length())
-            for (i in 0 until ja.length()) {
-                val user = User.vkParse(ja.getJSONObject(i))
-                r.add(user)
-            }
-            onUsersFetched.showUsers(r)
-        } catch (ex: JSONException) {
-            Log.e(ConversationViewModel.TAG, ex.stackTraceToString())
-        }
-    }
+
 
     suspend fun tgGetUser(userId: Long) {
         try {

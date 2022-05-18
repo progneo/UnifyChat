@@ -1,5 +1,6 @@
-package com.progcorp.unitedmessengers.data.db.vk.requests
+package com.progcorp.unitedmessengers.interfaces.requests
 
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -12,5 +13,5 @@ interface VKConversationsRequest {
         @Query("offset") offset: Int,
         @Query("extended") extended: Boolean,
         @Query("lang") lang: Int
-    ): String
+    ): Response<String>
 }

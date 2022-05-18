@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.util.VKAccountService
-import com.progcorp.unitedmessengers.util.VKAuthStatus
+import com.progcorp.unitedmessengers.enums.VKAuthStatus
 import java.net.URLEncoder
 import java.util.regex.Pattern
 

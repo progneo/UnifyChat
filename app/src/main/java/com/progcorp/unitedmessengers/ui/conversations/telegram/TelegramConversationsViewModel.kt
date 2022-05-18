@@ -8,7 +8,7 @@ import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
 import com.progcorp.unitedmessengers.ui.DefaultViewModel
 import com.progcorp.unitedmessengers.util.*
-import kotlinx.coroutines.GlobalScope
+import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
@@ -65,7 +65,7 @@ class TelegramConversationsViewModel : DefaultViewModel(),
             }
         }
         _loginState.value = when (App.application.tgClient.authState.value) {
-            Authentication.AUTHENTICATED -> true
+            TelegramAuthStatus.AUTHENTICATED -> true
             else -> false
         }
         layoutState.addSource(_loginState) { updateLayoutState(it) }
