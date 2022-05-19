@@ -28,6 +28,7 @@ data class Conversation(
     var is_online: Boolean = false,
     val messenger: String = "",
     val user_id: Long = 0,
+    val list: String = "",
     val data: Any? = null
 ) : Parcelable {
 
@@ -273,7 +274,7 @@ data class Conversation(
                 data = conversation.photo!!.small
             }
 
-            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline, "tg", userId, data)
+            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline, "tg", userId, "main", data)
         }
 
         suspend fun tgParseLastMessage(conversation: Conversation, update: TdApi.UpdateChatLastMessage) {

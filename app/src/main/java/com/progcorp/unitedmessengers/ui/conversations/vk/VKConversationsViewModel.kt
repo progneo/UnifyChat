@@ -4,10 +4,8 @@ import android.os.Handler
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
-import com.progcorp.unitedmessengers.data.db.Conversations
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
-import com.progcorp.unitedmessengers.ui.DefaultViewModel
 import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.addNewItem
 import com.progcorp.unitedmessengers.util.removeItem
@@ -26,7 +24,7 @@ enum class LayoutState {
     LOGGED_ID, NEED_TO_LOGIN
 }
 
-class VKConversationsViewModel : DefaultViewModel(), Conversations.OnConversationsFetched, IConversationsViewModel {
+class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
 
     private val _scope = MainScope()
 

@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Build
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.TelegramClient
-import com.progcorp.unitedmessengers.data.db.TelegramRepository
+import com.progcorp.unitedmessengers.data.db.TelegramDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -53,7 +53,7 @@ object AppModule {
     fun provideTelegramClient(parameters: TdApi.TdlibParameters) = TelegramClient(parameters)
 
     @Provides
-    fun provideTelegramRepository(client: TelegramClient) = TelegramRepository(client)
+    fun provideTelegramRepository(client: TelegramClient) = TelegramDataSource(client)
     //@Provides
     //fun provideChatsRepository(client: TelegramClient) = ChatsRepository(client)
 //

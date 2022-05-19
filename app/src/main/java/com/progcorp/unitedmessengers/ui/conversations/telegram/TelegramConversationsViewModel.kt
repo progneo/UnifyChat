@@ -3,10 +3,8 @@ package com.progcorp.unitedmessengers.ui.conversations.telegram
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
-import com.progcorp.unitedmessengers.data.db.Conversations
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
-import com.progcorp.unitedmessengers.ui.DefaultViewModel
 import com.progcorp.unitedmessengers.util.*
 import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
 import kotlinx.coroutines.MainScope
@@ -26,8 +24,7 @@ enum class LayoutState {
     LOGGED_ID, NEED_TO_LOGIN
 }
 
-class TelegramConversationsViewModel : DefaultViewModel(),
-    Conversations.OnConversationsFetched, IConversationsViewModel {
+class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
 
     private val _scope = MainScope()
 

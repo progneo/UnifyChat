@@ -3,7 +3,6 @@ package com.progcorp.unitedmessengers.ui.login.telegram
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
-import com.progcorp.unitedmessengers.ui.DefaultViewModel
 import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.launchIn
@@ -15,7 +14,7 @@ class TelegramAuthViewModelFactory :
     }
 }
 
-class TelegramAuthViewModel : DefaultViewModel() {
+class TelegramAuthViewModel : ViewModel() {
 
     enum class LayoutState {
         LOADING, INSERT_NUMBER, INSERT_CODE, INSERT_PASSWORD, AUTHENTICATED

@@ -9,7 +9,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import javax.inject.Inject
 
-class VKRemoteDataSource @Inject constructor(private val retrofit: Retrofit) {
+class VKDataSource @Inject constructor(private val retrofit: Retrofit) {
 
     suspend fun getConversations(offset: Int): ApiResult<String> {
         val service = retrofit.create(VKConversationsRequest::class.java)

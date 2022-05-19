@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package com.progcorp.unitedmessengers.ui.conversation
 
 import android.os.Handler
@@ -7,13 +5,9 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
-import com.progcorp.unitedmessengers.data.db.Messages
-import com.progcorp.unitedmessengers.data.db.telegram.TgConversationsRepository
-import com.progcorp.unitedmessengers.data.db.telegram.TgMessagesRepository
 import com.progcorp.unitedmessengers.interfaces.requests.VKSendMessageRequest
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
-import com.progcorp.unitedmessengers.ui.DefaultViewModel
 import com.progcorp.unitedmessengers.util.ConvertTime
 import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.addNewItem
@@ -27,6 +21,7 @@ import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 class ConversationViewModelFactory(private val conversation: Conversation) :
@@ -36,15 +31,12 @@ class ConversationViewModelFactory(private val conversation: Conversation) :
     }
 }
 
-class ConversationViewModel(private val conversation: Conversation) :
-    DefaultViewModel(), Messages.OnMessagesFetched {
+class ConversationViewModel(private val conversation: Conversation) : ViewModel() {
 
     private var _scope = MainScope()
 
     private var _handler = Handler()
     private var _messagesGetter: Runnable = Runnable {  }
-
-    private val _messages: Messages = Messages(this)
 
     private val _backEvent = MutableLiveData<Event<Unit>>()
 
