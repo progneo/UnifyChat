@@ -15,11 +15,9 @@ class TelegramRepository (private val dataSource: TelegramDataSource) {
         dataSource.getConversation(chatId)
             .mapNotNull { Conversation.tgParse(it) }
 
-    suspend fun getMessages(chatId: Long, fromMessageId: Long, limit: Int): Flow<List<Message>> {
-        val chat = dataSource.getConversation(chatId).first()
-        return dataSource.getMessages(chatId, fromMessageId, limit)
-            .map { messages -> messages.map { Message.tgParse(it, chat) } }
-    }
+    suspend fun getMessages(chatId: Long, fromMessageId: Long, limit: Int): Flow<List<Message>> =
+        dataSource.getMessages(chatId, fromMessageId, limit)
+            .map { messages -> messages.map { Message.tgParse(it) } }
 
     suspend fun getUser(userId: Long): Flow<User> =
         dataSource.getUser(userId)

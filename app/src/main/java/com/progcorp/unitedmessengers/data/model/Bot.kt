@@ -3,29 +3,21 @@ package com.progcorp.unitedmessengers.data.model
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.util.Constants
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.mapNotNull
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONObject
 
-data class User(
+data class Bot(
     val id: Long = 0,
-    val firstName: String = "",
-    val lastName: String = "",
-    val photo: String = "",
-    val lastSeen: Long = 0,
-    val isOnline: Boolean = false,
-    val deactivated: Boolean = false
+    var title: String = "",
+    var photo: String = "",
 ) : ICompanion {
-
     companion object {
-        fun vkParse(json: JSONObject) = User(
-            id = json.optLong("id", 0),
-            firstName = json.optString("first_name", ""),
-            lastName = json.optString("last_name", ""),
-            photo = json.optString("photo_100", ""),
-            lastSeen = (json.optJSONObject("last_seen")?.optLong("time") ?: 0) * 1000,
-            isOnline = json.optInt("online") != 0,
-            deactivated = json.optBoolean("deactivated", false)
+        fun vkParse(json: JSONObject) = Bot(
+            id = json.optLong("id"),
+            title = json.optString("name"),
+            photo = json.optJSONObject("photo")?.optString("photo_100")
+                ?: "https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg"
         )
 
         fun tgParse(tdUser: TdApi.User): User {

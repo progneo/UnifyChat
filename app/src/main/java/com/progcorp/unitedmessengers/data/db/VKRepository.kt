@@ -74,8 +74,9 @@ class VKRepository (private val dataSource: VKDataSource) {
                     try {
                         val messages = json.getJSONObject("response").getJSONArray("items")
                         val profiles = json.getJSONObject("response").optJSONArray("profiles")
+                        val groups = json.getJSONObject("response").optJSONArray("groups")
                         for (item in 0 until messages.length()) {
-                            result.add(Message.vkParse(messages.getJSONObject(item), profiles))
+                            result.add(Message.vkParse(messages.getJSONObject(item), profiles, groups))
                         }
                     } catch (ex: JSONException) {
                         Log.e("${javaClass.simpleName}.getMessages", ex.stackTraceToString())
@@ -107,9 +108,9 @@ class VKRepository (private val dataSource: VKDataSource) {
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun sendMessage(message: Message): Flow<Long> {
+    suspend fun sendMessage(chatId: Long, message: Message): Flow<Long> {
         return flow {
-            val response = dataSource.sendMessage(message)
+            val response = dataSource.sendMessage(chatId, message)
             if (response.status == ApiStatus.SUCCESS) {
                 val result: Long = 0
                 val json = response.data?.let { JSONObject(it) }

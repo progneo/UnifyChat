@@ -1,8 +1,7 @@
 package com.progcorp.unitedmessengers.data.model
 
-import android.os.Parcel
-import android.os.Parcelable
 import com.progcorp.unitedmessengers.App
+import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.util.Constants
 import kotlinx.coroutines.flow.first
 import org.drinkless.td.libcore.telegram.TdApi
@@ -11,49 +10,13 @@ import org.json.JSONObject
 
 data class Conversation(
     val id: Long = 0,
-    val type: Int = 0,
-    val user: User? = null,
-    val chat: Chat? = null,
+    val companion: ICompanion? = null,
     val lastMessage: Message? = null,
     val unreadCount: Int = 0,
     val canWrite: Boolean = true,
     val messenger: Int = 0
-) : Parcelable {
-
-    constructor(parcel: Parcel) : this(
-        parcel.readLong(),
-        parcel.readInt(),
-        parcel.readTypedObject(User.CREATOR),
-        parcel.readTypedObject(Chat.CREATOR),
-        parcel.readTypedObject(Message.CREATOR),
-        parcel.readInt(),
-        parcel.readByte() != 0.toByte(),
-        parcel.readInt()
-    )
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeLong(id)
-        parcel.writeInt(type)
-        parcel.writeTypedObject(user, flags)
-        parcel.writeTypedObject(chat, flags)
-        parcel.writeTypedObject(lastMessage, flags)
-        parcel.writeInt(unreadCount)
-        parcel.writeByte(if (canWrite) 1 else 0)
-        parcel.writeInt(messenger)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<Conversation> {
-        override fun createFromParcel(parcel: Parcel): Conversation {
-            return Conversation(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Conversation?> {
-            return arrayOfNulls(size)
-        }
+) {
+    companion object {
 
         fun vkParse(json: JSONObject, profiles: JSONArray?, groups: JSONArray?): Conversation {
             var conversation = json.optJSONObject("conversation")

@@ -3,6 +3,7 @@ package com.progcorp.unitedmessengers.data.db
 import android.util.Log
 import com.progcorp.unitedmessengers.data.clients.TelegramClient
 import com.progcorp.unitedmessengers.data.model.Message
+import com.progcorp.unitedmessengers.data.model.MessageText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
@@ -11,7 +12,7 @@ import org.drinkless.td.libcore.telegram.TdApi
 @OptIn(ExperimentalCoroutinesApi::class)
 class TelegramDataSource (private val client: TelegramClient) {
 
-    suspend fun getConversationIds(limit: Int): Flow<LongArray> =
+    private suspend fun getConversationIds(limit: Int): Flow<LongArray> =
         callbackFlow {
             client.client.send(TdApi.GetChats(TdApi.ChatListMain(), limit)) {
                 when (it.constructor) {
@@ -151,7 +152,7 @@ class TelegramDataSource (private val client: TelegramClient) {
 
     suspend fun sendMessage(chatId: Long, message: Message): Flow<TdApi.Message> =
         callbackFlow {
-            val text = TdApi.FormattedText(message.text, arrayOf(TdApi.TextEntity()))
+            val text = TdApi.FormattedText((message.content as MessageText).text, arrayOf(TdApi.TextEntity()))
             val input = TdApi.InputMessageText(text, true, false)
             client.client.send(TdApi.SendMessage(
                 chatId,

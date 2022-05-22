@@ -12,6 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "United Messages"
+rootProject.name = "United Messengers"
 include ':app'
 include ':libtd'

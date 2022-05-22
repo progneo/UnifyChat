@@ -1,8 +1,7 @@
 package com.progcorp.unitedmessengers.data.model
 
-import android.os.Parcel
-import android.os.Parcelable
 import com.progcorp.unitedmessengers.App
+import com.progcorp.unitedmessengers.interfaces.ICompanion
 import kotlinx.coroutines.flow.mapNotNull
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONObject
@@ -12,35 +11,8 @@ data class Chat(
     val title: String = "",
     val photo: String = "",
     val membersCount: Int = 0
-) : Parcelable {
-
-    constructor(parcel: Parcel) : this(
-        parcel.readLong(),
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readInt()
-    )
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeLong(id)
-        parcel.writeString(title)
-        parcel.writeString(photo)
-        parcel.writeInt(membersCount)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<Chat> {
-        override fun createFromParcel(parcel: Parcel): Chat {
-            return Chat(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Chat?> {
-            return arrayOfNulls(size)
-        }
-
+) : ICompanion {
+    companion object {
         fun vkParse(json: JSONObject, peerId: Long) = Chat(
             id = peerId,
             title = json.optString("title"),

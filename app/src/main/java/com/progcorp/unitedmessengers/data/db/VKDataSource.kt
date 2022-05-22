@@ -4,6 +4,7 @@ import com.progcorp.unitedmessengers.data.ApiResult
 import com.progcorp.unitedmessengers.data.clients.VKClient
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
+import com.progcorp.unitedmessengers.data.model.MessageText
 import com.progcorp.unitedmessengers.interfaces.requests.*
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -75,15 +76,15 @@ class VKDataSource (
         )
     }
 
-    suspend fun sendMessage(message: Message): ApiResult<String> {
+    suspend fun sendMessage(chatId: Long, message: Message): ApiResult<String> {
         val service = retrofit.create(VKSendMessageRequest::class.java)
         return getResponse(
             request = {
                 service.messageSend(
                     accountService.token!!,
                     "5.131",
-                    message.peerId,
-                    message.text,
+                    chatId,
+                    (message.content as MessageText).text,
                     0,
                     0
                 )
