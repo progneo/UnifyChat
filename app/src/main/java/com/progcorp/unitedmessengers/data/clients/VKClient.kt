@@ -1,11 +1,9 @@
-package com.progcorp.unitedmessengers.util
+package com.progcorp.unitedmessengers.data.clients
 
 import android.content.SharedPreferences
 import com.progcorp.unitedmessengers.interfaces.IAccountService
 
-internal class VKAccountService(
-    private val sharedPreference: SharedPreferences
-    ) : IAccountService {
+class VKClient (private val sharedPreference: SharedPreferences) : IAccountService {
 
     companion object {
         const val SCOPE = "1073737727"

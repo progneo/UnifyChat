@@ -1,13 +1,8 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package com.progcorp.unitedmessengers.data.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.progcorp.unitedmessengers.data.db.telegram.TgConversationsRepository
-import com.progcorp.unitedmessengers.data.db.telegram.TgUserRepository
 import com.progcorp.unitedmessengers.util.ConvertTime
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONArray
@@ -15,53 +10,26 @@ import org.json.JSONObject
 
 data class Message(
     var id: Long = 0,
-    val date: Long = 0,
-    val time: String = "",
-    val peerId: Long = 0,
-    val fromId: Long = 0,
-    val out: Boolean = false,
-    val senderName: String = "",
-    var senderPhoto: String = "",
-    val action: String = "",
-    val attachments: String = "",
-    var sticker: String = "",
-    val text: String = "",
-    val type: Int = 0,
-    val messenger: String = ""
+    val timeStamp: Long = 0,
+    val sender: User? = null,
+    val isOutgoing: Boolean = false,
+    val content: String = ""
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
         parcel.readLong(),
-        parcel.readString()!!,
-        parcel.readLong(),
-        parcel.readLong(),
+        parcel.readTypedObject(User.CREATOR)!!,
         parcel.readByte() != 0.toByte(),
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readInt(),
         parcel.readString()!!
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(id)
-        parcel.writeLong(date)
-        parcel.writeString(time)
-        parcel.writeLong(fromId)
-        parcel.writeLong(peerId)
-        parcel.writeByte(if (out) 1 else 0)
-        parcel.writeString(senderName)
-        parcel.writeString(senderPhoto)
-        parcel.writeString(action)
-        parcel.writeString(attachments)
-        parcel.writeString(sticker)
-        parcel.writeString(text)
-        parcel.writeInt(type)
-        parcel.writeString(messenger)
+        parcel.writeLong(timeStamp)
+        parcel.writeParcelable(sender, flags)
+        parcel.writeByte(if (isOutgoing) 1 else 0)
+        parcel.writeString(content)
     }
 
     override fun describeContents(): Int {
@@ -69,16 +37,6 @@ data class Message(
     }
 
     companion object CREATOR : Parcelable.Creator<Message> {
-        const val MESSAGE_OUT = 0
-        const val STICKER_OUT = 1
-        const val ATTACHMENT_OUT = 2
-        const val CHAT_MESSAGE = 3
-        const val CHAT_STICKER = 4
-        const val CHAT_ATTACHMENT = 5
-        const val CHAT_ACTION = 6
-        const val DIALOG_MESSAGE = 10
-        const val DIALOG_STICKER = 11
-        const val DIALOG_ATTACHMENT = 12
 
         override fun createFromParcel(parcel: Parcel): Message {
             return Message(parcel)

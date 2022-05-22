@@ -1,22 +1,24 @@
 package com.progcorp.unitedmessengers.data.db
 
-import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.ApiResult
+import com.progcorp.unitedmessengers.data.clients.VKClient
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.interfaces.requests.*
 import retrofit2.Response
 import retrofit2.Retrofit
-import javax.inject.Inject
 
-class VKDataSource @Inject constructor(private val retrofit: Retrofit) {
+class VKDataSource (
+    private val retrofit: Retrofit,
+    private val accountService: VKClient
+) {
 
     suspend fun getConversations(offset: Int): ApiResult<String> {
         val service = retrofit.create(VKConversationsRequest::class.java)
         return getResponse(
             request = {
                 service.conversationsGet(
-                    App.application.vkAccountService.token!!,
+                    accountService.token!!,
                     "5.131",
                     15,
                     offset,
@@ -32,7 +34,7 @@ class VKDataSource @Inject constructor(private val retrofit: Retrofit) {
         return getResponse(
             request = {
                 service.conversationGet(
-                    App.application.vkAccountService.token!!,
+                    accountService.token!!,
                     "5.131",
                     id,
                     true,
@@ -47,7 +49,7 @@ class VKDataSource @Inject constructor(private val retrofit: Retrofit) {
         return getResponse(
             request = {
                 service.messagesGet(
-                    App.application.vkAccountService.token!!,
+                    accountService.token!!,
                     "5.131",
                     count,
                     offset,
@@ -64,7 +66,7 @@ class VKDataSource @Inject constructor(private val retrofit: Retrofit) {
         return getResponse(
             request = {
                 service.usersGet(
-                    App.application.vkAccountService.token!!,
+                    accountService.token!!,
                     "5.131",
                     "photo_100",
                     0
@@ -78,7 +80,7 @@ class VKDataSource @Inject constructor(private val retrofit: Retrofit) {
         return getResponse(
             request = {
                 service.messageSend(
-                    App.application.vkAccountService.token!!,
+                    accountService.token!!,
                     "5.131",
                     message.peerId,
                     message.text,

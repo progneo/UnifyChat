@@ -3,13 +3,9 @@ package com.progcorp.unitedmessengers.data.db
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.data.model.User
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
-import org.drinkless.td.libcore.telegram.TdApi
-import javax.inject.Inject
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class TelegramRepository @Inject constructor(private val dataSource: TelegramDataSource) {
+class TelegramRepository (private val dataSource: TelegramDataSource) {
 
     suspend fun getConversations(): Flow<List<Conversation>> =
         dataSource.getConversations(1000)

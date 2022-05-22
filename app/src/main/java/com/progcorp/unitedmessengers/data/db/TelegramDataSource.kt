@@ -1,17 +1,15 @@
 package com.progcorp.unitedmessengers.data.db
 
 import android.util.Log
-import com.progcorp.unitedmessengers.App
-import com.progcorp.unitedmessengers.data.TelegramClient
+import com.progcorp.unitedmessengers.data.clients.TelegramClient
 import com.progcorp.unitedmessengers.data.model.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import org.drinkless.td.libcore.telegram.TdApi
-import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class TelegramDataSource @Inject constructor(private val client: TelegramClient) {
+class TelegramDataSource (private val client: TelegramClient) {
 
     suspend fun getConversationIds(limit: Int): Flow<LongArray> =
         callbackFlow {

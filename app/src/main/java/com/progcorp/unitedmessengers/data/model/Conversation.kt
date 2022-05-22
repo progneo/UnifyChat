@@ -1,14 +1,9 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package com.progcorp.unitedmessengers.data.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.progcorp.unitedmessengers.data.db.telegram.TgConversationsRepository
-import com.progcorp.unitedmessengers.data.db.telegram.TgMessagesRepository
-import com.progcorp.unitedmessengers.data.db.telegram.TgUserRepository
+import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.util.Constants
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONArray
@@ -16,52 +11,35 @@ import org.json.JSONObject
 
 data class Conversation(
     val id: Long = 0,
-    val type: String = "",
-    var date: Long = 0,
-    var unread_count: Int = 0,
-    val can_write: Boolean = true,
-    var title: String = "",
-    var photo: String = "",
-    var last_message: String = "",
-    val members_count: Int = 2,
-    var last_online: Long = 0,
-    var is_online: Boolean = false,
-    val messenger: String = "",
-    val user_id: Long = 0,
-    val list: String = "",
-    val data: Any? = null
+    val type: Int = 0,
+    val user: User? = null,
+    val chat: Chat? = null,
+    val lastMessage: Message? = null,
+    val unreadCount: Int = 0,
+    val canWrite: Boolean = true,
+    val messenger: Int = 0
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
-        parcel.readString()!!,
-        parcel.readLong(),
+        parcel.readInt(),
+        parcel.readTypedObject(User.CREATOR),
+        parcel.readTypedObject(Chat.CREATOR),
+        parcel.readTypedObject(Message.CREATOR),
         parcel.readInt(),
         parcel.readByte() != 0.toByte(),
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readInt(),
-        parcel.readLong(),
-        parcel.readByte() != 0.toByte(),
-        parcel.readString()!!,
-        parcel.readLong()
+        parcel.readInt()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(id)
-        parcel.writeString(type)
-        parcel.writeLong(date)
-        parcel.writeInt(unread_count)
-        parcel.writeByte(if (can_write) 1 else 0)
-        parcel.writeString(title)
-        parcel.writeString(photo)
-        parcel.writeString(last_message)
-        parcel.writeInt(members_count)
-        parcel.writeLong(last_online)
-        parcel.writeByte(if (is_online) 1 else 0)
-        parcel.writeString(messenger)
-        parcel.writeLong(user_id)
+        parcel.writeInt(type)
+        parcel.writeTypedObject(user, flags)
+        parcel.writeTypedObject(chat, flags)
+        parcel.writeTypedObject(lastMessage, flags)
+        parcel.writeInt(unreadCount)
+        parcel.writeByte(if (canWrite) 1 else 0)
+        parcel.writeInt(messenger)
     }
 
     override fun describeContents(): Int {
@@ -183,7 +161,7 @@ data class Conversation(
                 }
             }
 
-            return Conversation(id, type, date, unreadCount, canWrite, title, photo, lastMessage, membersCount, lastOnline, isOnline, "vk", 0)
+            return Conversation()
         }
 
         suspend fun tgParse(conversation: TdApi.Chat): Conversation? {
@@ -246,28 +224,8 @@ data class Conversation(
             var lastOnline: Long = 0
             var isOnline = false
             if (type == "user") {
-                val user = TgUserRepository().getUser(id).first()
-                when (user.status.constructor) {
-                    TdApi.UserStatusEmpty.CONSTRUCTOR -> {
-                        lastOnline = Constants.LastSeen.unknown
-                    }
-                    TdApi.UserStatusLastMonth.CONSTRUCTOR -> {
-                        lastOnline = Constants.LastSeen.lastMonth
-                    }
-                    TdApi.UserStatusLastWeek.CONSTRUCTOR -> {
-                        lastOnline = Constants.LastSeen.lastWeek
-                    }
-                    TdApi.UserStatusOffline.CONSTRUCTOR -> {
-                        lastOnline = ((user.status as TdApi.UserStatusOffline).wasOnline).toLong() * 1000
-                    }
-                    TdApi.UserStatusOnline.CONSTRUCTOR -> {
-                        lastOnline = Constants.LastSeen.unknown
-                        isOnline = true
-                    }
-                    TdApi.UserStatusRecently.CONSTRUCTOR -> {
-                        lastOnline = Constants.LastSeen.recently
-                    }
-                }
+                val user = App.application.tgRepository.getUser(id).first()
+
             }
             var data: Any? = null
             if (conversation.photo != null) {

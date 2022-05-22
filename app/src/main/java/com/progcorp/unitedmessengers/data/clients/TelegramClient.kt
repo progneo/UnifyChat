@@ -1,8 +1,6 @@
-package com.progcorp.unitedmessengers.data
+package com.progcorp.unitedmessengers.data.clients
 
 import android.util.Log
-import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
-import com.progcorp.unitedmessengers.ui.conversations.telegram.TelegramConversationsViewModel
 import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
@@ -10,15 +8,11 @@ import kotlinx.coroutines.flow.*
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Client.ResultHandler {
+class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Client.ResultHandler {
     lateinit var client: Client
 
     private val _authState = MutableStateFlow(TelegramAuthStatus.UNKNOWN)
     val authState: StateFlow<TelegramAuthStatus> get() = _authState
-
-    var conversationsViewModel: TelegramConversationsViewModel? = null
-    var conversationViewModel: ConversationViewModel? = null
 
     init {
         setupClient()
@@ -49,25 +43,23 @@ class TelegramClient(private val tdLibParameters: TdApi.TdlibParameters) : Clien
             }
 
             TdApi.UpdateUserStatus.CONSTRUCTOR -> {
-                conversationsViewModel?.updateOnline(data as TdApi.UpdateUserStatus)
-                conversationViewModel?.updateOnline(data as TdApi.UpdateUserStatus)
+
             }
 
             TdApi.UpdateChatLastMessage.CONSTRUCTOR -> {
-                conversationsViewModel?.updateLastMessage(data as TdApi.UpdateChatLastMessage)
+
             }
 
             TdApi.UpdateChatReadInbox.CONSTRUCTOR -> {
-                conversationsViewModel?.updateReadInbox(data as TdApi.UpdateChatReadInbox)
+
             }
 
             TdApi.UpdateNewChat.CONSTRUCTOR -> {
-                conversationsViewModel?.addNewChat(data as TdApi.UpdateNewChat)
+
             }
 
             TdApi.UpdateNewMessage.CONSTRUCTOR -> {
-                conversationsViewModel?.updateNewMessage(data as TdApi.UpdateNewMessage)
-                conversationViewModel?.newMessage(data as TdApi.UpdateNewMessage)
+
             }
 
             TdApi.UpdateSupergroupFullInfo.CONSTRUCTOR -> {

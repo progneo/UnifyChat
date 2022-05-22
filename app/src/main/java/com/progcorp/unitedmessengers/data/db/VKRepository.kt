@@ -11,9 +11,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import org.json.JSONException
 import org.json.JSONObject
-import javax.inject.Inject
 
-class VKRepository @Inject constructor(private val dataSource: VKDataSource) {
+class VKRepository (private val dataSource: VKDataSource) {
 
     suspend fun getConversations(offset: Int): Flow<List<Conversation>> {
         return flow {
