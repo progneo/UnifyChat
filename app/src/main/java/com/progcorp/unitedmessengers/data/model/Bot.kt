@@ -21,14 +21,14 @@ data class Bot(
         )
 
         fun tgParse(tdUser: TdApi.User): User {
-            val tgClient = App.application.tgClient
+            val client = App.application.tgClient
 
             val id = tdUser.id
             val firstName = tdUser.firstName
             val lastName = tdUser.lastName
             var photo = "https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg"
             if (tdUser.profilePhoto != null) {
-                tgClient.downloadableFile(tdUser.profilePhoto!!.small).mapNotNull {
+                client.downloadableFile(tdUser.profilePhoto!!.small).mapNotNull {
                     photo = it!!
                 }
             }

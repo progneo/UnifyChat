@@ -8,8 +8,8 @@ object Constants {
         const val recently: Long = 3
     }
     object Messenger {
-        const val vk: Int = 0
-        const val tg: Int = 1
+        const val VK: Int = 0
+        const val TG: Int = 1
     }
     object ConversationType {
         const val unsupported: Int = 0

@@ -9,12 +9,12 @@ import org.json.JSONObject
 
 data class User(
     val id: Long = 0,
-    val firstName: String = "",
-    val lastName: String = "",
-    val photo: String = "",
-    val lastSeen: Long = 0,
-    val isOnline: Boolean = false,
-    val deactivated: Boolean = false
+    var firstName: String = "",
+    var lastName: String = "",
+    var photo: String = "",
+    var lastSeen: Long = 0,
+    var isOnline: Boolean = false,
+    var deactivated: Boolean = false
 ) : ICompanion {
 
     companion object {
@@ -29,14 +29,14 @@ data class User(
         )
 
         fun tgParse(tdUser: TdApi.User): User {
-            val tgClient = App.application.tgClient
+            val client = App.application.tgClient
 
             val id = tdUser.id
             val firstName = tdUser.firstName
             val lastName = tdUser.lastName
             var photo = "https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg"
             if (tdUser.profilePhoto != null) {
-                tgClient.downloadableFile(tdUser.profilePhoto!!.small).mapNotNull {
+                client.downloadableFile(tdUser.profilePhoto!!.small).mapNotNull {
                     photo = it!!
                 }
             }

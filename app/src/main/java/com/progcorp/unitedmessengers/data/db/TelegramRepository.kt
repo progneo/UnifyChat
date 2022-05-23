@@ -1,9 +1,11 @@
 package com.progcorp.unitedmessengers.data.db
 
+import com.progcorp.unitedmessengers.data.model.Chat
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.data.model.User
 import kotlinx.coroutines.flow.*
+import org.drinkless.td.libcore.telegram.TdApi
 
 class TelegramRepository (private val dataSource: TelegramDataSource) {
 
@@ -14,6 +16,14 @@ class TelegramRepository (private val dataSource: TelegramDataSource) {
     suspend fun getConversation(chatId: Long): Flow<Conversation> =
         dataSource.getConversation(chatId)
             .mapNotNull { Conversation.tgParse(it) }
+
+    suspend fun getSupergroup(groupId: Long, conversation: TdApi.Chat): Flow<Chat> =
+        dataSource.getSupergroup(groupId)
+            .mapNotNull { Chat.tgParseSupergroup(conversation, it) }
+
+    suspend fun getBasicGroup(chatId: Long, conversation: TdApi.Chat): Flow<Chat> =
+        dataSource.getBasicGroup(chatId)
+            .mapNotNull { Chat.tgParseBasicGroup(conversation, it) }
 
     suspend fun getMessages(chatId: Long, fromMessageId: Long, limit: Int): Flow<List<Message>> =
         dataSource.getMessages(chatId, fromMessageId, limit)

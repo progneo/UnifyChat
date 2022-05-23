@@ -169,8 +169,8 @@ data class Message(
         }
 
         suspend fun tgParse(tgMessage: TdApi.Message): Message {
-            val tgClient = App.application.tgClient
-            val tgRepository = App.application.tgRepository
+            val client = App.application.tgClient
+            val repository = App.application.tgRepository
 
             val id = tgMessage.id
             val timeStamp: Long = (tgMessage.date).toLong() * 1000
@@ -179,12 +179,12 @@ data class Message(
 
             when (tgMessage.senderId.constructor) {
                 TdApi.MessageSenderUser.CONSTRUCTOR -> {
-                    tgRepository.getUser((tgMessage.senderId as TdApi.MessageSenderUser).userId).map {
+                    repository.getUser((tgMessage.senderId as TdApi.MessageSenderUser).userId).map {
                         sender = it
                     }
                 }
                 else -> {
-                    tgRepository.getConversation((tgMessage.senderId as TdApi.MessageSenderChat).chatId).map {
+                    repository.getConversation((tgMessage.senderId as TdApi.MessageSenderChat).chatId).map {
                         sender = it.companion!!
                     }
                 }
@@ -202,7 +202,7 @@ data class Message(
                 }
                 TdApi.MessageAnimation.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageAnimation
-                    tgClient.downloadableFile(content.animation.animation!!).mapNotNull {
+                    client.downloadableFile(content.animation.animation!!).mapNotNull {
                         messageContent = MessageAnimation(path = it!!)
                     }
                 }
@@ -216,7 +216,7 @@ data class Message(
                 }
                 TdApi.MessagePhoto.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessagePhoto
-                    tgClient.downloadableFile(content.photo.sizes[0].photo).mapNotNull {
+                    client.downloadableFile(content.photo.sizes[0].photo).mapNotNull {
                         messageContent = MessagePhoto(content.caption.text, it!!)
                     }
                 }
@@ -229,7 +229,7 @@ data class Message(
                         messageContent = MessageText("Анимированный стикер: ${content.sticker.emoji}")
                     }
                     else {
-                        tgClient.downloadableFile(content.sticker.sticker).mapNotNull {
+                        client.downloadableFile(content.sticker.sticker).mapNotNull {
                             messageContent = MessageSticker(it!!)
                         }
                     }
@@ -237,7 +237,7 @@ data class Message(
                 TdApi.MessageVideo.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageVideo
                     content.video.thumbnail?.let {
-                        tgClient.downloadableFile(it.file).mapNotNull { path ->
+                        client.downloadableFile(it.file).mapNotNull { path ->
                             messageContent = MessagePhoto(content.caption.text, path!!)
                         }
                     }
@@ -248,7 +248,7 @@ data class Message(
                 TdApi.MessageVideoNote.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageVideoNote
                     content.videoNote.thumbnail?.let {
-                        tgClient.downloadableFile(it.file).mapNotNull { path ->
+                        client.downloadableFile(it.file).mapNotNull { path ->
                             messageContent = MessagePhoto(path!!)
                         }
                     }
