@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.Serializable
 
 data class Conversation(
     val id: Long = 0,

@@ -14,9 +14,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/Theme.UM.NoActionBar">
         <activity
-            android:name="com.progcorp.unitedmessengers.ui.main.MainActivity"
+            android:name="com.progcorp.unitedmessengers.MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>

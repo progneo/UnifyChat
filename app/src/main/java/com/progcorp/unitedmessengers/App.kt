@@ -29,6 +29,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         setLocale()
+        application = this
 
         tgClient = TelegramClient(TdApi.TdlibParameters().apply {
             apiId = applicationContext.resources.getInteger(R.integer.telegram_api_id)
