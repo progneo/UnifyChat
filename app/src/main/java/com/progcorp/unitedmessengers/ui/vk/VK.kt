@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
@@ -21,6 +22,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -71,7 +73,8 @@ fun VK(
                 true,
                 0,
                 MessageVoiceNote("Text", "Voice")
-            )
+            ),
+            1000
         ),Conversation(0,
             User(
                 0,
@@ -97,7 +100,8 @@ fun VK(
                 true,
                 0,
                 MessageVoiceNote("Text", "Voice")
-            )
+            ),
+            -1
         ),Conversation(0,
             User(
                 0,
@@ -123,7 +127,8 @@ fun VK(
                 true,
                 0,
                 MessageVoiceNote("Text", "Voice")
-            )
+            ),
+            0
         ),Conversation(0,
             User(
                 0,
@@ -577,11 +582,21 @@ fun VK(
                     .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
-                Conversations(
-                    conversations = conversation,
-                    navigateToConversation = {},
-                    scrollState = scrollState
-                )
+                if (viewModel.loginState.value == true) {
+                    viewModel.conversationsList.value?.toList()?.let {
+                        Conversations(
+                            conversations = it,
+                            navigateToConversation = {},
+                            scrollState = scrollState
+                        )
+                    }
+                } else {
+                    Text(
+                        text = "Чтобы видеть список диалогов, необходимо авторизоваться",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(all = 32.dp)
+                    )
+                }
             }
             MainBar(
                 scrollBehavior = scrollBehavior,
@@ -604,17 +619,13 @@ fun Conversations(
         LazyColumn(
             state = scrollState,
             contentPadding =
-                WindowInsets.statusBars.add(WindowInsets(top = 64.dp, right = 10.dp, left = 10.dp)).asPaddingValues(),
+                WindowInsets.statusBars.add(WindowInsets(top = 64.dp, right = 15.dp, left = 15.dp)).asPaddingValues(),
             modifier = Modifier
                 .testTag("conversationsTag")
                 .fillMaxSize()
         ) {
-            for (conversation in conversations) {
-                item {
-                    ConversationItem(
-                        conversation = conversation
-                    )
-                }
+            items(conversations) { item ->
+                ConversationItem(conversation = item)
             }
         }
     }

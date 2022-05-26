@@ -19,10 +19,10 @@ class App : Application() {
         lateinit var application: App
     }
 
-    private lateinit var vkAccountService: IAccountService
     private lateinit var vkRetrofit: Retrofit
 
     lateinit var vkRepository: VKRepository
+    lateinit var vkAccountService: IAccountService
     lateinit var tgClient: TelegramClient
     lateinit var tgRepository: TelegramRepository
 

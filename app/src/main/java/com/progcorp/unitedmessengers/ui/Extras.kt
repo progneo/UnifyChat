@@ -12,7 +12,7 @@ fun FunctionalityNotAvailablePopup(onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         text = {
             Text(
-                text = "Functionality not available \uD83D\uDE48",
+                text = "Данная функция сейчас недоступна",
                 style = MaterialTheme.typography.bodyMedium
             )
         },

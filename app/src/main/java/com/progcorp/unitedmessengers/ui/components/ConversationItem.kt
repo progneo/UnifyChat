@@ -1,6 +1,7 @@
 package com.progcorp.unitedmessengers.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -15,7 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LastBaseline
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,7 +36,8 @@ fun ChatTitle(text: String, modifier: Modifier = Modifier) {
         text,
         modifier = modifier,
         maxLines = 1,
-        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp, fontWeight = FontWeight.Bold)
+        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold),
+        color = MaterialTheme.colorScheme.onBackground
     )
 }
 
@@ -62,16 +67,14 @@ fun ChatSummary(message: Message?, modifier: Modifier = Modifier) {
                         imageVector = Icons.Default.LocationOff,
                         contentDescription = null
                     )
-                    Text(
-                        text = "Локация",
-                        modifier = Modifier.padding(start = 8.dp)
+                    HighlightedChatSummary(
+                        text = "Локация"
                     )
                 }
             }
             is MessageVoiceNote -> {
-                BasicChatSummary(
-                    text = "Голосовое сообщение",
-                    modifier = Modifier.padding(start = 8.dp)
+                HighlightedChatSummary(
+                    text = "Голосовое сообщение"
                 )
             }
             is MessageVideoNote -> {
@@ -80,16 +83,14 @@ fun ChatSummary(message: Message?, modifier: Modifier = Modifier) {
                         imageVector = Icons.Default.Videocam,
                         contentDescription = null
                     )
-                    Text(
-                        text = "Видео-сообщение",
-                        modifier = Modifier.padding(start = 8.dp)
+                    BasicChatSummary(
+                        text = "Видео-сообщение"
                     )
                 }
             }
             is MessageChat -> {
                 BasicChatSummary(
-                    text = it.text,
-                    modifier = modifier
+                    text = it.text
                 )
             }
             is MessageCollage -> {
@@ -98,9 +99,8 @@ fun ChatSummary(message: Message?, modifier: Modifier = Modifier) {
                         imageVector = Icons.Default.Image,
                         contentDescription = null
                     )
-                    Text(
-                        text = "${it.paths} фото",
-                        modifier = Modifier.padding(start = 8.dp)
+                    HighlightedChatSummary(
+                        text = "${it.paths.size} фото"
                     )
                 }
             }
@@ -111,25 +111,25 @@ fun ChatSummary(message: Message?, modifier: Modifier = Modifier) {
                 )
             }
             is MessageExpiredVideo -> {
-                BasicChatSummary(
+                HighlightedChatSummary(
                     text = it.text,
                     modifier = modifier
                 )
             }
             is MessageExpiredPhoto -> {
-                BasicChatSummary(
+                HighlightedChatSummary(
                     text = it.text,
                     modifier = modifier
                 )
             }
             is MessagePoll -> {
-                BasicChatSummary(
+                HighlightedChatSummary(
                     text = "Голосование",
                     modifier = modifier
                 )
             }
             is MessageUnknown -> {
-                BasicChatSummary(
+                HighlightedChatSummary(
                     text = it.text,
                     modifier = modifier
                 )
@@ -143,10 +143,11 @@ fun ChatSummary(message: Message?, modifier: Modifier = Modifier) {
 fun BasicChatSummary(text: String, modifier: Modifier = Modifier) {
     Text(
         text,
-        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier
-            .paddingFrom(LastBaseline, after = 8.dp, before = 8.dp) // Space to 1st bubble
+        modifier = modifier,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1
     )
 }
 
@@ -154,10 +155,11 @@ fun BasicChatSummary(text: String, modifier: Modifier = Modifier) {
 fun HighlightedChatSummary(text: String, modifier: Modifier = Modifier) {
     Text(
         text,
-        color = MaterialTheme.colorScheme.primaryContainer,
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier
-            .paddingFrom(LastBaseline, after = 8.dp, before = 8.dp)
+        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+        color = MaterialTheme.colorScheme.primary,
+        modifier = modifier,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1
     )
 }
 
@@ -172,46 +174,111 @@ fun ChatTime(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun OnlineAvatar(photo: String) {
+    Image(
+        painter = rememberAsyncImagePainter(photo),
+        contentDescription = null,
+        modifier = Modifier
+            .size(56.dp)
+            .clip(shape = CircleShape)
+            .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+            .border(4.dp, MaterialTheme.colorScheme.surface, CircleShape)
+    )
+}
+
+@Composable
+fun OfflineAvatar(photo: String) {
+    Image(
+        painter = rememberAsyncImagePainter(photo),
+        contentDescription = null,
+        modifier = Modifier
+            .size(56.dp)
+            .clip(shape = CircleShape)
+    )
+}
+
+@Composable
 fun ConversationItem(
     conversation: Conversation,
     modifier: Modifier = Modifier
 ) {
     when (conversation.companion) {
         is User -> {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.padding(vertical = 3.dp)) {
-                val borderColor = if (conversation.companion.isOnline) {
-                    MaterialTheme.colorScheme.primary
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = modifier
+                    .padding(vertical = 6.dp)
+                    .height(56.dp),
+            ) {
+                if (conversation.companion.isOnline) {
+                    OnlineAvatar(photo = conversation.companion.photo)
                 } else {
-                    MaterialTheme.colorScheme.background
+                    OfflineAvatar(photo = conversation.companion.photo)
                 }
-                Image(
-                    painter = rememberAsyncImagePainter(conversation.companion.photo),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(52.dp)
-                        .clip(shape = CircleShape)
-                        .border(1.5.dp, borderColor, CircleShape)
-                        .border(3.dp, MaterialTheme.colorScheme.surface, CircleShape)
-                )
-                Column (modifier = Modifier.padding(horizontal = 10.dp)){
-                    Row {
+
+                Column (modifier = Modifier.padding(horizontal = 12.dp)){
+                    Row (Modifier.paddingFrom(LastBaseline, before = 23.dp)) {
                         ChatTitle(
                             text = "${conversation.companion.firstName} ${conversation.companion.lastName}",
-                            modifier = Modifier.alignBy(LastBaseline)
+                            modifier = Modifier.align(Alignment.Bottom)
                         )
                         Spacer(Modifier.weight(1f))
                         conversation.lastMessage?.timeStamp?.timeMsToDateWithDaysAgo()?.let {
                             Text(
                                 text = it,
                                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
-                                modifier = Modifier.alignBy(LastBaseline),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .align(Alignment.CenterVertically)
+                                    .width(32.dp),
                                 color = Color.Gray
                             )
                         }
                     }
-                    ChatSummary(conversation.lastMessage)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Row (Modifier.padding(bottom = 10.dp)) {
+                        ChatSummary(conversation.lastMessage)
+                        Spacer(Modifier.weight(1f))
+                        UnreadCountItem(count = conversation.unreadCount, modifier.align(Alignment.CenterVertically))
+                    }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun UnreadCountItem(count: Int, modifier: Modifier = Modifier) {
+    if (count > 0) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.primaryContainer, shape = CircleShape)
+                .padding(1.dp)
+        ) {
+            Text(
+                text = count.toString(),
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
+                modifier = Modifier
+                    .defaultMinSize(20.dp)
+                    .width(32.dp)
+            )
+        }
+    }
+    else if (count < 0) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = modifier
+                .width(32.dp)
+        ) {
+            Box (
+                modifier = modifier
+                    .background(MaterialTheme.colorScheme.primaryContainer, shape = CircleShape)
+                    .width(8.dp)
+                    .aspectRatio(1f)
+            )
         }
     }
 }
@@ -227,10 +294,19 @@ private fun Long.timeMsToDateWithDaysAgo(): String {
 
 @Preview
 @Composable
+fun UnreadCountPreview() {
+    UMTheme() {
+        UnreadCountItem(count = 100)
+    }
+}
+
+@Preview
+@Composable
 fun ChatItemPreview() {
-    UMTheme (isDarkTheme = true) {
+    UMTheme (isDarkTheme = false) {
         ConversationItem(
-            Conversation(0,
+            modifier = Modifier.background(MaterialTheme.colorScheme.background),
+            conversation = Conversation(0,
                 User(
                     0,
                     "Slava",
@@ -255,7 +331,47 @@ fun ChatItemPreview() {
                     true,
                     0,
                     MessageVoiceNote("Text", "Voice")
-                )
+                ),
+                -1
+            )
+        )
+    }
+}
+
+
+@Preview
+@Composable
+fun ChatItemDarkPreview() {
+    UMTheme (isDarkTheme = true) {
+        ConversationItem(
+            modifier = Modifier.background(MaterialTheme.colorScheme.background),
+            conversation = Conversation(0,
+                User(
+                    0,
+                    "Slava",
+                    "Lis",
+                    "https://sun4-17.userapi.com/s/v1/ig2/KYZfqE2ScHwWprJiyKjE_9Zbx0JwO1k_K2YAf95nDeX6tlon9gtUpvFs_jJnYH7qxp4KFgmWVW3VF8pSR0S7EoWq.jpg?size=50x50&quality=96&crop=129,365,821,821&ava=1",
+                    Date().time,
+                    true,
+                    false
+                ),
+                Message(
+                    0,
+                    1653316110000,
+                    User(
+                        0,
+                        "Slava",
+                        "Lis",
+                        "https://sun4-17.userapi.com/s/v1/ig2/KYZfqE2ScHwWprJiyKjE_9Zbx0JwO1k_K2YAf95nDeX6tlon9gtUpvFs_jJnYH7qxp4KFgmWVW3VF8pSR0S7EoWq.jpg?size=50x50&quality=96&crop=129,365,821,821&ava=1",
+                        Date().time,
+                        true,
+                        false
+                    ),
+                    true,
+                    0,
+                    MessageVoiceNote("Text", "Voice")
+                ),
+                100
             )
         )
     }
