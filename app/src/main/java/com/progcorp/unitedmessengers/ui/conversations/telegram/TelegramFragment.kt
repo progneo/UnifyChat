@@ -9,14 +9,15 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.EventObserver
+import com.progcorp.unitedmessengers.data.model.Bot
+import com.progcorp.unitedmessengers.data.model.Chat
 import com.progcorp.unitedmessengers.data.model.Conversation
+import com.progcorp.unitedmessengers.data.model.User
 import com.progcorp.unitedmessengers.databinding.FragmentTelegramBinding
-import com.progcorp.unitedmessengers.ui.conversation.chat.ChatFragment
-import com.progcorp.unitedmessengers.ui.conversation.dialog.DialogFragment
+import com.progcorp.unitedmessengers.ui.conversation.ConversationActivity
 import com.progcorp.unitedmessengers.ui.conversations.ConversationsListAdapter
 import java.lang.Exception
 
@@ -34,7 +35,7 @@ class TelegramFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         viewDataBinding =
             FragmentTelegramBinding.inflate(inflater, container, false).apply { viewmodel = viewModel }
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
-        viewDataBinding.swipeRefreshLayout.setOnRefreshListener(this)
+        //viewDataBinding.swipeRefreshLayout.setOnRefreshListener(this)
         return viewDataBinding.root
     }
 
@@ -61,33 +62,16 @@ class TelegramFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun navigateToChat(conversation: Conversation) {
-        when (conversation.type) {
-            "basicgroup" -> {
+        when (conversation.companion) {
+            is User, is Bot, is Chat -> {
                 val bundle = bundleOf(
-                    ChatFragment.ARGS_CONVERSATION to conversation
+                    ConversationActivity.ARGS_CONVERSATION to conversation
                 )
-                findNavController().navigate(R.id.action_navigation_chats_to_chatFragment, bundle)
-            }
-            "supergroup" -> {
-                val bundle = bundleOf(
-                    ChatFragment.ARGS_CONVERSATION to conversation
-                )
-                findNavController().navigate(R.id.action_navigation_chats_to_chatFragment, bundle)
-            }
-            "user" -> {
-                val bundle = bundleOf(
-                    DialogFragment.ARGS_CONVERSATION to conversation
-                )
-                findNavController().navigate(R.id.action_navigation_chats_to_dialogFragment, bundle)
-            }
-            "secret" -> {
-                Toast.makeText(
-                    context, "Secret dialogs are not supported", Toast.LENGTH_SHORT
-                ).show()
+                findNavController().navigate(R.id.action_navigation_chats_to_conversation_activity, bundle)
             }
             else -> {
                 Toast.makeText(
-                    context, "Dialogs with groups are not supported", Toast.LENGTH_SHORT
+                    context, "This conversation are not supported", Toast.LENGTH_SHORT
                 ).show()
             }
         }
@@ -99,11 +83,11 @@ class TelegramFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun navigateToLogin() {
-        findNavController().navigate(R.id.action_navigation_chats_to_telegramAuthFragment)
+        findNavController().navigate(R.id.action_navigation_chats_to_tg_auth_activity)
     }
 
     override fun onRefresh() {
         viewModel.refreshConversations()
-        viewDataBinding.swipeRefreshLayout.isRefreshing = false
+        //viewDataBinding.swipeRefreshLayout.isRefreshing = false
     }
 }

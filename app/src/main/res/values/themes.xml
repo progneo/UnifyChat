@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="asdaAppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -11,10 +11,22 @@
 
         <item name="colorAccent">@color/accent</item>
 
-        <item name="android:statusBarColor" tools:targetApi="l">@color/white</item>
-        <item name="android:navigationBarColor" tools:targetApi="l">@color/white</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <style name="Material3.Light" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+    </style>
+
+    <style name="Material3.Dark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
     </style>
 
     <style name="WhiteActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
@@ -89,7 +101,7 @@
         <item name="android:paddingTop">1dp</item>
     </style>
 
-    <style name="textview_name_left">
+    <style name="textview_name">
         <item name="android:textColor">#3385ff</item>
         <item name="android:textSize">@dimen/_9ssp</item>
         <item name="android:textStyle">bold</item>
@@ -138,7 +150,10 @@
     <style name="layout_message">
         <item name="android:layout_marginTop">@dimen/_1sdp</item>
         <item name="android:layout_marginBottom">@dimen/_6sdp</item>
+        <item name="android:layout_marginStart">@dimen/_10sdp</item>
+        <item name="android:layout_marginEnd">@dimen/_10sdp</item>
         <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">bottom</item>
     </style>
 
     <style name="layout_message_out">
@@ -179,12 +194,11 @@
     <style name="imageview_sender_photo">
         <item name="android:layout_width">@dimen/_25sdp</item>
         <item name="android:layout_height">@dimen/_25sdp</item>
-        <item name="android:layout_marginStart">@dimen/_10sdp</item>
         <item name="shapeAppearanceOverlay">@style/circleImageView</item>
     </style>
 
     <style name="textview_date_text">
-        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:textSize">12sp</item>
         <item name="android:layout_marginTop">@dimen/_4sdp</item>
 
@@ -192,18 +206,6 @@
 
     <style name="imageview_sticker">
         <item name="android:layout_marginStart">@dimen/_3sdp</item>
-        <item name="android:layout_width">@dimen/_100sdp</item>
-        <item name="android:layout_height">@dimen/_100sdp</item>
-    </style>
-
-    <style name="imageview_sticker_dialog">
-        <item name="android:layout_marginStart">@dimen/_10sdp</item>
-        <item name="android:layout_width">@dimen/_100sdp</item>
-        <item name="android:layout_height">@dimen/_100sdp</item>
-    </style>
-
-    <style name="imageview_sticker_out">
-        <item name="android:layout_marginEnd">@dimen/_10sdp</item>
         <item name="android:layout_width">@dimen/_100sdp</item>
         <item name="android:layout_height">@dimen/_100sdp</item>
     </style>

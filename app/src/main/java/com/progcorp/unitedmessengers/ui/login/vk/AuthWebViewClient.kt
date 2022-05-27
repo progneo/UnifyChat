@@ -5,8 +5,11 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.progcorp.unitedmessengers.util.VKAccountService
-import com.progcorp.unitedmessengers.util.VKAuthStatus
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.progcorp.unitedmessengers.data.clients.VKClient
+import com.progcorp.unitedmessengers.enums.VKAuthStatus
+import com.progcorp.unitedmessengers.ui.login.telegram.TelegramAuthViewModel
 import java.net.URLEncoder
 
 class AuthWebViewClient(
@@ -25,7 +28,7 @@ class AuthWebViewClient(
         if (_currentUrl != url) {
             val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             if (url.contains("https://oauth.vk.com/authorize")) {
-                val scope = URLEncoder.encode(VKAccountService.SCOPE, "UTF-8")
+                val scope = URLEncoder.encode(VKClient.SCOPE, "UTF-8")
                 if (url.contains(scope)) {
                     imm.showSoftInput(wv, 0)
                     wv.visibility = View.VISIBLE

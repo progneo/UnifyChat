@@ -19,91 +19,54 @@
         android:layout_height="match_parent"
         android:layout_gravity="center">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_height="wrap_content"
+            app:liftOnScroll="true">
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="@{viewmodel.layoutState == viewmodel.layoutState.LOGGED_ID ? View.GONE : View.VISIBLE}"
-                android:padding="@dimen/_24sdp"
-                tools:visibility="invisible">
-
-                <LinearLayout
+                android:layout_height="?attr/actionBarSize"
+                app:layout_scrollFlags="scroll|enterAlways|snap">
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="11dp"
+                    android:onClick="@{() -> viewmodel.goToLoginPressed()}"
+                    android:src="@drawable/ic_baseline_login_24"
+                    app:bind_appbar_image="@{viewmodel.user.photo}"
+                    app:shapeAppearanceOverlay="@style/circleImageView"/>
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    android:paddingHorizontal="10dp"
+                    android:textSize="22sp"
+                    android:ellipsize="end"
+                    app:bind_appbar_name="@{viewmodel.user}"
+                    tools:text="@string/login_text"/>
+            </androidx.appcompat.widget.Toolbar>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_40sdp"
-                        android:text="@string/vk"
-                        android:textColor="@color/primary_text"
-                        android:textSize="@dimen/_18ssp"
-                        android:textStyle="bold" />
+        </com.google.android.material.appbar.AppBarLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_4sdp"
-                        android:text="@string/login_text"
-                        android:textColor="@color/secondary_text"
-                        android:textSize="@dimen/_12ssp"
-                        android:textStyle="bold" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:visibility="@{viewmodel.loginState ? View.GONE : View.VISIBLE}"
+            app:bind_conversations_list="@{viewmodel.conversationsList}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:visibility="visible"
+            tools:listitem="@layout/list_item_conversation" />
 
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:animateLayoutChanges="true">
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/login"
-                            android:layout_width="match_parent"
-                            android:layout_height="@dimen/_50sdp"
-                            android:layout_marginTop="@dimen/_20sdp"
-                            android:text="@string/action_login"
-                            android:textAlignment="center"
-                            android:textColor="@color/white"
-                            android:textSize="@dimen/_13ssp"
-                            android:textStyle="bold"
-                            android:onClick="@{() -> viewmodel.goToLoginPressed()}"
-                            app:cornerRadius="@dimen/_8sdp"/>
-
-                    </FrameLayout>
-
-                </LinearLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginBottom="?attr/actionBarSize"
-                android:clipToPadding="false"
-                android:orientation="vertical"
-                android:overScrollMode="never"
-                android:padding="@dimen/_3sdp"
-                android:visibility="@{viewmodel.layoutState == viewmodel.layoutState.LOGGED_ID ? View.VISIBLE : View.INVISIBLE}"
-                app:bind_conversations_list="@{viewmodel.conversationsList}"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
-                tools:visibility="visible"
-                tools:listitem="@layout/list_item_conversation" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{viewmodel.loginState ? View.GONE : View.VISIBLE}"
+            android:text="@string/login_to_account"
+            android:layout_gravity="center"
+            tools:visibility="invisible" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

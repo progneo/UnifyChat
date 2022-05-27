@@ -10,14 +10,11 @@
         android:label="@string/telegram"
         tools:layout="@layout/fragment_telegram">
         <action
-            android:id="@+id/action_navigation_chats_to_chatFragment"
-            app:destination="@id/chatFragment" />
+            android:id="@+id/action_navigation_chats_to_tg_auth_activity"
+            app:destination="@id/tg_auth_activity" />
         <action
-            android:id="@+id/action_navigation_chats_to_dialogFragment"
-            app:destination="@id/dialogFragment" />
-        <action
-            android:id="@+id/action_navigation_chats_to_telegramAuthFragment"
-            app:destination="@id/telegramAuthFragment"/>
+            android:id="@+id/action_navigation_chats_to_conversation_activity"
+            app:destination="@id/conversation_activity" />
     </fragment>
     <fragment
         android:id="@+id/navigation_vk"
@@ -26,24 +23,21 @@
         tools:layout="@layout/fragment_vk">
         <action
             android:id="@+id/action_navigation_chats_to_vkAuthFragment"
-            app:destination="@id/vkAuthFragment" />
+            app:destination="@id/vk_auth_activity" />
         <action
-            android:id="@+id/action_navigation_chats_to_chatFragment"
-            app:destination="@id/chatFragment" />
-        <action
-            android:id="@+id/action_navigation_chats_to_dialogFragment"
-            app:destination="@id/dialogFragment" />
+            android:id="@+id/action_navigation_chats_to_conversation_activity"
+            app:destination="@id/conversation_activity" />
     </fragment>
-    <fragment
-        android:id="@+id/chatFragment"
-        android:name="com.progcorp.unitedmessengers.ui.conversation.chat.ChatFragment"/>
-    <fragment
-        android:id="@+id/dialogFragment"
-        android:name="com.progcorp.unitedmessengers.ui.conversation.dialog.DialogFragment"/>
-    <fragment
-        android:id="@+id/vkAuthFragment"
-        android:name="com.progcorp.unitedmessengers.ui.login.vk.VKAuthFragment"/>
-    <fragment
-        android:id="@+id/telegramAuthFragment"
-        android:name="com.progcorp.unitedmessengers.ui.login.telegram.TelegramAuthFragment"/>
+    <activity
+        android:id="@+id/conversation_activity"
+        android:name="com.progcorp.unitedmessengers.ui.conversation.ConversationActivity"
+        tools:layout="@layout/activity_conversation"/>
+    <activity
+        android:id="@+id/vk_auth_activity"
+        android:name="com.progcorp.unitedmessengers.ui.login.vk.VKAuthActivity"
+        tools:layout="@layout/activity_vk_auth"/>
+    <activity
+        android:id="@+id/tg_auth_activity"
+        android:name="com.progcorp.unitedmessengers.ui.login.telegram.TelegramAuthActivity"
+        tools:layout="@layout/activity_telegram_auth"/>
 </navigation>

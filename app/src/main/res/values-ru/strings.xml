@@ -4,7 +4,7 @@
     <string name="prompt_password">Пароль</string>
     <string name="prompt_code">Секретный код</string>
     <string name="action_login">Вход</string>
-    <string name="login_text">Войдите в свой аккаунт</string>
+    <string name="login_text">Войти в аккаунт</string>
     <string name="enter_message_hint">Сообщение</string>
     <string name="enter_phone_hint">+79*********</string>
     <string name="enter_code_hint">Секретный код</string>
@@ -32,4 +32,6 @@
     <string name="unknown">неизвестно</string>
     <string name="last_month">в этом месяце</string>
     <string name="last_week">на этой неделе</string>
+    <string name="bot">Бот</string>
+    <string name="login_to_account">Сначала вам нужно авторизоваться</string>
 </resources>

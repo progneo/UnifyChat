@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.ListItemConversationBinding
 import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
+import com.progcorp.unitedmessengers.interfaces.IMessageContent
 
 class ConversationsListAdapter internal constructor(private val viewModel: IConversationsViewModel) :
     ListAdapter<(Conversation), ConversationsListAdapter.ViewHolder>(ConversationDiffCallback()) {
@@ -38,10 +39,10 @@ class ConversationDiffCallback : DiffUtil.ItemCallback<Conversation>() {
     }
 
     override fun areContentsTheSame(oldItem: Conversation, newItem: Conversation): Boolean {
-        return oldItem.last_message == newItem.last_message &&
-                oldItem.unread_count == newItem.unread_count &&
-                oldItem.last_online == newItem.last_online &&
-                oldItem.photo == newItem.photo &&
+        return oldItem.lastMessage?.timeStamp == newItem.lastMessage?.timeStamp &&
+                oldItem.unreadCount == newItem.unreadCount &&
+                oldItem.getLastOnline() == newItem.getLastOnline() &&
+                oldItem.getPhoto() == newItem.getPhoto() &&
                 oldItem == newItem
     }
 }

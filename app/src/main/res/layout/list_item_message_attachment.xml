@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="viewmodel"
+            type="com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel" />
+        <variable
+            name="message"
+            type="com.progcorp.unitedmessengers.data.model.Message" />
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/dateText"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_20sdp"
+            app:bind_epochTimeMsToDate="@{message.timeStamp}"
+            app:bind_message="@{message}"
+            app:bind_message_viewModel="@{viewmodel}"
+            style="@style/textview_date_text"
+            tools:text="30 april" />
+
+        <LinearLayout
+            android:id="@+id/layout_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/layout_message">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/photo_sender"
+                app:bind_conversation="@{viewmodel.chat}"
+                app:bind_image_url="@{message.sender.photo}"
+                style="@style/imageview_sender_photo"
+                tools:src="@drawable/ic_baseline_account_circle_24"/>
+
+            <LinearLayout
+                android:id="@+id/linear_layout_message_left"
+                style="@style/layout_message_block"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toRightOf="@id/photo_sender"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/text_sender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:bind_name="@{message.sender}"
+                    style="@style/textview_name"
+                    tools:text="Имя Фамилия"/>
+
+                <TextView
+                    android:id="@+id/text_message_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:bind_message_text="@{message.content}"
+                    style="@style/textview_dialog_message_left"
+                    tools:text="Сообщение с чатика"/>
+
+                <TextView
+                    android:id="@+id/text_attachment_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{message.content.toString()}"
+                    style="@style/textview_attachments"
+                    tools:text="Вложение"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/text_time_left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:bind_message_time="@{message.timeStamp}"
+                style="@style/info_text_views"
+                tools:text="11:46"/>
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>

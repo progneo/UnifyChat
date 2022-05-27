@@ -9,13 +9,14 @@
     <string name="action_login">Login</string>
     <string name="action_logout">Cancel</string>
     <string name="action_next">Next</string>
-    <string name="login_text">Login to your account</string>
+    <string name="login_text">Login</string>
     <string name="enter_message_hint">Message…</string>
     <string name="enter_phone_hint">+79*********</string>
     <string name="enter_code_hint">Security code</string>
     <string name="enter_password_hint">Password</string>
     <string name="members">Members: %1$s</string>
     <string name="online">Online</string>
+    <string name="bot">Bot</string>
     <string name="last_seen">Was online at: %1$s</string>
     <integer name="com_vk_sdk_AppId">6121396</integer>
     <integer name="telegram_api_id">18101985</integer>
@@ -36,4 +37,5 @@
     <string name="unknown">unknown</string>
     <string name="last_month">last month</string>
     <string name="last_week">last week</string>
+    <string name="login_to_account">First you need to log in</string>
 </resources>

@@ -1,19 +1,19 @@
 package com.progcorp.unitedmessengers.ui.conversation
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.progcorp.unitedmessengers.data.model.Message
+import com.progcorp.unitedmessengers.data.model.*
 import com.progcorp.unitedmessengers.databinding.*
+import com.progcorp.unitedmessengers.util.Constants
 
 class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAdapter<Message, RecyclerView.ViewHolder>(
     MessageDiffCallback()
 ) {
 
-    class ChatMessageViewHolder(private val binding: ListItemChatMessageBinding)  :
+    class MessageViewHolder(private val binding: ListItemMessageTextBinding)  :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
@@ -22,7 +22,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
         }
     }
 
-    class ChatStickerViewHolder(private val binding: ListItemChatStickerBinding)  :
+    class StickerViewHolder(private val binding: ListItemMessageStickerBinding)  :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
@@ -31,7 +31,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
         }
     }
 
-    class ChatAttachmentViewHolder(private val binding: ListItemChatAttachmentBinding)  :
+    class AttachmentViewHolder(private val binding: ListItemMessageAttachmentBinding)  :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
@@ -40,7 +40,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
         }
     }
 
-    class ChatActionViewHolder(private val binding: ListItemChatActionBinding)  :
+    class ChatViewHolder(private val binding: ListItemMessageChatBinding)  :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
@@ -49,7 +49,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
         }
     }
 
-    class ChatOutMessageViewHolder(private val binding: ListItemChatOutMessageBinding)  :
+    class OutMessageViewHolder(private val binding: ListItemMessageTextOutBinding)  :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
@@ -58,7 +58,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
         }
     }
 
-    class ChatOutStickerViewHolder(private val binding: ListItemChatOutStickerBinding)  :
+    class OutStickerViewHolder(private val binding: ListItemMessageStickerOutBinding)  :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
@@ -67,61 +67,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
         }
     }
 
-    class ChatOutAttachmentViewHolder(private val binding: ListItemChatOutAttachmentBinding)  :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: ConversationViewModel, item: Message) {
-            binding.viewmodel = viewModel
-            binding.message = item
-            binding.executePendingBindings()
-        }
-    }
-
-    class DialogMessageViewHolder(private val binding: ListItemDialogMessageBinding)  :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: ConversationViewModel, item: Message) {
-            binding.viewmodel = viewModel
-            binding.message = item
-            binding.executePendingBindings()
-        }
-    }
-
-    class DialogStickerViewHolder(private val binding: ListItemDialogStickerBinding)  :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: ConversationViewModel, item: Message) {
-            binding.viewmodel = viewModel
-            binding.message = item
-            binding.executePendingBindings()
-        }
-    }
-
-    class DialogAttachmentViewHolder(private val binding: ListItemDialogAttachmentBinding)  :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: ConversationViewModel, item: Message) {
-            binding.viewmodel = viewModel
-            binding.message = item
-            binding.executePendingBindings()
-        }
-    }
-
-    class DialogOutMessageViewHolder(private val binding: ListItemDialogOutMessageBinding)  :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: ConversationViewModel, item: Message) {
-            binding.viewmodel = viewModel
-            binding.message = item
-            binding.executePendingBindings()
-        }
-    }
-
-    class DialogOutStickerViewHolder(private val binding: ListItemDialogOutStickerBinding)  :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(viewModel: ConversationViewModel, item: Message) {
-            binding.viewmodel = viewModel
-            binding.message = item
-            binding.executePendingBindings()
-        }
-    }
-
-    class DialogOutAttachmentViewHolder(private val binding: ListItemDialogOutAttachmentBinding)  :
+    class OutAttachmentViewHolder(private val binding: ListItemMessageAttachmentOutBinding)  :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
@@ -131,7 +77,133 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
     }
 
     override fun getItemViewType(position: Int): Int {
-        return getItem(position).type
+        val message = getItem(position)
+        val type: Int = when (message.content) {
+            is MessageText -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.text
+                }
+                else {
+                    Constants.MessageType.textOut
+                }
+            }
+            is MessageSticker -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.sticker
+                }
+                else {
+                    Constants.MessageType.stickerOut
+                }
+            }
+            is MessageChat -> {
+                Constants.MessageType.chat
+            }
+            is MessageAnimatedEmoji -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.animatedEmoji
+                }
+                else {
+                    Constants.MessageType.animatedEmojiOut
+                }
+            }
+            is MessageAnimation -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.animation
+                }
+                else {
+                    Constants.MessageType.animationOut
+                }
+            }
+            is MessageCollage -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.collage
+                }
+                else {
+                    Constants.MessageType.collageOut
+                }
+            }
+            is MessageDocument -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.document
+                }
+                else {
+                    Constants.MessageType.documentOut
+                }
+            }
+            is MessageDocuments -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.documents
+                }
+                else {
+                    Constants.MessageType.documentsOut
+                }
+            }
+            is MessageExpiredPhoto -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.expiredPhoto
+                }
+                else {
+                    Constants.MessageType.expiredPhotoOut
+                }
+            }
+            is MessageExpiredVideo -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.expiredVideo
+                }
+                else {
+                    Constants.MessageType.expiredVideoOut
+                }
+            }
+            is MessagePhoto -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.photo
+                }
+                else {
+                    Constants.MessageType.photoOut
+                }
+            }
+            is MessagePoll -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.poll
+                }
+                else {
+                    Constants.MessageType.pollOut
+                }
+            }
+            is MessageVideo -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.video
+                }
+                else {
+                    Constants.MessageType.videoOut
+                }
+            }
+            is MessageVideoNote -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.videoNote
+                }
+                else {
+                    Constants.MessageType.videoNoteOut
+                }
+            }
+            is MessageVoiceNote -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.voiceNote
+                }
+                else {
+                    Constants.MessageType.voiceNoteOut
+                }
+            }
+            else -> {
+                if (message.isOutgoing) {
+                    Constants.MessageType.unknown
+                }
+                else {
+                    Constants.MessageType.unknownOut
+                }
+            }
+        }
+        return type
     }
 
     override fun onCreateViewHolder(
@@ -141,109 +213,60 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
         val layoutInflater = LayoutInflater.from(parent.context)
 
         return when (viewType) {
-
-            Message.MESSAGE_OUT -> {
-                val binding = ListItemChatOutMessageBinding.inflate(layoutInflater, parent, false)
-                ChatOutMessageViewHolder(binding)
+            Constants.MessageType.text -> {
+                val binding = ListItemMessageTextBinding.inflate(layoutInflater, parent, false)
+                MessageViewHolder(binding)
             }
-
-            Message.STICKER_OUT -> {
-                val binding = ListItemChatOutStickerBinding.inflate(layoutInflater, parent, false)
-                ChatOutStickerViewHolder(binding)
+            Constants.MessageType.textOut -> {
+                val binding = ListItemMessageTextOutBinding.inflate(layoutInflater, parent, false)
+                OutMessageViewHolder(binding)
             }
-
-            Message.ATTACHMENT_OUT -> {
-                val binding = ListItemChatOutAttachmentBinding.inflate(layoutInflater, parent, false)
-                ChatOutAttachmentViewHolder(binding)
+            Constants.MessageType.sticker -> {
+                val binding = ListItemMessageStickerBinding.inflate(layoutInflater, parent, false)
+                StickerViewHolder(binding)
             }
-
-            Message.CHAT_MESSAGE -> {
-                val binding = ListItemChatMessageBinding.inflate(layoutInflater, parent, false)
-                ChatMessageViewHolder(binding)
+            Constants.MessageType.stickerOut -> {
+                val binding = ListItemMessageStickerOutBinding.inflate(layoutInflater, parent, false)
+                OutStickerViewHolder(binding)
             }
-
-            Message.CHAT_STICKER -> {
-                val binding = ListItemChatStickerBinding.inflate(layoutInflater, parent, false)
-                ChatStickerViewHolder(binding)
+            Constants.MessageType.chat -> {
+                val binding = ListItemMessageChatBinding.inflate(layoutInflater, parent, false)
+                ChatViewHolder(binding)
             }
-
-            Message.CHAT_ATTACHMENT -> {
-                val binding = ListItemChatAttachmentBinding.inflate(layoutInflater, parent, false)
-                ChatAttachmentViewHolder(binding)
-            }
-
-            Message.CHAT_ACTION -> {
-                val binding = ListItemChatActionBinding.inflate(layoutInflater, parent, false)
-                ChatActionViewHolder(binding)
-            }
-
-            Message.DIALOG_MESSAGE -> {
-                val binding = ListItemDialogMessageBinding.inflate(layoutInflater, parent, false)
-                DialogMessageViewHolder(binding)
-            }
-
-            Message.DIALOG_STICKER -> {
-                val binding = ListItemDialogStickerBinding.inflate(layoutInflater, parent, false)
-                DialogStickerViewHolder(binding)
-            }
-
-            Message.DIALOG_ATTACHMENT -> {
-                val binding = ListItemDialogAttachmentBinding.inflate(layoutInflater, parent, false)
-                DialogAttachmentViewHolder(binding)
-            }
-
             else -> {
-                Log.e("MessagesListAdapter", "Wrong type: $viewType")
-                throw Exception("Error reading holder type")
+                val binding = ListItemMessageAttachmentBinding.inflate(layoutInflater, parent, false)
+                AttachmentViewHolder(binding)
             }
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
-            Message.MESSAGE_OUT -> (holder as ChatOutMessageViewHolder).bind(
+            Constants.MessageType.text -> (holder as MessageViewHolder).bind(
                 viewModel,
                 getItem(position)
             )
-            Message.STICKER_OUT -> (holder as ChatOutStickerViewHolder).bind(
+            Constants.MessageType.textOut -> (holder as OutMessageViewHolder).bind(
                 viewModel,
                 getItem(position)
             )
-            Message.ATTACHMENT_OUT -> (holder as ChatOutAttachmentViewHolder).bind(
+            Constants.MessageType.sticker -> (holder as StickerViewHolder).bind(
                 viewModel,
                 getItem(position)
             )
-            Message.CHAT_MESSAGE -> (holder as ChatMessageViewHolder).bind(
+            Constants.MessageType.stickerOut -> (holder as OutStickerViewHolder).bind(
                 viewModel,
                 getItem(position)
             )
-            Message.CHAT_STICKER -> (holder as ChatStickerViewHolder).bind(
-                viewModel,
-                getItem(position)
-            )
-            Message.CHAT_ATTACHMENT -> (holder as ChatAttachmentViewHolder).bind(
-                viewModel,
-                getItem(position)
-            )
-            Message.CHAT_ACTION -> (holder as ChatActionViewHolder).bind(
-                viewModel,
-                getItem(position)
-            )
-            Message.DIALOG_MESSAGE -> (holder as DialogMessageViewHolder).bind(
-                viewModel,
-                getItem(position)
-            )
-            Message.DIALOG_STICKER -> (holder as DialogStickerViewHolder).bind(
-                viewModel,
-                getItem(position)
-            )
-            Message.DIALOG_ATTACHMENT -> (holder as DialogAttachmentViewHolder).bind(
+            Constants.MessageType.chat -> (holder as ChatViewHolder).bind(
                 viewModel,
                 getItem(position)
             )
             else -> {
-                Log.e("MessagesListAdapter", "Wrong type: $holder.itemViewType")
-                throw Exception("Error reading holder type")
+                (holder as AttachmentViewHolder).bind(
+                    viewModel,
+                    getItem(position)
+                )
             }
         }
     }
@@ -255,6 +278,6 @@ class MessageDiffCallback : DiffUtil.ItemCallback<Message>() {
     }
 
     override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean {
-        return oldItem.text == newItem.text
+        return oldItem.content.text == newItem.content.text
     }
 }

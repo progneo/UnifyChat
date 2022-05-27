@@ -9,6 +9,7 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.model.Conversation
+import com.progcorp.unitedmessengers.util.Constants
 import com.progcorp.unitedmessengers.util.ConvertTime
 import com.squareup.picasso.Picasso
 import java.util.*
@@ -16,27 +17,27 @@ import java.util.concurrent.TimeUnit
 
 
 @BindingAdapter("bind_image_url")
-fun bindImageWithPicasso(imageView: ImageView, url: String?) {
+fun ImageView.bindImageWithPicasso(url: String?) {
     when (url) {
         null -> Unit
-        "" -> imageView.setBackgroundResource(R.drawable.ic_baseline_account_circle_24)
-        else -> Picasso.get().load(url).error(R.drawable.ic_baseline_account_circle_24).into(imageView)
+        "" -> this.setBackgroundResource(R.drawable.ic_baseline_account_circle_24)
+        else -> Picasso.get().load(url).error(R.drawable.ic_baseline_account_circle_24).into(this)
     }
 }
 
 @BindingAdapter("bind_conversation", "bind_image_url")
-fun bindConversationImageWithPicasso(imageView: ImageView, conversation: Conversation, path: String?) {
+fun ImageView.bindConversationImageWithPicasso(conversation: Conversation, path: String?) {
     when (path) {
         null -> Unit
-        "" -> Picasso.get().load("https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg").error(R.drawable.ic_baseline_account_circle_24).into(imageView)
+        "" -> Picasso.get().load("https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg").error(R.drawable.ic_baseline_account_circle_24).into(this)
         else -> {
             when (conversation.messenger) {
-                "tg" -> {
+                Constants.Messenger.TG -> {
                     val bitmap = BitmapFactory.decodeFile(path)
-                    imageView.setImageBitmap(bitmap)
+                    this.setImageBitmap(bitmap)
                 }
-                "vk" -> {
-                    Picasso.get().load(path).error(R.drawable.ic_baseline_account_circle_24).into(imageView)
+                Constants.Messenger.VK -> {
+                    Picasso.get().load(path).error(R.drawable.ic_baseline_account_circle_24).into(this)
                 }
             }
         }

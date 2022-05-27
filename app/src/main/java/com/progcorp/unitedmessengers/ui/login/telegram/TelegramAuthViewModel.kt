@@ -3,8 +3,7 @@ package com.progcorp.unitedmessengers.ui.login.telegram
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
-import com.progcorp.unitedmessengers.ui.DefaultViewModel
-import com.progcorp.unitedmessengers.util.Authentication
+import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.launchIn
 
@@ -15,12 +14,13 @@ class TelegramAuthViewModelFactory :
     }
 }
 
-class TelegramAuthViewModel : DefaultViewModel() {
+class TelegramAuthViewModel : ViewModel() {
 
     enum class LayoutState {
         LOADING, INSERT_NUMBER, INSERT_CODE, INSERT_PASSWORD, AUTHENTICATED
     }
 
+    private val _client = App.application.tgClient
     private val _restartEvent = MutableLiveData<Event<Unit>>()
 
     val layoutState = MediatorLiveData<LayoutState>()
@@ -31,22 +31,23 @@ class TelegramAuthViewModel : DefaultViewModel() {
     val restartEvent: LiveData<Event<Unit>> = _restartEvent
 
     init {
-        App.application.tgClient.authState.onEach {
+        _client.authState.onEach {
             when (it) {
-                Authentication.UNAUTHENTICATED, Authentication.UNKNOWN -> {
+                TelegramAuthStatus.UNAUTHENTICATED, TelegramAuthStatus.UNKNOWN -> {
                     layoutState.value = LayoutState.LOADING
                 }
-                Authentication.WAIT_FOR_NUMBER -> {
+                TelegramAuthStatus.WAIT_FOR_NUMBER -> {
                     layoutState.value = LayoutState.INSERT_NUMBER
                 }
-                Authentication.WAIT_FOR_CODE -> {
+                TelegramAuthStatus.WAIT_FOR_CODE -> {
                     layoutState.value = LayoutState.INSERT_CODE
                 }
-                Authentication.WAIT_FOR_PASSWORD -> {
+                TelegramAuthStatus.WAIT_FOR_PASSWORD -> {
                     layoutState.value = LayoutState.INSERT_PASSWORD
                 }
-                Authentication.AUTHENTICATED -> {
+                TelegramAuthStatus.AUTHENTICATED -> {
                     layoutState.value = LayoutState.AUTHENTICATED
+                    _restartEvent.value = Event(Unit)
                 }
             }
         }.launchIn(viewModelScope)
@@ -55,27 +56,27 @@ class TelegramAuthViewModel : DefaultViewModel() {
     fun insertPhoneNumber() {
         if (!phoneNumberText.value.isNullOrBlank()) {
             layoutState.value = LayoutState.LOADING
-            App.application.tgClient.insertPhoneNumber(phoneNumberText.value!!)
+            _client.insertPhoneNumber(phoneNumberText.value!!)
         }
     }
 
     fun insertCode() {
         if (!codeText.value.isNullOrBlank()) {
             layoutState.value = LayoutState.LOADING
-            App.application.tgClient.insertCode(codeText.value!!)
-            _restartEvent.value = Event(Unit)
+            _client.insertCode(codeText.value!!)
         }
     }
 
     fun insertPassword() {
         if (!passwordText.value.isNullOrBlank()) {
             layoutState.value = LayoutState.LOADING
-            App.application.tgClient.insertPassword(passwordText.value!!)
+            _client.insertPassword(passwordText.value!!)
         }
     }
 
     fun logout() {
         layoutState.value = LayoutState.LOADING
-        App.application.tgClient.logout()
+        _client.logout()
+        _restartEvent.value = Event(Unit)
     }
 }

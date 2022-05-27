@@ -12,10 +12,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.EventObserver
+import com.progcorp.unitedmessengers.data.model.Bot
+import com.progcorp.unitedmessengers.data.model.Chat
 import com.progcorp.unitedmessengers.data.model.Conversation
+import com.progcorp.unitedmessengers.data.model.User
 import com.progcorp.unitedmessengers.databinding.FragmentVkBinding
-import com.progcorp.unitedmessengers.ui.conversation.chat.ChatFragment
-import com.progcorp.unitedmessengers.ui.conversation.dialog.DialogFragment
+import com.progcorp.unitedmessengers.ui.conversation.ConversationActivity
 import com.progcorp.unitedmessengers.ui.conversations.ConversationsListAdapter
 import java.lang.Exception
 
@@ -69,22 +71,16 @@ class VKFragment : Fragment() {
     }
 
     private fun navigateToChat(conversation: Conversation) {
-        when (conversation.type) {
-            "chat" -> {
+        when (conversation.companion) {
+            is User, is Bot, is Chat -> {
                 val bundle = bundleOf(
-                    ChatFragment.ARGS_CONVERSATION to conversation
+                    ConversationActivity.ARGS_CONVERSATION to conversation
                 )
-                findNavController().navigate(R.id.action_navigation_chats_to_chatFragment, bundle)
-            }
-            "user" -> {
-                val bundle = bundleOf(
-                    DialogFragment.ARGS_CONVERSATION to conversation
-                )
-                findNavController().navigate(R.id.action_navigation_chats_to_dialogFragment, bundle)
+                findNavController().navigate(R.id.action_navigation_chats_to_conversation_activity, bundle)
             }
             else -> {
                 Toast.makeText(
-                    context, "Dialogs with groups are not supported", Toast.LENGTH_SHORT
+                    context, "This conversation are not supported", Toast.LENGTH_SHORT
                 ).show()
             }
         }

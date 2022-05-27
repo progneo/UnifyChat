@@ -11,7 +11,3 @@ fun View.forceHideKeyboard() {
         this.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     inputManager.hideSoftInputFromWindow(this.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
 }
-
-fun View.showSnackBar(text: String) {
-    Snackbar.make(this.rootView.findViewById(R.id.container), text, Snackbar.LENGTH_SHORT).show()
-}

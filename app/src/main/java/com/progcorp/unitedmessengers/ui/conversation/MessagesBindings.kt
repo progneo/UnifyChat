@@ -2,19 +2,17 @@
 
 package com.progcorp.unitedmessengers.ui.conversation
 
-import android.graphics.BitmapFactory
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
-import com.progcorp.unitedmessengers.data.model.Conversation
-import com.progcorp.unitedmessengers.data.model.Message
+import com.progcorp.unitedmessengers.data.model.*
+import com.progcorp.unitedmessengers.interfaces.ICompanion
+import com.progcorp.unitedmessengers.interfaces.IMessageContent
 import com.progcorp.unitedmessengers.util.Constants
 import com.progcorp.unitedmessengers.util.ConvertTime
-import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.fragment_dialog.view.*
 
 @BindingAdapter("bind_messages_list")
 fun bindMessagesList(listView: RecyclerView, items: List<Message>?) {
@@ -25,27 +23,127 @@ fun bindMessagesList(listView: RecyclerView, items: List<Message>?) {
 
 @BindingAdapter("bind_online")
 fun TextView.bindOnlineText(conversation: Conversation) {
-    text = if (conversation.is_online) {
-        resources.getString(R.string.online)
+    val isOnline = conversation.getIsOnline()
+    if (isOnline == null) {
+        text = resources.getString(R.string.bot)
     }
     else {
-        when (conversation.last_online) {
-            Constants.LastSeen.unknown -> {
-                resources.getString(R.string.last_seen, resources.getString(R.string.unknown))
-            }
-            Constants.LastSeen.lastWeek -> {
-                resources.getString(R.string.last_seen, resources.getString(R.string.last_week))
-            }
-            Constants.LastSeen.lastMonth -> {
-                resources.getString(R.string.last_seen, resources.getString(R.string.last_month))
-            }
-            Constants.LastSeen.recently -> {
-                resources.getString(R.string.last_seen, resources.getString(R.string.recently))
-            }
-            else -> {
-                resources.getString(R.string.last_seen, ConvertTime.toDateTime(conversation.last_online))
+        text = if (conversation.getIsOnline()!!) {
+            resources.getString(R.string.online)
+        } else {
+            when (conversation.getLastOnline()) {
+                Constants.LastSeen.unknown -> {
+                    resources.getString(R.string.last_seen, resources.getString(R.string.unknown))
+                }
+                Constants.LastSeen.lastWeek -> {
+                    resources.getString(R.string.last_seen, resources.getString(R.string.last_week))
+                }
+                Constants.LastSeen.lastMonth -> {
+                    resources.getString(
+                        R.string.last_seen,
+                        resources.getString(R.string.last_month)
+                    )
+                }
+                Constants.LastSeen.recently -> {
+                    resources.getString(R.string.last_seen, resources.getString(R.string.recently))
+                }
+                else -> {
+                    resources.getString(
+                        R.string.last_seen,
+                        conversation.getLastOnline()?.let { ConvertTime.toDateTime(it) }
+                    )
+                }
             }
         }
+    }
+}
+
+@BindingAdapter("bind_name")
+fun TextView.bindNameText(sender: ICompanion) {
+    when(sender) {
+        is User -> {
+            this.text = "${sender.firstName} ${sender.lastName}"
+        }
+        is Bot -> {
+            this.text = sender.title
+        }
+        is Chat -> {
+            this.text = sender.title
+        }
+    }
+}
+
+@BindingAdapter("bind_message_image")
+fun ImageView.bindMessageImage(content: IMessageContent) {
+
+}
+
+@BindingAdapter("bind_extra_info")
+fun TextView.bindExtraInfo(companion: ICompanion) {
+    this.text = when (companion) {
+        is User -> {
+            if (companion.isOnline) {
+                resources.getString(R.string.online)
+            } else {
+                when (companion.lastSeen) {
+                    Constants.LastSeen.unknown -> {
+                        resources.getString(
+                            R.string.last_seen,
+                            resources.getString(R.string.unknown)
+                        )
+                    }
+                    Constants.LastSeen.lastWeek -> {
+                        resources.getString(
+                            R.string.last_seen,
+                            resources.getString(R.string.last_week)
+                        )
+                    }
+                    Constants.LastSeen.lastMonth -> {
+                        resources.getString(
+                            R.string.last_seen,
+                            resources.getString(R.string.last_month)
+                        )
+                    }
+                    Constants.LastSeen.recently -> {
+                        resources.getString(
+                            R.string.last_seen,
+                            resources.getString(R.string.recently)
+                        )
+                    }
+                    else -> {
+                        resources.getString(
+                            R.string.last_seen, ConvertTime.toDateTime(companion.lastSeen)
+                        )
+                    }
+                }
+            }
+
+        }
+        is Chat -> {
+            companion.membersCount.toString()
+        }
+        is Bot -> {
+            resources.getString(R.string.bot)
+        }
+        else -> {
+            ""
+        }
+    }
+}
+
+@BindingAdapter("bind_message_time")
+fun TextView.bindMessageTime(timeStamp: Long) {
+    this.text = ConvertTime.toTime(timeStamp)
+}
+
+@BindingAdapter("bind_message_text")
+fun TextView.bindMessageText(messageContent: IMessageContent) {
+    if (messageContent.text == "") {
+        this.visibility = View.GONE
+    }
+    else {
+        this.visibility = View.VISIBLE
+        this.text = messageContent.text
     }
 }
 
@@ -56,8 +154,8 @@ fun View.bindShouldMessageShowTimeText(message: Message, viewModel: Conversation
     if (index != viewModel.messagesList.value!!.size - 1) {
         val messageBefore = viewModel.messagesList.value!![index + 1]
 
-        val dateBefore = ConvertTime.toDateWithDayOfWeek(messageBefore.date)
-        val dateThis = ConvertTime.toDateWithDayOfWeek(message.date)
+        val dateBefore = ConvertTime.toDateWithDayOfWeek(messageBefore.timeStamp)
+        val dateThis = ConvertTime.toDateWithDayOfWeek(message.timeStamp)
 
         if (dateThis == dateBefore) {
             this.visibility = View.GONE

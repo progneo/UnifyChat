@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:foreground="?android:attr/selectableItemBackground">
+    <data>
+        <variable
+            name="message"
+            type="com.progcorp.unitedmessengers.data.model.Message" />
+        <variable
+            name="viewmodel"
+            type="com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel" />
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/dateText"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_20sdp"
+            app:bind_epochTimeMsToDate="@{message.timeStamp}"
+            app:bind_message="@{message}"
+            app:bind_message_viewModel="@{viewmodel}"
+            style="@style/textview_date_text"
+            tools:text="30 april" />
+
+        <LinearLayout
+            android:id="@+id/layout_message_left"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            style="@style/layout_message">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/photo_sender"
+                app:bind_image_url="@{message.sender.photo}"
+                style="@style/imageview_sender_photo"
+                tools:src="@drawable/ic_baseline_account_circle_24" />
+
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/photo_sticker_left"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/photo_sender"
+                app:bind_message_image="@{message.content}"
+                style="@style/imageview_sticker"
+                tools:src="@drawable/sticker"/>
+
+            <TextView
+                android:id="@+id/text_time_left"
+                style="@style/info_text_views"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:bind_message_time="@{message.timeStamp}"
+                tools:text="11:50"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>

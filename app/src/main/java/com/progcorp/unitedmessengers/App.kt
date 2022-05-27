@@ -2,8 +2,14 @@ package com.progcorp.unitedmessengers
 
 import android.app.Application
 import android.os.Build
-import com.progcorp.unitedmessengers.data.TelegramClient
-import com.progcorp.unitedmessengers.util.VKAccountService
+import androidx.core.view.WindowCompat
+import com.google.android.material.color.DynamicColors
+import com.progcorp.unitedmessengers.data.clients.TelegramClient
+import com.progcorp.unitedmessengers.data.clients.VKClient
+import com.progcorp.unitedmessengers.data.db.TelegramDataSource
+import com.progcorp.unitedmessengers.data.db.TelegramRepository
+import com.progcorp.unitedmessengers.data.db.VKDataSource
+import com.progcorp.unitedmessengers.data.db.VKRepository
 import com.progcorp.unitedmessengers.interfaces.IAccountService
 import org.drinkless.td.libcore.telegram.TdApi
 import retrofit2.Retrofit
@@ -11,18 +17,22 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.*
 
 class App : Application() {
-    lateinit var vkAccountService: IAccountService
-    lateinit var vkRetrofit: Retrofit
-    lateinit var tgClient: TelegramClient
-
     companion object {
         lateinit var application: App
     }
 
+    private lateinit var vkRetrofit: Retrofit
+
+    lateinit var vkRepository: VKRepository
+    lateinit var vkAccountService: IAccountService
+    lateinit var tgClient: TelegramClient
+    lateinit var tgRepository: TelegramRepository
+
     override fun onCreate() {
         super.onCreate()
-        application = this
         setLocale()
+        application = this
+
         tgClient = TelegramClient(TdApi.TdlibParameters().apply {
             apiId = applicationContext.resources.getInteger(R.integer.telegram_api_id)
             apiHash = applicationContext.getString(R.string.telegram_api_hash)
@@ -32,14 +42,19 @@ class App : Application() {
             databaseDirectory = applicationContext.filesDir.absolutePath
             deviceModel = Build.MODEL
             systemVersion = Build.VERSION.RELEASE
-            applicationVersion = "0.1"
+            applicationVersion = "1.0.0"
             enableStorageOptimizer = true
         })
-        vkAccountService = VKAccountService(getSharedPreferences("vk_account", MODE_PRIVATE))
+        tgRepository = TelegramRepository(TelegramDataSource(tgClient))
+
+        vkAccountService = VKClient(getSharedPreferences("vk_account", MODE_PRIVATE))
         vkRetrofit = Retrofit.Builder()
             .baseUrl("https://api.vk.com/method/")
             .addConverterFactory(ScalarsConverterFactory.create())
             .build()
+        vkRepository = VKRepository(VKDataSource(vkRetrofit, vkAccountService as VKClient))
+
+        DynamicColors.applyToActivitiesIfAvailable(this)
     }
 
     private fun setLocale() {

@@ -4,15 +4,15 @@ import android.os.Handler
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
-import com.progcorp.unitedmessengers.data.db.Conversations
 import com.progcorp.unitedmessengers.data.model.Conversation
+import com.progcorp.unitedmessengers.data.model.User
 import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
-import com.progcorp.unitedmessengers.ui.DefaultViewModel
 import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.addNewItem
 import com.progcorp.unitedmessengers.util.removeItem
 import com.progcorp.unitedmessengers.util.updateItemAt
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 
 class VKConversationsViewModelFactory() :
@@ -22,18 +22,14 @@ class VKConversationsViewModelFactory() :
     }
 }
 
-enum class LayoutState {
-    LOGGED_ID, NEED_TO_LOGIN
-}
+class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
 
-class VKConversationsViewModel : DefaultViewModel(), Conversations.OnConversationsFetched, IConversationsViewModel {
+    private val _repository = App.application.vkRepository
 
-    private val _scope = MainScope()
+    private val _scope: CoroutineScope = viewModelScope
 
     private var _handler = Handler()
     private var _conversationsGetter: Runnable = Runnable {  }
-
-    private val _conversations: Conversations = Conversations(this)
 
     private val _loginEvent = MutableLiveData<Event<Unit>>()
 
@@ -41,12 +37,14 @@ class VKConversationsViewModel : DefaultViewModel(), Conversations.OnConversatio
     private val _updatedConversation = MutableLiveData<Conversation>()
     private val _selectedConversation = MutableLiveData<Event<Conversation>>()
     private val _loginState = MutableLiveData<Boolean>()
+    private val _user = MutableLiveData<User?>()
 
     val loginEvent: LiveData<Event<Unit>> = _loginEvent
 
     var selectedConversation: LiveData<Event<Conversation>> = _selectedConversation
     val conversationsList = MediatorLiveData<MutableList<Conversation>>()
-    val layoutState = MediatorLiveData<LayoutState>()
+    val loginState: LiveData<Boolean> = _loginState
+    val user: LiveData<User?> = _user
 
     init {
         conversationsList.addSource(_updatedConversation) { newConversation ->
@@ -57,12 +55,12 @@ class VKConversationsViewModel : DefaultViewModel(), Conversations.OnConversatio
                 conversationsList.addNewItem(newConversation)
             }
             else {
-                if (newConversation.date != conversation.date) {
+                if (newConversation.lastMessage?.timeStamp != conversation.lastMessage?.timeStamp) {
                     conversationsList.removeItem(conversation)
                     conversationsList.addFrontItem(newConversation)
                 }
-                else if (newConversation.unread_count != conversation.unread_count ||
-                    newConversation.is_online != conversation.is_online) {
+                else if (newConversation.unreadCount != conversation.unreadCount ||
+                    newConversation.getLastOnline() != conversation.getLastOnline()) {
                     conversationsList.updateItemAt(newConversation, conversationsList.value!!.indexOf(conversation))
                 }
             }
@@ -75,77 +73,58 @@ class VKConversationsViewModel : DefaultViewModel(), Conversations.OnConversatio
                 conversationsList.addFrontItem(newConversation)
             }
             else {
-                if (newConversation.date != conversation.date) {
+                if (newConversation.lastMessage?.timeStamp != conversation.lastMessage?.timeStamp) {
                     conversationsList.removeItem(conversation)
                     conversationsList.addFrontItem(newConversation)
                 }
-                else if (newConversation.unread_count != conversation.unread_count ||
-                        newConversation.is_online != conversation.is_online) {
+                else if (newConversation.unreadCount != conversation.unreadCount ||
+                    newConversation.getLastOnline() != conversation.getLastOnline()) {
                     conversationsList.updateItemAt(newConversation, conversationsList.value!!.indexOf(conversation))
                 }
             }
         }
         _loginState.value = (App.application.vkAccountService.token != null)
-        layoutState.addSource(_loginState) { updateLayoutState(it) }
         if (_loginState.value == true) {
             setupConversations()
         }
     }
 
-    private fun updateLayoutState(loginState: Boolean?) {
-        if (loginState != null) {
-            layoutState.value = when (_loginState.value) {
-                true -> LayoutState.LOGGED_ID
-                else -> LayoutState.NEED_TO_LOGIN
-            }
-        }
-    }
-
     private fun setupConversations() {
         startGetter()
-        loadConversations(0)
     }
 
-    private fun loadConversations(offset: Int) {
+    private fun loadConversations(offset: Int, isNew: Boolean) {
         _scope.launch {
-            _conversations.vkGetConversations(offset, false)
-        }
-    }
-
-    private fun loadNewConversations() {
-        _scope.launch {
-            _conversations.vkGetConversations(0, true)
+            _repository.getConversations(offset).mapNotNull { list ->
+                list.forEach {
+                    if (isNew) {
+                        _newConversation.value = it
+                    }
+                    else {
+                        _updatedConversation.value = it
+                    }
+                }
+            }
+            conversationsList.value?.sortByDescending { it.lastMessage?.timeStamp }
         }
     }
 
     private fun startGetter() {
         _conversationsGetter = Runnable {
-            loadNewConversations()
+            loadConversations(0, true)
             _handler.postDelayed(_conversationsGetter, 5000)
         }
         _handler.postDelayed(_conversationsGetter, 0)
     }
 
-    override fun showConversations(chats: ArrayList<Conversation>, isNew: Boolean) {
-        if (!isNew) {
-            for (conversation in chats) {
-                _updatedConversation.value = conversation
-            }
-        }
-        else {
-            for (conversation in chats) {
-                _newConversation.value = conversation
-            }
-        }
-        conversationsList.value?.sortByDescending { it.date }
-    }
-
     fun loadMoreConversations() {
-        loadConversations(conversationsList.value!!.size)
+        loadConversations(conversationsList.value!!.size, false)
     }
 
     fun goToLoginPressed() {
-        _loginEvent.value = Event(Unit)
+        if (!_loginState.value!!) {
+            _loginEvent.value = Event(Unit)
+        }
     }
 
     override fun selectConversationPressed(conversation: Conversation) {

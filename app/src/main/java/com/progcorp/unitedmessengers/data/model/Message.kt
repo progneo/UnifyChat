@@ -1,131 +1,65 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package com.progcorp.unitedmessengers.data.model
 
-import android.os.Parcel
-import android.os.Parcelable
-import com.progcorp.unitedmessengers.data.db.telegram.TgConversationsRepository
-import com.progcorp.unitedmessengers.data.db.telegram.TgUserRepository
-import com.progcorp.unitedmessengers.util.ConvertTime
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.progcorp.unitedmessengers.App
+import com.progcorp.unitedmessengers.interfaces.ICompanion
+import com.progcorp.unitedmessengers.interfaces.IMessageContent
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.Serializable
 
 data class Message(
     var id: Long = 0,
-    val date: Long = 0,
-    val time: String = "",
-    val peerId: Long = 0,
-    val fromId: Long = 0,
-    val out: Boolean = false,
-    val senderName: String = "",
-    var senderPhoto: String = "",
-    val action: String = "",
-    val attachments: String = "",
-    var sticker: String = "",
-    val text: String = "",
-    val type: Int = 0,
-    val messenger: String = ""
-) : Parcelable {
+    var timeStamp: Long = 0,
+    val sender: ICompanion? = null,
+    val isOutgoing: Boolean = false,
+    val replyToMessageId: Long = 0,
+    var content: IMessageContent = MessageText()
+) : Serializable {
 
-    constructor(parcel: Parcel) : this(
-        parcel.readLong(),
-        parcel.readLong(),
-        parcel.readString()!!,
-        parcel.readLong(),
-        parcel.readLong(),
-        parcel.readByte() != 0.toByte(),
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readInt(),
-        parcel.readString()!!
-    )
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeLong(id)
-        parcel.writeLong(date)
-        parcel.writeString(time)
-        parcel.writeLong(fromId)
-        parcel.writeLong(peerId)
-        parcel.writeByte(if (out) 1 else 0)
-        parcel.writeString(senderName)
-        parcel.writeString(senderPhoto)
-        parcel.writeString(action)
-        parcel.writeString(attachments)
-        parcel.writeString(sticker)
-        parcel.writeString(text)
-        parcel.writeInt(type)
-        parcel.writeString(messenger)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<Message> {
-        const val MESSAGE_OUT = 0
-        const val STICKER_OUT = 1
-        const val ATTACHMENT_OUT = 2
-        const val CHAT_MESSAGE = 3
-        const val CHAT_STICKER = 4
-        const val CHAT_ATTACHMENT = 5
-        const val CHAT_ACTION = 6
-        const val DIALOG_MESSAGE = 10
-        const val DIALOG_STICKER = 11
-        const val DIALOG_ATTACHMENT = 12
-
-        override fun createFromParcel(parcel: Parcel): Message {
-            return Message(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Message?> {
-            return arrayOfNulls(size)
-        }
-
-        fun vkParse(json: JSONObject, profiles: JSONArray?): Message {
+    companion object {
+        suspend fun vkParse(json: JSONObject, profiles: JSONArray?, groups: JSONArray?): Message {
             val id = json.optLong("id")
             val timeStamp = json.optLong("date") * 1000
-            val time = ConvertTime.toTime(timeStamp)
-            val fromId = json.optLong("from_id")
-            val peerId = json.optLong("peer_id")
-            val out: Boolean = when (json.getInt("out")) {
-                1 -> true
-                else -> false
-            }
-            var text = json.getString("text")
 
-            val isDialog = fromId == peerId
-
-            var fromName = "User"
-            var photo = ""
-            var action = "message"
-            var attachments = ""
-            var sticker = ""
-            var type = 0
-
+            var sender: ICompanion? = null
             if (profiles != null) {
                 for (i in 0 until profiles.length()) {
                     val profile = profiles.getJSONObject(i)
-                    if (profile.getLong("id") == fromId) {
-                        fromName =
-                            profile.getString("first_name") + " " + profile.getString("last_name")
-                        photo = profile.getString("photo_100")
+                    if (profile.getLong("id") == json.getLong("from_id")) {
+                        sender = User.vkParse(profile)
                         break
                     }
                 }
             }
+            if (sender == null && groups != null) {
+                for (i in 0 until groups.length()) {
+                    val group = groups.getJSONObject(i)
+                    if (group.getLong("id") == json.getLong("from_id")) {
+                        sender = Bot.vkParse(group)
+                        break
+                    }
+                }
+            }
+            if (sender == null) {
+                sender = json.optJSONObject("chat_settings")?.let {
+                    Chat.vkParse(it, id)
+                }
+            }
 
-            if (!isDialog) {
+            val isOutgoing: Boolean = json.getInt("out") == 1
+            val replyToMessageId: Long = json.optJSONObject("reply_message")?.getLong("id") ?: 0
+
+            val text = json.getString("text")
+            var messageContent: IMessageContent = MessageText(text)
+
+            if (sender is Chat) {
                 val actionObject = json.optJSONObject("action")
                 if (actionObject != null) {
-                    action = actionObject.getString("type")
-                    text = when (action) {
+                    val action = when (actionObject.getString("type")) {
                         "chat_photo_update" -> "Обновлена фотография беседы"
                         "chat_photo_remove " -> "Удалена фотография беседы"
                         "chat_create" -> "Создана беседа"
@@ -137,339 +71,289 @@ data class Message(
                         "chat_invite_user_by_link" -> "Пользователь присоединился"
                         else -> "Действие в беседе"
                     }
-                    type = CHAT_ACTION
+                    messageContent = MessageChat(action)
                 }
             }
 
-            if (type != CHAT_ACTION) {
-                val attachmentsObject = json.getJSONArray("attachments")
-                if (attachmentsObject.length() != 0) {
-                    for (i in 0 until attachmentsObject.length()) {
-                        val at = attachmentsObject.getJSONObject(i)
-                        when (at.getString("type")) {
-                            "sticker" -> {
-                                sticker = at.getJSONObject("sticker")
-                                    .getJSONArray("images")
-                                    .getJSONObject(3)
-                                    .getString("url")
-                                break
-                            }
-                            "photo" -> {
-                                attachments = "Фото"
-                            }
-                            "video" -> {
-                                attachments = "Видео"
-                            }
-                            "audio" -> {
-                                attachments = "Аудиозапись"
-                            }
-                            "audio_message" -> {
-                                attachments = "Голосовое сообщение"
-                                break
-                            }
-                            "doc" -> {
-                                attachments = "Документ"
-                            }
-                            "link" -> {
-                                continue
-                            }
-                            "market" -> {
-                                attachments = "Товар"
-                                break
-                            }
-                            "market_album" -> {
-                                attachments = "Подборка товаров"
-                                break
-                            }
-                            "wall" -> {
-                                attachments = "Запись со стены"
-                                break
-                            }
-                            "wall_reply" -> {
-                                attachments = "Комментарий к записи"
-                                break
-                            }
-                            "gift" -> {
-                                attachments = "Подарок"
-                                break
-                            }
-                        }
+            val attachmentsObject = json.getJSONArray("attachments")
+            if (attachmentsObject.length() == 1) {
+                val at = attachmentsObject.getJSONObject(0)
+                when (at.getString("type")) {
+                    "sticker" -> {
+                        val sticker = at.getJSONObject("sticker")
+                            .getJSONArray("images")
+                            .getJSONObject(3)
+                            .getString("url")
+                        messageContent = MessageSticker(sticker)
                     }
-                }
+                    "photo" -> {
+                        val photo = at.getJSONObject("photo")
+                            .getJSONArray("sizes")
+                            .getJSONObject(4)
+                            .getString("url")
+                        messageContent = MessagePhoto(text, photo)
+                    }
+                    "video" -> {
+                        val video = at.getJSONObject("video")
+                            .getJSONArray("image")
+                            .getJSONObject(5)
+                            .getString("url")
+                        messageContent = MessageVideo(text, video)
+                    }
+                    "audio" -> {
+                        val audioObj = at.getJSONObject("audio")
+                        val name = audioObj.getString("artist") +
+                                " " + audioObj.getString("title")
+                        messageContent = MessageUnknown(text, name)
+                    }
+                    "audio_message" -> {
+                        val audio = at.getJSONObject("audio_message")
+                            .getString("link_mp3")
+                        messageContent = MessageVoiceNote(text, audio)
 
-                if (attachments == "") {
-                    if (json.getJSONArray("fwd_messages").length() != 0) {
-                        attachments = "Пересланное сообщение"
                     }
-                    else if (json.optJSONObject("reply_message") != null) {
-                        attachments = "Ответ на сообщение"
+                    "doc" -> {
+                        val doc = at.getJSONObject("doc")
+                            .getString("title")
+                        messageContent = MessageDocument(text, doc)
                     }
-                }
-
-                when {
-                    sticker != "" -> {
-                        type = when {
-                            out -> {
-                                STICKER_OUT
-                            }
-                            isDialog -> {
-                                DIALOG_STICKER
-                            }
-                            else -> {
-                                CHAT_STICKER
-                            }
-                        }
+                    "link" -> {}
+                    "market" -> {
+                        messageContent = MessageUnknown(text, "Товар")
                     }
-
-                    attachments != "" -> {
-                        type = when {
-                            out -> {
-                                ATTACHMENT_OUT
-                            }
-                            isDialog -> {
-                                DIALOG_ATTACHMENT
-                            }
-                            else -> {
-                                CHAT_ATTACHMENT
-                            }
-                        }
+                    "market_album" -> {
+                        messageContent = MessageUnknown(text, "Подборка товаров")
                     }
-
-                    else -> {
-                        type = when {
-                            out -> {
-                                MESSAGE_OUT
-                            }
-                            isDialog -> {
-                                DIALOG_MESSAGE
-                            }
-                            else -> {
-                                CHAT_MESSAGE
-                            }
-                        }
+                    "wall" -> {
+                        messageContent = MessageUnknown(text, "Запись со стены")
+                    }
+                    "wall_reply" -> {
+                        messageContent = MessageUnknown(text, "Комментарий к записи")
+                    }
+                    "gift" -> {
+                        messageContent = MessageUnknown(text, "Подарок")
                     }
                 }
             }
+            else if (attachmentsObject.length() > 1) {
+                var items = arrayListOf<String>()
+                for (i in 0 until attachmentsObject.length()) {
+                    val at = attachmentsObject.getJSONObject(i)
+                    when (at.getString("type")) {
+                        "photo" -> {
+                            items.add(at.getJSONObject("photo")
+                                .getJSONArray("sizes")
+                                .getJSONObject(4)
+                                .getString("url")
+                            )
+                        }
+                        "video" -> {
+                            items.add(at.getJSONObject("video")
+                                .getJSONArray("image")
+                                .getJSONObject(5)
+                                .getString("url")
+                            )
+                        }
+                        else -> {
+                            items = arrayListOf()
+                            break
+                        }
+                    }
+                }
+                messageContent = if (items.size > 0) {
+                    MessageCollage(text, items)
+                } else {
+                    MessageUnknown(text, "Вложения")
+                }
+            }
 
-            return Message(
-                id,
-                timeStamp,
-                time,
-                fromId,
-                peerId,
-                out,
-                fromName,
-                photo,
-                action,
-                attachments,
-                sticker,
-                text,
-                type,
-                "vk"
-            )
+            return Message(id, timeStamp, sender, isOutgoing, replyToMessageId, messageContent)
         }
 
-        suspend fun tgParse(tgMessage: TdApi.Message, tgConversation: TdApi.Chat): Message {
+        suspend fun tgParse(tgMessage: TdApi.Message): Message {
+            val client = App.application.tgClient
+            val repository = App.application.tgRepository
+
             val id = tgMessage.id
             val timeStamp: Long = (tgMessage.date).toLong() * 1000
-            val time = ConvertTime.toTime(timeStamp)
-            val peerId = tgMessage.chatId
-            val fromId: Long
-            val messageSender: TdApi.MessageSender
-            val fromName: String
-            when (tgMessage.senderId::class.simpleName) {
-                "MessageSenderUser" -> {
-                    messageSender = tgMessage.senderId as TdApi.MessageSenderUser
-                    val sender = TgUserRepository().getUser(messageSender.userId).first()
-                    fromId = sender.id
-                    fromName = sender.firstName + " " + sender.lastName
+
+            val sender: ICompanion = when (tgMessage.senderId.constructor) {
+                TdApi.MessageSenderUser.CONSTRUCTOR -> {
+                    repository.getUser((tgMessage.senderId as TdApi.MessageSenderUser).userId).first()
                 }
                 else -> {
-                    messageSender = tgMessage.senderId as TdApi.MessageSenderChat
-                    val sender = TgConversationsRepository().getChat(messageSender.chatId).first()
-                    fromId = sender.id
-                    fromName = sender.title
+                    repository.getConversation((tgMessage.senderId as TdApi.MessageSenderChat).chatId).first().companion!!
                 }
             }
-            val isDialog = when(tgConversation.type.constructor) {
-                TdApi.ChatTypePrivate.CONSTRUCTOR -> true
-                TdApi.ChatTypeSecret.CONSTRUCTOR -> true
-                else -> false
-            }
 
-            val out = tgMessage.isOutgoing
+            val isOutgoing = tgMessage.isOutgoing
 
-            val photo = ""
-            val action = ""
-            var attachments = ""
-            val sticker = ""
-            var text = ""
-            var type = 0
-            when (tgMessage.content::class.simpleName) {
-                "MessageText" -> text = (tgMessage.content as TdApi.MessageText).text.text
-                "MessageAnimation" -> attachments = "GIF"
-                "MessageAudio" -> {
-                    text = (tgMessage.content as TdApi.MessageAudio).caption.text
-                    attachments = "Аудиозапись"
+            val replyToMessageId = tgMessage.replyToMessageId
+
+            var messageContent: IMessageContent = MessageText()
+
+            when (tgMessage.content.constructor) {
+                TdApi.MessageText.CONSTRUCTOR -> {
+                    messageContent = MessageText((tgMessage.content as TdApi.MessageText).text.text)
                 }
-                "MessageDocument" -> {
-                    text = (tgMessage.content as TdApi.MessageDocument).caption.text
-                    attachments = "Документ"
-                }
-                "MessagePhoto" -> {
-                    text = (tgMessage.content as TdApi.MessagePhoto).caption.text
-                    attachments = "Фото"
-                }
-                "MessageExpiredPhoto" -> attachments = "Удалённое фото"
-                "MessageSticker" -> {
-                    attachments = if (!(tgMessage.content as TdApi.MessageSticker).sticker.isAnimated) {
-                        "Стикер"
-                    } else {
-                        "Анимированный стикер"
+                TdApi.MessageAnimation.CONSTRUCTOR -> {
+                    val content = tgMessage.content as TdApi.MessageAnimation
+                    client.downloadableFile(content.animation.animation!!).mapNotNull {
+                        messageContent = MessageAnimation(path = it!!)
                     }
                 }
-                "MessageVideo" -> {
-                    text = (tgMessage.content as TdApi.MessageVideo).caption.text
-                    attachments = "Видео"
+                TdApi.MessageAudio.CONSTRUCTOR -> {
+                    val content = tgMessage.content as TdApi.MessageAudio
+                    messageContent = MessageUnknown(content.caption.text, content.audio.fileName)
                 }
-                "MessageExpiredVideo" -> attachments = "Удалённое видео"
-                "MessageVideoNote" -> attachments = "Видео-сообщение"
-                "MessageVoiceNote" -> attachments = "Голосовое сообщение"
-                "MessageLocation" -> attachments = "Место на карте"
-                "MessageVenue" -> attachments = "Место встречи"
-                "MessageContact" -> attachments = "Контакт"
-                "MessageAnimatedEmoji" -> text = (tgMessage.content as TdApi.MessageAnimatedEmoji).emoji
-                "MessageDice" -> attachments = "Кости"
-                "MessageGame" -> attachments = "Игра"
-                "MessagePoll" -> attachments = "Голосование"
-                "MessageInvoice" -> attachments = "Счёт"
-                "MessageCall" -> attachments = "Звонок"
-                "MessageVideoChatScheduled" -> attachments = "Запланированный видеозвонок"
-                "MessageVideoChatStarted" -> attachments = "Видеозвонок начат"
-                "MessageVideoChatEnded" -> attachments = "Видеозвонок окончен"
-                "MessageInviteVideoChatParticipants" -> attachments = "Приглашение в видеозвонок"
-                "MessageChatChangeTitle" -> {
-                    text = "Чат сменил название"
-                    type = CHAT_ACTION
+                TdApi.MessageDocument.CONSTRUCTOR -> {
+                    val content = tgMessage.content as TdApi.MessageDocument
+                    messageContent = MessageUnknown(content.caption.text, content.document.fileName)
                 }
-                "MessageChatChangePhoto" -> {
-                    text = "Чат сменил фото"
-                    type = CHAT_ACTION
-                }
-                "MessageChatDeletePhoto" -> {
-                    text = "Чат удалил фото"
-                    type = CHAT_ACTION
-                }
-                "MessageChatAddMembers" -> {
-                    text = "Новый участник"
-                    type = CHAT_ACTION
-                }
-                "MessageChatJoinByLink" -> {
-                    text = "Новый участник присоеденился по ссылке"
-                    type = CHAT_ACTION
-                }
-                "MessageChatJoinByRequest" -> {
-                    text = "Новый участник"
-                    type = CHAT_ACTION
-                }
-                "MessageChatDeleteMember" -> {
-                    text = "Участник покинул чат"
-                    type = CHAT_ACTION
-                }
-                "MessageChatUpgradeTo" -> {
-                    text = "Группа стала супергруппой (?)"
-                    type = CHAT_ACTION
-                }
-                "MessageChatUpgradeFrom" -> {
-                    text = "Группа стала супергруппой (?)"
-                    type = CHAT_ACTION
-                }
-                "MessagePinMessage" -> {
-                    text = "Закреплено сообщение"
-                    type = CHAT_ACTION
-                }
-                "MessageScreenshotTaken" -> {
-                    text = "Был сделан скриншот чата"
-                    type = CHAT_ACTION
-                }
-                "MessageChatSetTheme" -> {
-                    text = "Изменена тема чата"
-                    type = CHAT_ACTION
-                }
-                "MessageChatSetTtl" -> {
-                    text = "Время жизни сообщений изменено"
-                    type = CHAT_ACTION
-                }
-                "MessageCustomServiceAction" -> {
-                    text = "Что-то произошло"
-                    type = CHAT_ACTION
-                }
-                "MessageGameScore" -> {
-                    text = "В игре побит рекорд"
-                    type = CHAT_ACTION
-                }
-                "MessagePaymentSuccessful" -> {
-                    text = "Успешная оплата"
-                    type = CHAT_ACTION
-                }
-                "MessagePaymentSuccessfulBot" -> {
-                    text = "Успешная оплата"
-                    type = CHAT_ACTION
-                }
-                "MessageContactRegistered" -> {
-                    text = "Присоединился к Telegram"
-                    type = CHAT_ACTION
-                }
-                else -> attachments = "Какое-то действие"
-            }
-            if (type != CHAT_ACTION) {
-                when {
-                    attachments != "" -> {
-                        type = when {
-                            out -> {
-                                ATTACHMENT_OUT
-                            }
-                            isDialog -> {
-                                DIALOG_ATTACHMENT
-                            }
-                            else -> {
-                                CHAT_ATTACHMENT
-                            }
-                        }
+                TdApi.MessagePhoto.CONSTRUCTOR -> {
+                    val content = tgMessage.content as TdApi.MessagePhoto
+                    client.downloadableFile(content.photo.sizes[0].photo).mapNotNull {
+                        messageContent = MessagePhoto(content.caption.text, it!!)
                     }
-
-                    else -> {
-                        type = when {
-                            out -> {
-                                MESSAGE_OUT
-                            }
-                            isDialog -> {
-                                DIALOG_MESSAGE
-                            }
-                            else -> {
-                                CHAT_MESSAGE
-                            }
+                }
+                TdApi.MessageExpiredPhoto.CONSTRUCTOR -> {
+                    messageContent = MessageExpiredPhoto()
+                }
+                TdApi.MessageSticker.CONSTRUCTOR -> {
+                    val content = tgMessage.content as TdApi.MessageSticker
+                    if (content.sticker.isAnimated) {
+                        messageContent = MessageText("Анимированный стикер: ${content.sticker.emoji}")
+                    }
+                    else {
+                        client.downloadableFile(content.sticker.sticker).mapNotNull {
+                            messageContent = MessageSticker(it!!)
                         }
                     }
                 }
+                TdApi.MessageVideo.CONSTRUCTOR -> {
+                    val content = tgMessage.content as TdApi.MessageVideo
+                    content.video.thumbnail?.let {
+                        client.downloadableFile(it.file).mapNotNull { path ->
+                            messageContent = MessagePhoto(content.caption.text, path!!)
+                        }
+                    }
+                }
+                TdApi.MessageExpiredVideo.CONSTRUCTOR -> {
+                    messageContent = MessageExpiredVideo()
+                }
+                TdApi.MessageVideoNote.CONSTRUCTOR -> {
+                    val content = tgMessage.content as TdApi.MessageVideoNote
+                    content.videoNote.thumbnail?.let {
+                        client.downloadableFile(it.file).mapNotNull { path ->
+                            messageContent = MessagePhoto(path!!)
+                        }
+                    }
+                }
+                TdApi.MessageVoiceNote.CONSTRUCTOR -> {
+                    val content = tgMessage.content as TdApi.MessageVoiceNote
+                    messageContent = MessageVoiceNote(content.caption.text)
+                }
+                TdApi.MessageLocation.CONSTRUCTOR -> {
+                    messageContent = MessageLocation()
+                }
+                TdApi.MessageVenue.CONSTRUCTOR -> {
+                    messageContent = MessageLocation()
+                }
+                TdApi.MessageContact.CONSTRUCTOR -> {
+                    messageContent = MessageUnknown(info = "Контакт")
+                }
+                TdApi.MessageAnimatedEmoji.CONSTRUCTOR -> {
+                    val content = tgMessage.content as TdApi.MessageAnimatedEmoji
+                    messageContent = MessageText(content.emoji)
+                }
+                TdApi.MessageDice.CONSTRUCTOR -> {
+                    val content = tgMessage.content as TdApi.MessageDice
+                    messageContent = MessageUnknown(content.emoji, content.value.toString())
+                }
+                TdApi.MessageGame.CONSTRUCTOR -> {
+                    messageContent = MessageUnknown(info = "Игра")
+                }
+                TdApi.MessagePoll.CONSTRUCTOR -> {
+                    messageContent = MessagePoll()
+                }
+                TdApi.MessageInvoice.CONSTRUCTOR -> {
+                    messageContent = MessageUnknown(info = "Счёт")
+                }
+                TdApi.MessageCall.CONSTRUCTOR -> {
+                    messageContent = MessageUnknown(info = "Звонок")
+                }
+                TdApi.MessageVideoChatScheduled.CONSTRUCTOR -> {
+                    messageContent = MessageUnknown(info = "Запланированный видеозвонок")
+                }
+                TdApi.MessageVideoChatStarted.CONSTRUCTOR -> {
+                    messageContent = MessageUnknown(info = "Видеозвонок начат")
+                }
+                TdApi.MessageVideoChatEnded.CONSTRUCTOR -> {
+                    messageContent = MessageUnknown(info = "Видеозвонок окончен")
+                }
+                TdApi.MessageInviteVideoChatParticipants.CONSTRUCTOR -> {
+                    messageContent = MessageUnknown(info = "Приглашение в видеозвонок")
+                }
+                TdApi.MessageChatChangeTitle.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Чат сменил название")
+                }
+                TdApi.MessageChatChangePhoto.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Чат сменил фото")
+                }
+                TdApi.MessageChatDeletePhoto.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Чат удалил фото")
+                }
+                TdApi.MessageChatAddMembers.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Новый участник")
+                }
+                TdApi.MessageChatJoinByLink.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Новый участник присоеденился по ссылке")
+                }
+                TdApi.MessageChatJoinByRequest.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Новый участник")
+                }
+                TdApi.MessageChatDeleteMember.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Участник покинул чат")
+                }
+                TdApi.MessageChatUpgradeTo.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Группа стала супергруппой (?)")
+                }
+                TdApi.MessageChatUpgradeFrom.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Группа стала супергруппой (?)")
+                }
+                TdApi.MessagePinMessage.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Закреплено сообщение")
+                }
+                TdApi.MessageScreenshotTaken.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Был сделан скриншот чата")
+                }
+                TdApi.MessageChatSetTheme.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Изменена тема чата")
+                }
+                TdApi.MessageChatSetTtl.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Время жизни сообщений изменено")
+                }
+                TdApi.MessageCustomServiceAction.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Что-то произошло")
+                }
+                TdApi.MessageGameScore.CONSTRUCTOR -> {
+                    messageContent = MessageChat("В игре побит рекорд")
+                }
+                TdApi.MessagePaymentSuccessful.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Успешная оплата")
+                }
+                TdApi.MessagePaymentSuccessfulBot.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Успешная оплата")
+                }
+                TdApi.MessageContactRegistered.CONSTRUCTOR -> {
+                    messageContent = MessageChat("Присоединился к Telegram")
+                }
+                else -> {
+                    messageContent = MessageUnknown(info = "Какое-то действие")
+                }
             }
 
-            return Message(
-                id,
-                timeStamp,
-                time,
-                fromId,
-                peerId,
-                out,
-                fromName,
-                photo,
-                action,
-                attachments,
-                sticker,
-                text,
-                type,
-                "tg"
-            )
+            return Message(id, timeStamp, sender, isOutgoing, replyToMessageId, messageContent)
         }
     }
 }
