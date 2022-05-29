@@ -152,7 +152,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                     }
                     Constants.Messenger.TG -> {
                         App.application.tgRepository.sendMessage(chat.value!!.id, message).map {
-                            message.id = it
+                            //message.id = it
                         }
                     }
                 }

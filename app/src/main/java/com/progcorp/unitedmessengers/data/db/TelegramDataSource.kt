@@ -33,10 +33,13 @@ class TelegramDataSource (private val client: TelegramClient) {
     fun getConversations(limit: Int): Flow<List<TdApi.Chat>> =
         getConversationIds(limit)
             .map { ids -> ids.map { getConversation(it) } }
-            .flatMapLatest { chatsFlow -> combine(chatsFlow) { chats -> chats.toList() } }
+            .flatMapLatest { chatsFlow ->
+                combine(chatsFlow) { chats ->
+                    chats.toList()
+                }
+            }
 
-    suspend fun getConversation(chatId: Long): Flow<TdApi.Chat> =
-        callbackFlow {
+    fun getConversation(chatId: Long): Flow<TdApi.Chat> = callbackFlow {
             client.client.send(TdApi.GetChat(chatId)) {
                 when (it.constructor) {
                     TdApi.Chat.CONSTRUCTOR -> {
@@ -50,10 +53,10 @@ class TelegramDataSource (private val client: TelegramClient) {
                     }
                 }
             }
-            awaitClose { }
-        }
+        awaitClose()
+    }
 
-    suspend fun getSupergroup(chatId: Long): Flow<TdApi.Supergroup> =
+    fun getSupergroup(chatId: Long): Flow<TdApi.Supergroup> =
         callbackFlow {
             client.client.send(TdApi.GetSupergroup(chatId)) {
                 when (it.constructor) {
@@ -77,7 +80,7 @@ class TelegramDataSource (private val client: TelegramClient) {
             awaitClose { }
         }
 
-    suspend fun getBasicGroup(chatId: Long): Flow<TdApi.BasicGroup> =
+    fun getBasicGroup(chatId: Long): Flow<TdApi.BasicGroup> =
         callbackFlow {
             client.client.send(TdApi.GetBasicGroup(chatId)) {
                 when (it.constructor) {
@@ -102,7 +105,7 @@ class TelegramDataSource (private val client: TelegramClient) {
         }
 
 
-    suspend fun getMessages(chatId: Long, fromMessageId: Long, limit: Int): Flow<List<TdApi.Message>> =
+    fun getMessages(chatId: Long, fromMessageId: Long, limit: Int): Flow<List<TdApi.Message>> =
         callbackFlow {
             client.client.send(TdApi.GetChatHistory(chatId, fromMessageId, 0, limit, false)) {
                 when (it.constructor) {
@@ -126,7 +129,7 @@ class TelegramDataSource (private val client: TelegramClient) {
             awaitClose { }
         }
 
-    suspend fun getMessage(chatId: Long, messageId: Long): Flow<TdApi.Message> =
+    fun getMessage(chatId: Long, messageId: Long): Flow<TdApi.Message> =
         callbackFlow {
             client.client.send(TdApi.GetMessage(chatId, messageId)) {
                 when (it.constructor) {
@@ -150,7 +153,7 @@ class TelegramDataSource (private val client: TelegramClient) {
             awaitClose { }
         }
 
-    suspend fun sendMessage(chatId: Long, message: Message): Flow<TdApi.Message> =
+    fun sendMessage(chatId: Long, message: Message): Flow<TdApi.Message> =
         callbackFlow {
             val text = TdApi.FormattedText((message.content as MessageText).text, arrayOf(TdApi.TextEntity()))
             val input = TdApi.InputMessageText(text, true, false)

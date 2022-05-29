@@ -3,8 +3,10 @@ package com.progcorp.unitedmessengers.ui.conversations.telegram
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
+import com.progcorp.unitedmessengers.data.Resource
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.User
+import com.progcorp.unitedmessengers.enums.Status
 import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
 import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
 import com.progcorp.unitedmessengers.util.addFrontItem
@@ -12,7 +14,6 @@ import com.progcorp.unitedmessengers.util.removeItem
 import com.progcorp.unitedmessengers.util.updateItemAt
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import org.drinkless.td.libcore.telegram.TdApi
 
 class TelegramConversationsViewModelFactory :
@@ -27,13 +28,16 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     private val _client = App.application.tgClient
     private val _repository = App.application.tgRepository
 
-    private val _scope: CoroutineScope = viewModelScope
-
     private val _loginEvent = MutableLiveData<Event<Unit>>()
 
-    private val _observableConversation = MutableLiveData<Conversation>()
+    private val _conversations = MutableStateFlow<Resource<List<Conversation>>>(Resource.loading(null))
+
+    private var _observableConversation = MutableLiveData<Conversation>()
     private val _selectedConversation = MutableLiveData<Event<Conversation>>()
+
     private val _loginState = MutableLiveData<Boolean>()
+    private val _loadingState = MutableLiveData<Status>()
+
     private val _user = MutableLiveData<User?>()
 
     val loginEvent: LiveData<Event<Unit>> = _loginEvent
@@ -41,8 +45,7 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     var selectedConversation: LiveData<Event<Conversation>> = _selectedConversation
     val conversationsList = MediatorLiveData<MutableList<Conversation>>()
 
-    val conversations: Flow<List<Conversation>> = flowOf()
-
+    val loadingState: LiveData<Status> = _loadingState
     val loginState: LiveData<Boolean> = _loginState
     val user: LiveData<User?> = _user
 
@@ -70,22 +73,25 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
             else -> false
         }
         if (_loginState.value == true) {
-            refreshConversations()
+            viewModelScope.launch {
+                val data = _repository.getConversations().first()
+                when(data.status) {
+                    Status.SUCCESS -> {
+                        _loadingState.value = Status.SUCCESS
+                        for (conversation in data.data!!) {
+                            _observableConversation.value = conversation
+                        }
+                    }
+                    Status.LOADING -> {
+                        _loadingState.value = Status.LOADING
+                    }
+                    Status.ERROR -> {
+                        _loadingState.value = Status.ERROR
+                    }
+                }
+            }
         }
         _client.conversationsViewModel = this
-    }
-
-    fun refreshConversations() {
-        conversationsList.value = mutableListOf()
-        loadConversations()
-    }
-
-    fun loadConversations() {
-        MainScope().launch {
-            val conv = _repository.getConversations()
-            conversations.collect { conv.collect() }
-        }
-        conversationsList.value?.sortByDescending { it.lastMessage?.timeStamp }
     }
 
     fun goToLoginPressed() {
@@ -93,19 +99,23 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     }
 
     fun addNewChat(update: TdApi.UpdateNewChat) {
-        MainScope().launch {
+        viewModelScope.launch {
             val conversation = conversationsList.value?.find {
                 it.id == update.chat.id
             }
             if (conversation == null) {
-                val chat = async { Conversation.tgParse(update.chat) }
-                (chat.await())?.let { _observableConversation.value = it }
+                val chat = Conversation.tgParse(update.chat)
+                chat?.let { _observableConversation.value = it }
+                //val chat = _repository.getConversation(update.chat.id).first()
+                //if (chat.status == Status.SUCCESS) {
+                //    chat.data?.let { _observableConversation.value = it }
+                //}
             }
         }
     }
 
     fun updateOnline(update: TdApi.UpdateUserStatus) {
-        MainScope().launch {
+        viewModelScope.launch {
             conversationsList.value?.find {
                 it.companion is User && it.companion.id == update.userId
             }?.tgParseOnlineStatus(update)
@@ -113,7 +123,7 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     }
 
     fun updateLastMessage(update: TdApi.UpdateChatLastMessage) {
-        MainScope().launch {
+        viewModelScope.launch {
             conversationsList.value?.find {
                 it.id == update.chatId
             }?.tgParseLastMessage(update)
@@ -121,7 +131,7 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     }
 
     fun updateNewMessage(update: TdApi.UpdateNewMessage) {
-        MainScope().launch {
+        viewModelScope.launch {
             conversationsList.value?.find {
                 it.id == update.message.chatId
             }?.tgParseNewMessage(update)
@@ -129,7 +139,7 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     }
 
     fun updateReadInbox(update: TdApi.UpdateChatReadInbox) {
-        MainScope().launch {
+        viewModelScope.launch {
             conversationsList.value?.find {
                 it.id == update.chatId
             }?.unreadCount = update.unreadCount

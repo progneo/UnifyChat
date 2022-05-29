@@ -4,6 +4,7 @@ import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.interfaces.IMessageContent
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import org.drinkless.td.libcore.telegram.TdApi
@@ -179,10 +180,10 @@ data class Message(
 
             val sender: ICompanion = when (tgMessage.senderId.constructor) {
                 TdApi.MessageSenderUser.CONSTRUCTOR -> {
-                    repository.getUser((tgMessage.senderId as TdApi.MessageSenderUser).userId).first()
+                    repository.getUser((tgMessage.senderId as TdApi.MessageSenderUser).userId).first().data!!
                 }
                 else -> {
-                    repository.getConversation((tgMessage.senderId as TdApi.MessageSenderChat).chatId).first().companion!!
+                    repository.getConversation((tgMessage.senderId as TdApi.MessageSenderChat).chatId).first().data?.companion!!
                 }
             }
 
@@ -198,9 +199,7 @@ data class Message(
                 }
                 TdApi.MessageAnimation.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageAnimation
-                    client.downloadableFile(content.animation.animation!!).mapNotNull {
-                        messageContent = MessageAnimation(path = it!!)
-                    }
+                    messageContent = MessageAnimation(path = client.downloadableFile(content.animation.animation!!).first()!!)
                 }
                 TdApi.MessageAudio.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageAudio
@@ -212,9 +211,7 @@ data class Message(
                 }
                 TdApi.MessagePhoto.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessagePhoto
-                    client.downloadableFile(content.photo.sizes[0].photo).mapNotNull {
-                        messageContent = MessagePhoto(content.caption.text, it!!)
-                    }
+                    messageContent = MessagePhoto(content.caption.text, client.downloadableFile(content.photo.sizes[0].photo).first()!!)
                 }
                 TdApi.MessageExpiredPhoto.CONSTRUCTOR -> {
                     messageContent = MessageExpiredPhoto()
@@ -225,17 +222,13 @@ data class Message(
                         messageContent = MessageText("Анимированный стикер: ${content.sticker.emoji}")
                     }
                     else {
-                        client.downloadableFile(content.sticker.sticker).mapNotNull {
-                            messageContent = MessageSticker(it!!)
-                        }
+                        messageContent = MessageSticker(client.downloadableFile(content.sticker.sticker).first()!!)
                     }
                 }
                 TdApi.MessageVideo.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageVideo
                     content.video.thumbnail?.let {
-                        client.downloadableFile(it.file).mapNotNull { path ->
-                            messageContent = MessagePhoto(content.caption.text, path!!)
-                        }
+                        messageContent = MessagePhoto(content.caption.text, client.downloadableFile(it.file).first()!!)
                     }
                 }
                 TdApi.MessageExpiredVideo.CONSTRUCTOR -> {
@@ -244,9 +237,7 @@ data class Message(
                 TdApi.MessageVideoNote.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageVideoNote
                     content.videoNote.thumbnail?.let {
-                        client.downloadableFile(it.file).mapNotNull { path ->
-                            messageContent = MessagePhoto(path!!)
-                        }
+                        messageContent = MessagePhoto(client.downloadableFile(it.file).first()!!)
                     }
                 }
                 TdApi.MessageVoiceNote.CONSTRUCTOR -> {

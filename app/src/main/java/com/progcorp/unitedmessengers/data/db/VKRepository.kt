@@ -4,7 +4,7 @@ import android.util.Log
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.data.model.User
-import com.progcorp.unitedmessengers.enums.ApiStatus
+import com.progcorp.unitedmessengers.enums.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,7 +17,7 @@ class VKRepository (private val dataSource: VKDataSource) {
     suspend fun getConversations(offset: Int): Flow<List<Conversation>> {
         return flow {
             val response = dataSource.getConversations(offset)
-            if (response.status == ApiStatus.SUCCESS) {
+            if (response.status == Status.SUCCESS) {
                 val result: ArrayList<Conversation> = arrayListOf()
                 val json = response.data?.let { JSONObject(it) }
                 if (json != null) {
@@ -44,7 +44,7 @@ class VKRepository (private val dataSource: VKDataSource) {
         return flow {
             val response = dataSource.getConversationById(id)
             var result: Conversation? = null
-            if (response.status == ApiStatus.SUCCESS) {
+            if (response.status == Status.SUCCESS) {
                 try {
                     val json = response.data?.let { JSONObject(it) }
                     if (json != null) {
@@ -67,7 +67,7 @@ class VKRepository (private val dataSource: VKDataSource) {
     suspend fun getMessages(chat: Conversation, offset: Int, count: Int): Flow<List<Message>> {
         return flow {
             val response = dataSource.getMessages(chat, offset, count)
-            if (response.status == ApiStatus.SUCCESS) {
+            if (response.status == Status.SUCCESS) {
                 val result: ArrayList<Message> = arrayListOf()
                 val json = response.data?.let { JSONObject(it) }
                 if (json != null) {
@@ -90,7 +90,7 @@ class VKRepository (private val dataSource: VKDataSource) {
     suspend fun getUsers(): Flow<List<User>> {
         return flow {
             val response = dataSource.getUsers()
-            if (response.status == ApiStatus.SUCCESS) {
+            if (response.status == Status.SUCCESS) {
                 val result: ArrayList<User> = arrayListOf()
                 val json = response.data?.let { JSONObject(it) }
                 if (json != null) {
@@ -111,7 +111,7 @@ class VKRepository (private val dataSource: VKDataSource) {
     suspend fun sendMessage(chatId: Long, message: Message): Flow<Long> {
         return flow {
             val response = dataSource.sendMessage(chatId, message)
-            if (response.status == ApiStatus.SUCCESS) {
+            if (response.status == Status.SUCCESS) {
                 val result: Long = 0
                 val json = response.data?.let { JSONObject(it) }
                 if (json != null) {

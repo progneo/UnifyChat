@@ -1,6 +1,6 @@
 package com.progcorp.unitedmessengers.data.db
 
-import com.progcorp.unitedmessengers.data.ApiResult
+import com.progcorp.unitedmessengers.data.Resource
 import com.progcorp.unitedmessengers.data.clients.VKClient
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
@@ -14,7 +14,7 @@ class VKDataSource (
     private val accountService: VKClient
 ) {
 
-    suspend fun getConversations(offset: Int): ApiResult<String> {
+    suspend fun getConversations(offset: Int): Resource<String> {
         val service = retrofit.create(VKConversationsRequest::class.java)
         return getResponse(
             request = {
@@ -30,7 +30,7 @@ class VKDataSource (
         )
     }
 
-    suspend fun getConversationById(id: Int): ApiResult<String> {
+    suspend fun getConversationById(id: Int): Resource<String> {
         val service = retrofit.create(VKConversationByIdRequest::class.java)
         return getResponse(
             request = {
@@ -45,7 +45,7 @@ class VKDataSource (
         )
     }
 
-    suspend fun getMessages(chat: Conversation, offset: Int, count: Int): ApiResult<String> {
+    suspend fun getMessages(chat: Conversation, offset: Int, count: Int): Resource<String> {
         val service = retrofit.create(VKMessagesRequest::class.java)
         return getResponse(
             request = {
@@ -62,7 +62,7 @@ class VKDataSource (
         )
     }
 
-    suspend fun getUsers(): ApiResult<String> {
+    suspend fun getUsers(): Resource<String> {
         val service = retrofit.create(VKUsersRequest::class.java)
         return getResponse(
             request = {
@@ -76,7 +76,7 @@ class VKDataSource (
         )
     }
 
-    suspend fun sendMessage(chatId: Long, message: Message): ApiResult<String> {
+    suspend fun sendMessage(chatId: Long, message: Message): Resource<String> {
         val service = retrofit.create(VKSendMessageRequest::class.java)
         return getResponse(
             request = {
@@ -92,19 +92,19 @@ class VKDataSource (
         )
     }
 
-    private suspend fun <T> getResponse(request: suspend () -> Response<T>): ApiResult<T> {
+    private suspend fun <T> getResponse(request: suspend () -> Response<T>): Resource<T> {
         return try {
             val result = request.invoke()
             if (result.isSuccessful) {
-                return ApiResult.Success(result.body())
+                return Resource.success(result.body())
             }
             else {
                 val error = result.errorBody()?.toString()
                 result.errorBody()?.close()
-                ApiResult.Error(error!!)
+                Resource.error(error!!, null)
             }
         } catch (e: Throwable) {
-            ApiResult.Error("Unknown Error")
+            Resource.error("Unknown Error", null)
         }
     }
 }

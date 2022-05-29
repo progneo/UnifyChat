@@ -21,7 +21,7 @@ import com.progcorp.unitedmessengers.ui.conversation.ConversationActivity
 import com.progcorp.unitedmessengers.ui.conversations.ConversationsListAdapter
 import java.lang.Exception
 
-class TelegramFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
+class TelegramFragment : Fragment() {
     private val viewModel: TelegramConversationsViewModel by viewModels { TelegramConversationsViewModelFactory() }
 
     private lateinit var viewDataBinding: FragmentTelegramBinding
@@ -35,7 +35,6 @@ class TelegramFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         viewDataBinding =
             FragmentTelegramBinding.inflate(inflater, container, false).apply { viewmodel = viewModel }
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
-        //viewDataBinding.swipeRefreshLayout.setOnRefreshListener(this)
         return viewDataBinding.root
     }
 
@@ -77,17 +76,7 @@ class TelegramFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        viewModel.loadConversations()
-    }
-
     private fun navigateToLogin() {
         findNavController().navigate(R.id.action_navigation_chats_to_tg_auth_activity)
-    }
-
-    override fun onRefresh() {
-        viewModel.refreshConversations()
-        //viewDataBinding.swipeRefreshLayout.isRefreshing = false
     }
 }

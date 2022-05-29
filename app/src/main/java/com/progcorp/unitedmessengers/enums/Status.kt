@@ -1,6 +1,6 @@
 package com.progcorp.unitedmessengers.enums
 
-enum class ApiStatus {
+enum class Status {
     SUCCESS,
     ERROR,
     LOADING
