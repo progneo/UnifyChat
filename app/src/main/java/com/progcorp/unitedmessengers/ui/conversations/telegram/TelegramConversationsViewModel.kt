@@ -73,25 +73,33 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
             else -> false
         }
         if (_loginState.value == true) {
-            viewModelScope.launch {
-                val data = _repository.getConversations().first()
-                when(data.status) {
-                    Status.SUCCESS -> {
-                        _loadingState.value = Status.SUCCESS
-                        for (conversation in data.data!!) {
-                            _observableConversation.value = conversation
-                        }
-                    }
-                    Status.LOADING -> {
-                        _loadingState.value = Status.LOADING
-                    }
-                    Status.ERROR -> {
-                        _loadingState.value = Status.ERROR
-                    }
-                }
-            }
+            fetchChats()
         }
         _client.conversationsViewModel = this
+    }
+
+    private fun fetchChats() {
+        viewModelScope.launch {
+            val data = _repository.getConversations(1000).first()
+            for (conversation in data) {
+                val chat = Conversation.tgParse(conversation)
+                chat?.let { _observableConversation.value = it }
+            }
+            //when(data.status) {
+            //    Status.SUCCESS -> {
+            //        _loadingState.value = Status.SUCCESS
+            //        for (conversation in data.data!!) {
+            //
+            //        }
+            //    }
+            //    Status.LOADING -> {
+            //        _loadingState.value = Status.LOADING
+            //    }
+            //    Status.ERROR -> {
+            //        _loadingState.value = Status.ERROR
+            //    }
+            //}
+        }
     }
 
     fun goToLoginPressed() {

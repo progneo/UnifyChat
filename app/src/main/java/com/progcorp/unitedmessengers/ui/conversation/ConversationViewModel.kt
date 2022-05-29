@@ -13,6 +13,7 @@ import com.progcorp.unitedmessengers.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
@@ -151,9 +152,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                         }
                     }
                     Constants.Messenger.TG -> {
-                        App.application.tgRepository.sendMessage(chat.value!!.id, message).map {
-                            //message.id = it
-                        }
+                        App.application.tgRepository.sendMessage(chat.value!!.id, message).first().id
                     }
                 }
             }

@@ -180,10 +180,31 @@ data class Message(
 
             val sender: ICompanion = when (tgMessage.senderId.constructor) {
                 TdApi.MessageSenderUser.CONSTRUCTOR -> {
-                    repository.getUser((tgMessage.senderId as TdApi.MessageSenderUser).userId).first().data!!
+                    User.tgParse(repository.getUser((tgMessage.senderId as TdApi.MessageSenderUser).userId).first())
                 }
                 else -> {
-                    repository.getConversation((tgMessage.senderId as TdApi.MessageSenderChat).chatId).first().data?.companion!!
+                    val conversation = repository.getConversation((tgMessage.senderId as TdApi.MessageSenderChat).chatId).first()
+                    when(conversation.type.constructor) {
+                        TdApi.ChatTypePrivate.CONSTRUCTOR -> {
+                            User.tgParse(repository.getUser(id).first())
+                        }
+                        TdApi.ChatTypeBasicGroup.CONSTRUCTOR -> {
+                            Chat.tgParseBasicGroup(conversation, repository.getBasicGroup(
+                                (conversation.type as TdApi.ChatTypeBasicGroup).basicGroupId).first()
+                            )
+                        }
+                        TdApi.ChatTypeSupergroup.CONSTRUCTOR -> {
+                            Chat.tgParseSupergroup(conversation, repository.getSupergroup(
+                                (conversation.type as TdApi.ChatTypeSupergroup).supergroupId).first()
+                            )
+                        }
+                        TdApi.ChatTypeSecret.CONSTRUCTOR -> {
+                            User.tgParse(repository.getUser(id).first())
+                        }
+                        else -> {
+                            Chat()
+                        }
+                    }
                 }
             }
 
@@ -218,11 +239,10 @@ data class Message(
                 }
                 TdApi.MessageSticker.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageSticker
-                    if (content.sticker.isAnimated) {
-                        messageContent = MessageText("Анимированный стикер: ${content.sticker.emoji}")
-                    }
-                    else {
-                        messageContent = MessageSticker(client.downloadableFile(content.sticker.sticker).first()!!)
+                    messageContent = if (content.sticker.isAnimated) {
+                        MessageText("Анимированный стикер: ${content.sticker.emoji}")
+                    } else {
+                        MessageSticker(client.downloadableFile(content.sticker.sticker).first()!!)
                     }
                 }
                 TdApi.MessageVideo.CONSTRUCTOR -> {

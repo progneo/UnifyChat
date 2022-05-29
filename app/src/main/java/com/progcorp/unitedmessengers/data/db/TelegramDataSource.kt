@@ -27,7 +27,7 @@ class TelegramDataSource (private val client: TelegramClient) {
                     }
                 }
             }
-            awaitClose {  }
+            awaitClose { }
         }
 
     fun getConversations(limit: Int): Flow<List<TdApi.Chat>> =
@@ -40,20 +40,21 @@ class TelegramDataSource (private val client: TelegramClient) {
             }
 
     fun getConversation(chatId: Long): Flow<TdApi.Chat> = callbackFlow {
-            client.client.send(TdApi.GetChat(chatId)) {
-                when (it.constructor) {
-                    TdApi.Chat.CONSTRUCTOR -> {
-                        trySend(it as TdApi.Chat).isSuccess
-                    }
-                    TdApi.Error.CONSTRUCTOR -> {
-                        Log.e("${javaClass.simpleName}.getChat", "${(it as TdApi.Error).message}. ID: $chatId")
-                    }
-                    else -> {
-                        Log.e("${javaClass.simpleName}.getChat", "Unknown error")
-                    }
+        client.client.send(TdApi.GetChat(chatId)) {
+            when (it.constructor) {
+                TdApi.Chat.CONSTRUCTOR -> {
+                    trySend(it as TdApi.Chat).isSuccess
+                    Log.i("connas", it.title)
+                }
+                TdApi.Error.CONSTRUCTOR -> {
+                    Log.e("${javaClass.simpleName}.getChat", "${(it as TdApi.Error).message}. ID: $chatId")
+                }
+                else -> {
+                    Log.e("${javaClass.simpleName}.getChat", "Unknown error")
                 }
             }
-        awaitClose()
+        }
+        awaitClose { }
     }
 
     fun getSupergroup(chatId: Long): Flow<TdApi.Supergroup> =

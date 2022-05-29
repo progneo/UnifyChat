@@ -26,7 +26,7 @@ class App : Application() {
     lateinit var vkRepository: VKRepository
     lateinit var vkAccountService: IAccountService
     lateinit var tgClient: TelegramClient
-    lateinit var tgRepository: TelegramRepository
+    lateinit var tgRepository: TelegramDataSource
 
     override fun onCreate() {
         super.onCreate()
@@ -45,7 +45,7 @@ class App : Application() {
             applicationVersion = "1.0.0"
             enableStorageOptimizer = true
         })
-        tgRepository = TelegramRepository(TelegramDataSource(tgClient))
+        tgRepository = TelegramDataSource(tgClient)
 
         vkAccountService = VKClient(getSharedPreferences("vk_account", MODE_PRIVATE))
         vkRetrofit = Retrofit.Builder()

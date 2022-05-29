@@ -61,7 +61,7 @@ data class Conversation(
 
         if (update.lastMessage != null) {
             lastMessage = Message.tgParse(update.lastMessage!!)
-            unreadCount = repository.getConversation(this.id).last().data?.unreadCount!!
+            unreadCount = repository.getConversation(this.id).first().unreadCount
         }
     }
 
@@ -70,18 +70,18 @@ data class Conversation(
 
         if (update.message != null) {
             lastMessage = Message.tgParse(update.message!!)
-            unreadCount = repository.getConversation(this.id).last().data?.unreadCount!!
+            unreadCount = repository.getConversation(this.id).first().unreadCount
         }
     }
 
     suspend fun tgParseOnlineStatus(update: TdApi.UpdateUserStatus) {
         val repository = App.application.tgRepository
 
-        val user = repository.getUser(update.userId).last().data
+        val user = User.tgParse(repository.getUser(update.userId).first())
         companion as User
 
-        companion.isOnline = user?.isOnline == true
-        companion.lastSeen = user?.lastSeen!!
+        companion.isOnline = user.isOnline == true
+        companion.lastSeen = user.lastSeen
     }
 
     companion object {
@@ -140,20 +140,20 @@ data class Conversation(
             val companion: ICompanion?
             when(conversation.type.constructor) {
                 TdApi.ChatTypePrivate.CONSTRUCTOR -> {
-                    companion = repository.getUser(id).first().data
+                    companion = User.tgParse(repository.getUser(id).first())
                 }
                 TdApi.ChatTypeBasicGroup.CONSTRUCTOR -> {
-                    companion = repository.getBasicGroup(
-                        (conversation.type as TdApi.ChatTypeBasicGroup).basicGroupId, conversation
-                    ).first().data
+                    companion = Chat.tgParseBasicGroup(conversation, repository.getBasicGroup(
+                        (conversation.type as TdApi.ChatTypeBasicGroup).basicGroupId).first()
+                    )
                 }
                 TdApi.ChatTypeSupergroup.CONSTRUCTOR -> {
-                    companion = repository.getSupergroup(
-                        (conversation.type as TdApi.ChatTypeSupergroup).supergroupId, conversation
-                    ).first().data
+                    companion = Chat.tgParseSupergroup(conversation, repository.getSupergroup(
+                        (conversation.type as TdApi.ChatTypeSupergroup).supergroupId).first()
+                    )
                 }
                 TdApi.ChatTypeSecret.CONSTRUCTOR -> {
-                    companion = repository.getUser(id).first().data
+                    companion = User.tgParse(repository.getUser(id).first())
                 }
                 else -> {
                     companion = null
