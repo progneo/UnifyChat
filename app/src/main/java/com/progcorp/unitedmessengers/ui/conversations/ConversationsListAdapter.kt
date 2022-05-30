@@ -22,8 +22,17 @@ class ConversationsListAdapter internal constructor(private val viewModel: IConv
         }
     }
 
+    override fun registerAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) {
+        super.registerAdapterDataObserver(observer)
+
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(viewModel, getItem(position))
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position;
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

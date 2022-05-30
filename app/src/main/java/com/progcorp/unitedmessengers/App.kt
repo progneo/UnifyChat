@@ -1,6 +1,7 @@
 package com.progcorp.unitedmessengers
 
 import android.app.Application
+import android.content.res.Configuration
 import android.os.Build
 import androidx.core.view.WindowCompat
 import com.google.android.material.color.DynamicColors

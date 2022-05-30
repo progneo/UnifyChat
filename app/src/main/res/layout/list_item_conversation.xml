@@ -57,7 +57,7 @@
             android:layout_marginStart="@dimen/_6sdp"
             android:layout_marginEnd="@dimen/_6sdp"
             android:maxLines="1"
-            android:textColor="@color/primary_text"
+            android:textColor="@color/material_dynamic_neutral0"
             android:textSize="@dimen/_12ssp"
             android:textStyle="bold"
             android:ellipsize="end"
@@ -77,7 +77,7 @@
             android:layout_marginStart="@dimen/_6sdp"
             android:layout_marginEnd="@dimen/_6sdp"
             android:maxLines="1"
-            android:textColor="@color/secondary_text"
+            android:textColor="@color/material_dynamic_primary40"
             android:textSize="@dimen/_11ssp"
             android:ellipsize="end"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -89,8 +89,8 @@
 
         <TextView
             android:id="@+id/read_state"
-            android:layout_width="5dp"
-            android:layout_height="5dp"
+            android:layout_width="7dp"
+            android:layout_height="7dp"
             android:layout_gravity="center"
             android:background="@drawable/unread_messages"
             android:gravity="center"
@@ -101,24 +101,27 @@
             app:layout_constraintLeft_toLeftOf="@id/date"
             app:layout_constraintTop_toTopOf="@+id/last_message"
             app:layout_constraintBottom_toBottomOf="@+id/last_message"
-            android:visibility="invisible"/>
+            android:visibility="visible"/>
 
         <TextView
             android:id="@+id/unread_count"
-            android:layout_width="@dimen/_20sdp"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:minWidth="@dimen/_20sdp"
+            android:maxWidth="@dimen/_32sdp"
             android:background="@drawable/unread_messages"
             android:gravity="center"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/_10ssp"
+            android:textColor="@color/material_dynamic_neutral_variant30"
+            android:textSize="@dimen/_9ssp"
+            android:layout_marginHorizontal="4dp"
             app:bind_unread_count="@{conversation.unreadCount}"
             app:layout_constraintRight_toRightOf="@id/date"
             app:layout_constraintLeft_toLeftOf="@id/date"
             app:layout_constraintTop_toTopOf="@+id/last_message"
             app:layout_constraintBottom_toBottomOf="@+id/last_message"
-            tools:text="11"
-            android:visibility="visible"/>
+            tools:text="1"
+            android:visibility="invisible"/>
 
         <TextView
             android:id="@+id/date"
@@ -126,7 +129,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/material_dynamic_secondary40"
             android:textSize="@dimen/_11ssp"
             app:bind_epochTimeMsToDate_with_days_ago="@{conversation.lastMessage.timeStamp}"
             app:layout_constraintRight_toRightOf="parent"

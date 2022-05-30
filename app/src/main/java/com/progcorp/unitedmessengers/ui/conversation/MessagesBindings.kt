@@ -5,6 +5,7 @@ package com.progcorp.unitedmessengers.ui.conversation
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
@@ -139,10 +140,26 @@ fun TextView.bindMessageTime(timeStamp: Long) {
 @BindingAdapter("bind_message_text")
 fun TextView.bindMessageText(messageContent: IMessageContent) {
     if (messageContent.text == "") {
-        this.visibility = View.GONE
+        this.setTextColor(ContextCompat.getColor(context, com.google.android.material.R.color.material_dynamic_primary40))
+        when (messageContent) {
+            is MessageSticker -> this.text = "Стикер"
+            is MessagePoll -> this.text = "Голосование"
+            is MessagePhoto -> this.text = "Фото"
+            is MessageVideoNote -> this.text = "Видео-сообщение"
+            is MessageVoiceNote -> this.text = "Голосовое сообщение"
+            is MessageVideo -> this.text = "Видео"
+            is MessageAnimation -> this.text = "GIF"
+            is MessageAnimatedEmoji -> this.text = messageContent.emoji
+            is MessageCollage -> this.text = "Коллаж"
+            is MessageDocument -> this.text = "Документ"
+            is MessageLocation -> this.text = "Местоположение"
+            else -> {
+                this.text = "Необработанное сообщение"
+            }
+        }
     }
     else {
-        this.visibility = View.VISIBLE
+        this.setTextColor(ContextCompat.getColor(context, com.google.android.material.R.color.material_dynamic_neutral0))
         this.text = messageContent.text
     }
 }

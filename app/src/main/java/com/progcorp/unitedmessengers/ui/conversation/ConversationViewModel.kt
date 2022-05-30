@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package com.progcorp.unitedmessengers.ui.conversation
 
 import android.os.Handler
@@ -11,7 +9,6 @@ import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.data.model.MessageText
 import com.progcorp.unitedmessengers.util.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

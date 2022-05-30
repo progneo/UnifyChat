@@ -3,10 +3,11 @@ package com.progcorp.unitedmessengers.data.model
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.interfaces.IMessageContent
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONArray
 import org.json.JSONObject
@@ -220,7 +221,14 @@ data class Message(
                 }
                 TdApi.MessageAnimation.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageAnimation
-                    messageContent = MessageAnimation(path = client.downloadableFile(content.animation.animation!!).first()!!)
+                    messageContent = MessageAnimation()
+                    MainScope().launch {
+                        val result = async { client.downloadableFile(content.animation.animation!!).first() }
+                        val photo = result.await()
+                        if (photo != null) {
+                            messageContent = MessageAnimation(photo)
+                        }
+                    }
                 }
                 TdApi.MessageAudio.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageAudio
@@ -232,7 +240,14 @@ data class Message(
                 }
                 TdApi.MessagePhoto.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessagePhoto
-                    messageContent = MessagePhoto(content.caption.text, client.downloadableFile(content.photo.sizes[0].photo).first()!!)
+                    messageContent = MessagePhoto(content.caption.text)
+                    MainScope().launch {
+                        val result = async { client.downloadableFile(content.photo.sizes[0].photo).first() }
+                        val photo = result.await()
+                        if (photo != null) {
+                            messageContent = MessagePhoto(content.caption.text, photo)
+                        }
+                    }
                 }
                 TdApi.MessageExpiredPhoto.CONSTRUCTOR -> {
                     messageContent = MessageExpiredPhoto()
@@ -240,7 +255,7 @@ data class Message(
                 TdApi.MessageSticker.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageSticker
                     messageContent = if (content.sticker.isAnimated) {
-                        MessageText("Анимированный стикер: ${content.sticker.emoji}")
+                        MessageAnimatedEmoji(emoji = content.sticker.emoji)
                     } else {
                         MessageSticker(client.downloadableFile(content.sticker.sticker).first()!!)
                     }
@@ -248,7 +263,14 @@ data class Message(
                 TdApi.MessageVideo.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageVideo
                     content.video.thumbnail?.let {
-                        messageContent = MessagePhoto(content.caption.text, client.downloadableFile(it.file).first()!!)
+                        messageContent = MessagePhoto()
+                        MainScope().launch {
+                            val result = async { client.downloadableFile(it.file).first() }
+                            val photo = result.await()
+                            if (photo != null) {
+                                messageContent = MessagePhoto(photo)
+                            }
+                        }
                     }
                 }
                 TdApi.MessageExpiredVideo.CONSTRUCTOR -> {
@@ -257,7 +279,14 @@ data class Message(
                 TdApi.MessageVideoNote.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageVideoNote
                     content.videoNote.thumbnail?.let {
-                        messageContent = MessagePhoto(client.downloadableFile(it.file).first()!!)
+                        messageContent = MessagePhoto()
+                        MainScope().launch {
+                            val result = async { client.downloadableFile(it.file).first() }
+                            val photo = result.await()
+                            if (photo != null) {
+                                messageContent = MessagePhoto(photo)
+                            }
+                        }
                     }
                 }
                 TdApi.MessageVoiceNote.CONSTRUCTOR -> {

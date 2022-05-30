@@ -3,7 +3,10 @@ package com.progcorp.unitedmessengers.data.model
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.util.Constants
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONObject
 
@@ -28,20 +31,13 @@ data class User(
             deactivated = json.optBoolean("deactivated", false)
         )
 
-        fun tgParse(tdUser: TdApi.User): User {
-            val client = App.application.tgClient
-
+        suspend fun tgParse(tdUser: TdApi.User): User {
             val id = tdUser.id
             val firstName = tdUser.firstName
             val lastName = tdUser.lastName
-            var photo = "https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg"
-            if (tdUser.profilePhoto != null) {
-                client.downloadableFile(tdUser.profilePhoto!!.small).mapNotNull {
-                    photo = it!!
-                }
-            }
             var isOnline = false
             val lastSeen: Long
+            val photo = ""
             when (tdUser.status.constructor) {
                 TdApi.UserStatusEmpty.CONSTRUCTOR -> {
                     lastSeen = Constants.LastSeen.unknown
@@ -65,7 +61,22 @@ data class User(
                 else -> lastSeen = Constants.LastSeen.unknown
             }
             val deactivated = !tdUser.haveAccess
-            return User(id, firstName, lastName, photo, lastSeen, isOnline, deactivated)
+            val user = User(id, firstName, lastName, photo, lastSeen, isOnline, deactivated)
+            if (tdUser.profilePhoto != null) {
+                user.loadPhoto(tdUser.profilePhoto!!.small)
+            }
+            return user
+        }
+    }
+
+    override fun loadPhoto(file: TdApi.File) {
+        val client = App.application.tgClient
+        MainScope().launch {
+            val result = async { client.downloadableFile(file).first() }
+            val path = result.await()
+            if (path != null) {
+                photo = path
+            }
         }
     }
 }

@@ -2,23 +2,16 @@
 
 package com.progcorp.unitedmessengers.ui.conversations
 
-import android.graphics.BitmapFactory
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toolbar
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.User
 import com.progcorp.unitedmessengers.interfaces.ICompanion
-import com.progcorp.unitedmessengers.ui.bindConversationImageWithPicasso
-import com.progcorp.unitedmessengers.util.Constants
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.toList
 
 @BindingAdapter("bind_conversations_list")
 fun bindConversationsList(listView: RecyclerView, items: List<Conversation>?) {
@@ -40,6 +33,13 @@ fun TextView.bindUnreadCount(unreadCount: Int) {
     when {
         unreadCount <= 0 -> {
             this.visibility = View.INVISIBLE
+        }
+        unreadCount > 9999 -> {
+            this.text = resources.getString(
+                R.string.reduce_messages_count,
+                (unreadCount / 1000).toString()
+            )
+            this.visibility = View.VISIBLE
         }
         else -> {
             this.text = unreadCount.toString()

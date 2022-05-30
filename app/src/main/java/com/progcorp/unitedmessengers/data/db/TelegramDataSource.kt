@@ -44,7 +44,6 @@ class TelegramDataSource (private val client: TelegramClient) {
             when (it.constructor) {
                 TdApi.Chat.CONSTRUCTOR -> {
                     trySend(it as TdApi.Chat).isSuccess
-                    Log.i("connas", it.title)
                 }
                 TdApi.Error.CONSTRUCTOR -> {
                     Log.e("${javaClass.simpleName}.getChat", "${(it as TdApi.Error).message}. ID: $chatId")

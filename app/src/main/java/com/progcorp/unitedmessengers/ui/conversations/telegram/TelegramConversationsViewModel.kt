@@ -9,6 +9,7 @@ import com.progcorp.unitedmessengers.data.model.User
 import com.progcorp.unitedmessengers.enums.Status
 import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
 import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
+import com.progcorp.unitedmessengers.ui.conversations.ConversationsListAdapter
 import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.removeItem
 import com.progcorp.unitedmessengers.util.updateItemAt
@@ -30,7 +31,9 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
 
     private val _loginEvent = MutableLiveData<Event<Unit>>()
 
-    private val _conversations = MutableStateFlow<Resource<List<Conversation>>>(Resource.loading(null))
+    private val _notifyItemInsertedEvent = MutableLiveData<Event<Int>>()
+    private val _notifyItemChangedEvent = MutableLiveData<Event<Int>>()
+    private val _notifyItemMovedEvent = MutableLiveData<Event<Pair<Int, Int>>>()
 
     private var _observableConversation = MutableLiveData<Conversation>()
     private val _selectedConversation = MutableLiveData<Event<Conversation>>()
@@ -42,10 +45,13 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
 
     val loginEvent: LiveData<Event<Unit>> = _loginEvent
 
+    val notifyItemInsertedEvent: LiveData<Event<Int>> = _notifyItemInsertedEvent
+    val notifyItemChangedEvent: LiveData<Event<Int>> = _notifyItemChangedEvent
+    val notifyItemMovedEvent: LiveData<Event<Pair<Int, Int>>> = _notifyItemMovedEvent
+
     var selectedConversation: LiveData<Event<Conversation>> = _selectedConversation
     val conversationsList = MediatorLiveData<MutableList<Conversation>>()
 
-    val loadingState: LiveData<Status> = _loadingState
     val loginState: LiveData<Boolean> = _loginState
     val user: LiveData<User?> = _user
 
@@ -56,15 +62,8 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
             }
             if (conversation == null) {
                 conversationsList.addFrontItem(newConversation)
-            }
-            else {
-                if (newConversation.lastMessage?.timeStamp != conversation.lastMessage?.timeStamp) {
-                    conversationsList.removeItem(conversation)
-                    conversationsList.addFrontItem(newConversation)
-                }
-                else if (newConversation.unreadCount != conversation.unreadCount ||
-                        newConversation.getLastOnline() != conversation.getLastOnline()) {
-                    conversationsList.updateItemAt(newConversation, conversationsList.value!!.indexOf(conversation))
+                conversationsList.value?.sortByDescending {
+                    it.lastMessage?.timeStamp
                 }
             }
         }
@@ -79,27 +78,26 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     }
 
     private fun fetchChats() {
-        viewModelScope.launch {
+        MainScope().launch {
             val data = _repository.getConversations(1000).first()
             for (conversation in data) {
                 val chat = Conversation.tgParse(conversation)
                 chat?.let { _observableConversation.value = it }
             }
-            //when(data.status) {
-            //    Status.SUCCESS -> {
-            //        _loadingState.value = Status.SUCCESS
-            //        for (conversation in data.data!!) {
-            //
-            //        }
-            //    }
-            //    Status.LOADING -> {
-            //        _loadingState.value = Status.LOADING
-            //    }
-            //    Status.ERROR -> {
-            //        _loadingState.value = Status.ERROR
-            //    }
-            //}
         }
+    }
+
+    //TODO: Notify change
+    private fun notifyItemInserted(position: Int) {
+        _notifyItemInsertedEvent.value = Event(position)
+    }
+
+    private fun notifyItemChanged(position: Int) {
+        _notifyItemChangedEvent.value = Event(position)
+    }
+
+    private fun notifyItemMoved(pair: Pair<Int, Int>) {
+        _notifyItemMovedEvent.value = Event(pair)
     }
 
     fun goToLoginPressed() {
@@ -114,43 +112,69 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
             if (conversation == null) {
                 val chat = Conversation.tgParse(update.chat)
                 chat?.let { _observableConversation.value = it }
-                //val chat = _repository.getConversation(update.chat.id).first()
-                //if (chat.status == Status.SUCCESS) {
-                //    chat.data?.let { _observableConversation.value = it }
-                //}
+                conversationsList.value?.sortByDescending {
+                    it.lastMessage?.timeStamp
+                }
+                conversationsList.value?.indexOf(chat)?.let { notifyItemInserted(it) }
             }
         }
     }
 
     fun updateOnline(update: TdApi.UpdateUserStatus) {
         viewModelScope.launch {
-            conversationsList.value?.find {
+            val item = conversationsList.value?.find {
                 it.companion is User && it.companion.id == update.userId
-            }?.tgParseOnlineStatus(update)
+            }
+            item?.tgParseOnlineStatus(update)
+            conversationsList.value?.indexOf(item)?.let { notifyItemChanged(it) }
         }
     }
 
     fun updateLastMessage(update: TdApi.UpdateChatLastMessage) {
         viewModelScope.launch {
-            conversationsList.value?.find {
+            val item = conversationsList.value?.find {
                 it.id == update.chatId
-            }?.tgParseLastMessage(update)
+            }
+            if (item != null) {
+                val previousIndex = conversationsList.value?.indexOf(item)
+                item.tgParseLastMessage(update)
+                conversationsList.value?.sortByDescending {
+                    it.lastMessage?.timeStamp
+                }
+                conversationsList.value?.indexOf(item)?.let {
+                    notifyItemMoved(Pair(previousIndex!!, it))
+                }
+            }
         }
     }
 
     fun updateNewMessage(update: TdApi.UpdateNewMessage) {
         viewModelScope.launch {
-            conversationsList.value?.find {
+            val item = conversationsList.value?.find {
                 it.id == update.message.chatId
-            }?.tgParseNewMessage(update)
+            }
+            if (item != null) {
+                val previousIndex = conversationsList.value?.indexOf(item)
+                item.tgParseNewMessage(update)
+                conversationsList.value?.sortByDescending {
+                    it.lastMessage?.timeStamp
+                }
+                conversationsList.value?.indexOf(item)?.let {
+                    notifyItemMoved(Pair(previousIndex!!, it))
+                }
+            }
         }
     }
 
     fun updateReadInbox(update: TdApi.UpdateChatReadInbox) {
         viewModelScope.launch {
-            conversationsList.value?.find {
+            val item = conversationsList.value?.find {
                 it.id == update.chatId
-            }?.unreadCount = update.unreadCount
+            }
+            item?.unreadCount = update.unreadCount
+            conversationsList.value?.indexOf(item)?.let {
+                notifyItemChanged(it)
+            }
         }
     }
 

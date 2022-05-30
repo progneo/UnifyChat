@@ -9,7 +9,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.EventObserver
 import com.progcorp.unitedmessengers.data.model.Bot
@@ -19,13 +20,15 @@ import com.progcorp.unitedmessengers.data.model.User
 import com.progcorp.unitedmessengers.databinding.FragmentTelegramBinding
 import com.progcorp.unitedmessengers.ui.conversation.ConversationActivity
 import com.progcorp.unitedmessengers.ui.conversations.ConversationsListAdapter
+import kotlinx.android.synthetic.main.activity_conversation.*
 import java.lang.Exception
 
 class TelegramFragment : Fragment() {
-    private val viewModel: TelegramConversationsViewModel by viewModels { TelegramConversationsViewModelFactory() }
-
     private lateinit var viewDataBinding: FragmentTelegramBinding
     private lateinit var listAdapter: ConversationsListAdapter
+    private lateinit var listAdapterObserver: RecyclerView.AdapterDataObserver
+
+    private val viewModel: TelegramConversationsViewModel by viewModels { TelegramConversationsViewModelFactory() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +50,10 @@ class TelegramFragment : Fragment() {
     private fun setupListAdapter() {
         val viewModel = viewDataBinding.viewmodel
         if (viewModel != null) {
+            listAdapterObserver = (object : RecyclerView.AdapterDataObserver(){
+            })
             listAdapter = ConversationsListAdapter(viewModel)
+            listAdapter.registerAdapterDataObserver(listAdapterObserver)
             viewDataBinding.recyclerView.adapter = listAdapter
         }
         else {
@@ -58,6 +64,15 @@ class TelegramFragment : Fragment() {
     private fun setupObservers() {
         viewModel.selectedConversation.observe(viewLifecycleOwner, EventObserver { navigateToChat(it) } )
         viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver { navigateToLogin() })
+        viewModel.notifyItemInsertedEvent.observe(viewLifecycleOwner, EventObserver {
+            listAdapter.notifyItemInserted(it)
+        })
+        viewModel.notifyItemChangedEvent.observe(viewLifecycleOwner, EventObserver {
+            listAdapter.notifyItemChanged(it)
+        })
+        viewModel.notifyItemMovedEvent.observe(viewLifecycleOwner, EventObserver {
+            listAdapter.notifyItemMoved(it.first, it.second)
+        })
     }
 
     private fun navigateToChat(conversation: Conversation) {
