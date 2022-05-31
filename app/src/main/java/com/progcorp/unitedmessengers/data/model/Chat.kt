@@ -2,6 +2,7 @@ package com.progcorp.unitedmessengers.data.model
 
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.interfaces.ICompanion
+import com.progcorp.unitedmessengers.util.Constants
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
@@ -13,15 +14,16 @@ data class Chat(
     override val id: Long = 0,
     var title: String = "",
     override var photo: String = "",
-    val membersCount: Int = 0
+    val membersCount: Int = 0,
+    override var messenger: Int = 0
 ) : ICompanion {
     companion object {
         fun vkParse(json: JSONObject, peerId: Long) = Chat(
             id = peerId,
             title = json.optString("title"),
-            photo = json.optJSONObject("photo")?.optString("photo_100")
-                ?: "https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg",
-            membersCount = json.optInt("members_count")
+            photo = json.optJSONObject("photo")!!.optString("photo_100"),
+            membersCount = json.optInt("members_count"),
+            Constants.Messenger.VK
         )
 
         suspend fun tgParseSupergroup(tdChat: TdApi.Chat, group: TdApi.Supergroup): Chat {
@@ -29,7 +31,7 @@ data class Chat(
             val title: String = tdChat.title
             val photo = ""
             val membersCount: Int = group.memberCount
-            val chat = Chat(id, title, photo, membersCount)
+            val chat = Chat(id, title, photo, membersCount, Constants.Messenger.TG)
             if (tdChat.photo != null) {
                 chat.loadPhoto(tdChat.photo!!.small)
             }
@@ -41,7 +43,7 @@ data class Chat(
            val title: String = tdChat.title
            val photo = ""
            val membersCount: Int = group.memberCount
-           val chat = Chat(id, title, photo, membersCount)
+           val chat = Chat(id, title, photo, membersCount, Constants.Messenger.TG)
            if (tdChat.photo != null) {
                chat.loadPhoto(tdChat.photo!!.small)
            }

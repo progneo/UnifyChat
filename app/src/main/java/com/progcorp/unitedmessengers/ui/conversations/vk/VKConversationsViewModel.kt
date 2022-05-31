@@ -122,7 +122,7 @@ class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
     }
 
     fun goToLoginPressed() {
-        if (!_loginState.value!!) {
+        if (_loginState.value == false) {
             _loginEvent.value = Event(Unit)
         }
     }

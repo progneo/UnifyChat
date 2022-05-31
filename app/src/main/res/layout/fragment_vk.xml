@@ -18,33 +18,31 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center">
-
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
             app:liftOnScroll="true">
-            <androidx.appcompat.widget.Toolbar
+            <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_scrollFlags="scroll|enterAlways|snap">
+                android:layout_height="?attr/actionBarSize">
                 <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:padding="11dp"
-                    android:onClick="@{() -> viewmodel.goToLoginPressed()}"
+                    android:layout_width="?attr/actionBarSize"
+                    android:layout_height="?attr/actionBarSize"
+                    android:padding="16dp"
                     android:src="@drawable/ic_baseline_login_24"
-                    app:bind_appbar_image="@{viewmodel.user.photo}"
+                    android:onClick="@{() -> viewmodel.goToLoginPressed()}"
+                    app:bind_appbar_image="@{viewmodel.user}"
                     app:shapeAppearanceOverlay="@style/circleImageView"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="10dp"
                     android:textSize="22sp"
                     android:ellipsize="end"
                     app:bind_appbar_name="@{viewmodel.user}"
                     tools:text="@string/login_text"/>
-            </androidx.appcompat.widget.Toolbar>
+            </com.google.android.material.appbar.MaterialToolbar>
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -52,12 +50,14 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
+            android:layout_gravity="top"
             android:orientation="vertical"
-            android:visibility="@{viewmodel.loginState ? View.GONE : View.VISIBLE}"
+            android:clipToPadding="false"
+            android:visibility="@{viewmodel.loginState ? View.VISIBLE : View.GONE}"
             app:bind_conversations_list="@{viewmodel.conversationsList}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:itemAnimator="@{null}"
             tools:visibility="visible"
             tools:listitem="@layout/list_item_conversation" />
 

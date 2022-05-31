@@ -17,7 +17,8 @@ data class User(
     override var photo: String = "",
     var lastSeen: Long = 0,
     var isOnline: Boolean = false,
-    var deactivated: Boolean = false
+    var deactivated: Boolean = false,
+    override var messenger: Int = 0
 ) : ICompanion {
 
     companion object {
@@ -28,7 +29,8 @@ data class User(
             photo = json.optString("photo_100", ""),
             lastSeen = (json.optJSONObject("last_seen")?.optLong("time") ?: 0) * 1000,
             isOnline = json.optInt("online") != 0,
-            deactivated = json.optBoolean("deactivated", false)
+            deactivated = json.optBoolean("deactivated", false),
+            Constants.Messenger.VK
         )
 
         suspend fun tgParse(tdUser: TdApi.User): User {
@@ -61,7 +63,7 @@ data class User(
                 else -> lastSeen = Constants.LastSeen.unknown
             }
             val deactivated = !tdUser.haveAccess
-            val user = User(id, firstName, lastName, photo, lastSeen, isOnline, deactivated)
+            val user = User(id, firstName, lastName, photo, lastSeen, isOnline, deactivated, Constants.Messenger.TG)
             if (tdUser.profilePhoto != null) {
                 user.loadPhoto(tdUser.profilePhoto!!.small)
             }

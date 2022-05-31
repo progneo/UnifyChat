@@ -34,4 +34,5 @@
     <string name="last_week">на этой неделе</string>
     <string name="bot">Бот</string>
     <string name="login_to_account">Сначала вам нужно авторизоваться</string>
+    <string name="outgoing">Вы:</string>
 </resources>

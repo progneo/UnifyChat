@@ -32,7 +32,7 @@ fun ImageView.bindImageWithPicasso(url: String?) {
 fun ImageView.bindConversationImageWithPicasso(conversation: Conversation, path: String?) {
     when (path) {
         null -> Unit
-        "" -> Picasso.get().load("https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg").error(R.drawable.ic_baseline_account_circle_24).into(this)
+        "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png").error(R.drawable.ic_baseline_account_circle_24).into(this)
         else -> {
             when (conversation.messenger) {
                 Constants.Messenger.TG -> {

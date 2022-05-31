@@ -6,5 +6,6 @@ import java.io.Serializable
 interface ICompanion : Serializable {
     val id: Long
     var photo: String
+    var messenger: Int
     fun loadPhoto(file: TdApi.File)
 }

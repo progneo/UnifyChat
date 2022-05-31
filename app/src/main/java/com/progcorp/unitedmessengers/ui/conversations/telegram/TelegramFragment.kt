@@ -9,7 +9,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.EventObserver
@@ -20,7 +19,6 @@ import com.progcorp.unitedmessengers.data.model.User
 import com.progcorp.unitedmessengers.databinding.FragmentTelegramBinding
 import com.progcorp.unitedmessengers.ui.conversation.ConversationActivity
 import com.progcorp.unitedmessengers.ui.conversations.ConversationsListAdapter
-import kotlinx.android.synthetic.main.activity_conversation.*
 import java.lang.Exception
 
 class TelegramFragment : Fragment() {
@@ -35,9 +33,9 @@ class TelegramFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewDataBinding =
-            FragmentTelegramBinding.inflate(inflater, container, false).apply { viewmodel = viewModel }
-        viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
+        viewDataBinding = FragmentTelegramBinding
+            .inflate(inflater, container, false).apply { viewmodel = viewModel }
+        viewDataBinding.lifecycleOwner = this
         return viewDataBinding.root
     }
 

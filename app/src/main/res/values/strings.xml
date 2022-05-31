@@ -17,6 +17,7 @@
     <string name="members">Members: %1$s</string>
     <string name="online">Online</string>
     <string name="bot">Bot</string>
+    <string name="outgoing">You:</string>
     <string name="last_seen">Was online at: %1$s</string>
     <string name="reduce_messages_count" translatable="false">%1$sk</string>
     <integer name="com_vk_sdk_AppId">6121396</integer>

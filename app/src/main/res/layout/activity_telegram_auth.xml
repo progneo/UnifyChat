@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:visibility="@{viewmodel.layoutState == viewmodel.LayoutState.INSERT_NUMBER ? View.VISIBLE : View.INVISIBLE}">
+                android:visibility="visible">
 
                 <EditText
                     android:id="@+id/phoneText"
@@ -83,8 +83,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                tools:visibility="visible"
-                android:visibility="@{viewmodel.layoutState == viewmodel.LayoutState.INSERT_CODE ? View.VISIBLE : View.INVISIBLE}">
+                android:visibility="invisible">
 
                 <EditText
                     android:id="@+id/codeText"
@@ -120,8 +119,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:visibility="@{viewmodel.layoutState == viewmodel.LayoutState.INSERT_PASSWORD ? View.VISIBLE : View.INVISIBLE}"
-                tools:visibility="visible">
+                android:visibility="invisible">
 
                 <EditText
                     android:id="@+id/passwordText"
@@ -162,7 +160,7 @@
             android:textSize="@dimen/_13ssp"
             android:textStyle="bold"
             android:onClick="@{() -> viewmodel.logout()}"
-            android:visibility="@{viewmodel.layoutState == viewmodel.LayoutState.INSERT_PASSWORD || viewmodel.layoutState == viewmodel.LayoutState.INSERT_CODE ? View.VISIBLE : View.INVISIBLE}"
-        app:cornerRadius="@dimen/_8sdp"/>
+            android:visibility="invisible"
+            app:cornerRadius="@dimen/_8sdp"/>
     </LinearLayout>
 </layout>

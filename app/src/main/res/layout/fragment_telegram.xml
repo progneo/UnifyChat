@@ -28,17 +28,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize">
                 <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:padding="11dp"
+                    android:layout_width="?attr/actionBarSize"
+                    android:layout_height="?attr/actionBarSize"
+                    android:padding="16dp"
                     android:src="@drawable/ic_baseline_login_24"
                     android:onClick="@{() -> viewmodel.goToLoginPressed()}"
-                    app:bind_appbar_image="@{viewmodel.user.photo}"
+                    app:bind_appbar_image="@{viewmodel.user}"
                     app:shapeAppearanceOverlay="@style/circleImageView"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="10dp"
                     android:textSize="22sp"
                     android:ellipsize="end"
                     app:bind_appbar_name="@{viewmodel.user}"

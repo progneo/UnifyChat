@@ -70,18 +70,21 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
                 conversationsViewModel?.updateNewMessage(data as TdApi.UpdateNewMessage)
                 conversationViewModel?.newMessage(data as TdApi.UpdateNewMessage)
             }
+            //TODO:
+            //TdApi.UpdateSupergroupFullInfo.CONSTRUCTOR -> {
 
-            TdApi.UpdateSupergroupFullInfo.CONSTRUCTOR -> {
+            //}
 
-            }
+            //TdApi.UpdateUser.CONSTRUCTOR -> {
 
-            TdApi.UpdateUser.CONSTRUCTOR -> {
+            //}
 
-            }
+            //TdApi.UpdateOption.CONSTRUCTOR -> {
 
-            TdApi.UpdateOption.CONSTRUCTOR -> {
-
-            }
+            //}
+            //TdApi.UpdateUnreadMessageCount.CONSTRUCTOR -> {
+            //
+            //}
 
             else -> Log.d(TAG, "Unhandled onResult call with data: $data.")
         }

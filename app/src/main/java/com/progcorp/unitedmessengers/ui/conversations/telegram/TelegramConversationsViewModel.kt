@@ -72,7 +72,9 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
             else -> false
         }
         if (_loginState.value == true) {
+            _user.value = User()
             fetchChats()
+            getMe()
         }
         _client.conversationsViewModel = this
     }
@@ -84,6 +86,16 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
                 val chat = Conversation.tgParse(conversation)
                 chat?.let { _observableConversation.value = it }
             }
+        }
+    }
+
+    private fun getMe() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val data = _repository.getMe().first()
+            val user = User.tgParse(data)
+            _user.postValue(user)
+            Thread.sleep(1000)
+            _user.postValue(user)
         }
     }
 
@@ -100,7 +112,9 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     }
 
     fun goToLoginPressed() {
-        _loginEvent.value = Event(Unit)
+        if (_loginState.value == false) {
+            _loginEvent.value = Event(Unit)
+        }
     }
 
     fun addNewChat(update: TdApi.UpdateNewChat) {

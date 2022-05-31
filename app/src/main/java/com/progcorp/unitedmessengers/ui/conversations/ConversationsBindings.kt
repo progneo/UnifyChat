@@ -2,6 +2,7 @@
 
 package com.progcorp.unitedmessengers.ui.conversations
 
+import android.graphics.BitmapFactory
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -10,8 +11,11 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.model.Conversation
+import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.data.model.User
 import com.progcorp.unitedmessengers.interfaces.ICompanion
+import com.progcorp.unitedmessengers.ui.bindConversationImageWithPicasso
+import com.progcorp.unitedmessengers.util.Constants
 import com.squareup.picasso.Picasso
 
 @BindingAdapter("bind_conversations_list")
@@ -58,7 +62,6 @@ fun TextView.bindUnreadCount(unreadCount: Int) {
     }
 }
 
-//TODO: fix
 @BindingAdapter("bind_online")
 fun View.bindOnline(companion: ICompanion) {
     when (companion) {
@@ -82,15 +85,32 @@ fun TextView.bindUser(user: User?) {
 }
 
 @BindingAdapter("bind_appbar_image")
-fun ImageView.bindAppbarImage(photo: String?) {
-    when (photo) {
+fun ImageView.bindAppbarImage(user: User?) {
+    when (user?.photo) {
         null -> Unit
-        "" -> Picasso.get().load("https://www.meme-arsenal.com/memes/8b6f5f94a53dbc3c8240347693830120.jpg").error(
+        "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png").error(
             R.drawable.ic_baseline_account_circle_24).into(this)
         else -> {
-            Picasso.get().load(photo).error(R.drawable.ic_baseline_account_circle_24).into(this)
+            when (user.messenger) {
+                Constants.Messenger.TG -> {
+                    val bitmap = BitmapFactory.decodeFile(user.photo)
+                    this.setImageBitmap(bitmap)
+                }
+                Constants.Messenger.VK -> {
+                    Picasso.get().load(user.photo).error(R.drawable.ic_baseline_account_circle_24).into(this)
+                }
+            }
         }
     }
 }
 
+@BindingAdapter("bind_is_outgoing")
+fun TextView.bindIsOutgoing(message: Message) {
+    if (message.isOutgoing) {
+        this.visibility = View.VISIBLE
+    }
+    else {
+        this.visibility = View.GONE
+    }
+}
 

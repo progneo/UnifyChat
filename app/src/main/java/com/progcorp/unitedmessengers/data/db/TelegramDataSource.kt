@@ -208,4 +208,21 @@ class TelegramDataSource (private val client: TelegramClient) {
             }
             awaitClose { }
         }
+
+    fun getMe(): Flow<TdApi.User> = callbackFlow {
+        client.client.send(TdApi.GetMe()) {
+            when (it.constructor) {
+                TdApi.User.CONSTRUCTOR -> {
+                    trySend(it as TdApi.User).isSuccess
+                }
+                TdApi.Error.CONSTRUCTOR -> {
+                    Log.e("${javaClass.simpleName}.getMe", (it as TdApi.Error).message)
+                }
+                else -> {
+                    Log.e("${javaClass.simpleName}.getMe", "Unknown error")
+                }
+            }
+        }
+        awaitClose { }
+    }
 }

@@ -25,10 +25,21 @@ class TelegramAuthViewModel : ViewModel() {
     private val _client = App.application.tgClient
     private val _restartEvent = MutableLiveData<Event<Unit>>()
 
-    val layoutState = MediatorLiveData<LayoutState>()
+    val layoutState = MutableLiveData<LayoutState>()
+
     val phoneNumberText = MutableLiveData<String?>()
     val codeText = MutableLiveData<String?>()
     val passwordText = MutableLiveData<String?>()
+
+    private val _showPhoneEvent = MutableLiveData<Event<Unit>>()
+    private val _showPasswordEvent = MutableLiveData<Event<Unit>>()
+    private val _showCodeEvent = MutableLiveData<Event<Unit>>()
+    private val _hideAllEvent = MutableLiveData<Event<Unit>>()
+
+    val showPhoneEvent: LiveData<Event<Unit>> = _showPhoneEvent
+    val showPasswordEvent: LiveData<Event<Unit>> = _showPasswordEvent
+    val showCodeEvent: LiveData<Event<Unit>> = _showCodeEvent
+    val hideAllEvent: LiveData<Event<Unit>> = _hideAllEvent
 
     val restartEvent: LiveData<Event<Unit>> = _restartEvent
 
@@ -41,15 +52,19 @@ class TelegramAuthViewModel : ViewModel() {
             when (it) {
                 TelegramAuthStatus.UNAUTHENTICATED, TelegramAuthStatus.UNKNOWN -> {
                     layoutState.value = LayoutState.LOADING
+                    _hideAllEvent.value = Event(Unit)
                 }
                 TelegramAuthStatus.WAIT_FOR_NUMBER -> {
                     layoutState.value = LayoutState.INSERT_NUMBER
+                    _showPhoneEvent.value = Event(Unit)
                 }
                 TelegramAuthStatus.WAIT_FOR_CODE -> {
                     layoutState.value = LayoutState.INSERT_CODE
+                    _showCodeEvent.value = Event(Unit)
                 }
                 TelegramAuthStatus.WAIT_FOR_PASSWORD -> {
                     layoutState.value = LayoutState.INSERT_PASSWORD
+                    _showPasswordEvent.value = Event(Unit)
                 }
                 TelegramAuthStatus.AUTHENTICATED -> {
                     layoutState.value = LayoutState.AUTHENTICATED
@@ -62,6 +77,7 @@ class TelegramAuthViewModel : ViewModel() {
     fun insertPhoneNumber() {
         if (!phoneNumberText.value.isNullOrBlank()) {
             layoutState.value = LayoutState.LOADING
+            _hideAllEvent.value = Event(Unit)
             _client.insertPhoneNumber(phoneNumberText.value!!)
         }
     }
@@ -69,6 +85,7 @@ class TelegramAuthViewModel : ViewModel() {
     fun insertCode() {
         if (!codeText.value.isNullOrBlank()) {
             layoutState.value = LayoutState.LOADING
+            _hideAllEvent.value = Event(Unit)
             _client.insertCode(codeText.value!!)
         }
     }
@@ -76,6 +93,7 @@ class TelegramAuthViewModel : ViewModel() {
     fun insertPassword() {
         if (!passwordText.value.isNullOrBlank()) {
             layoutState.value = LayoutState.LOADING
+            _hideAllEvent.value = Event(Unit)
             _client.insertPassword(passwordText.value!!)
         }
     }

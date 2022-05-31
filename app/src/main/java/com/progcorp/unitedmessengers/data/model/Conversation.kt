@@ -140,7 +140,12 @@ data class Conversation(
             val companion: ICompanion?
             when(conversation.type.constructor) {
                 TdApi.ChatTypePrivate.CONSTRUCTOR -> {
-                    companion = User.tgParse(repository.getUser(id).first())
+                    val tgCompanion = repository.getUser(id).first()
+                    companion = if (tgCompanion.type.constructor == TdApi.UserTypeBot.CONSTRUCTOR){
+                        Bot.tgParse(tgCompanion)
+                    } else {
+                        User.tgParse(tgCompanion)
+                    }
                 }
                 TdApi.ChatTypeBasicGroup.CONSTRUCTOR -> {
                     companion = Chat.tgParseBasicGroup(conversation, repository.getBasicGroup(
