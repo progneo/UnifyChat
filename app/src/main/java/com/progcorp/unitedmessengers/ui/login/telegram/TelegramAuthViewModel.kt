@@ -4,8 +4,10 @@ import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
 import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.launch
 
 class TelegramAuthViewModelFactory :
     ViewModelProvider.Factory {
@@ -31,6 +33,10 @@ class TelegramAuthViewModel : ViewModel() {
     val restartEvent: LiveData<Event<Unit>> = _restartEvent
 
     init {
+        observeAuthStatus()
+    }
+
+    private fun observeAuthStatus() {
         _client.authState.onEach {
             when (it) {
                 TelegramAuthStatus.UNAUTHENTICATED, TelegramAuthStatus.UNKNOWN -> {

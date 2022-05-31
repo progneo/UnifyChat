@@ -2,9 +2,12 @@ package com.progcorp.unitedmessengers.ui
 
 import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
+import android.graphics.drawable.GradientDrawable
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.view.setPadding
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R

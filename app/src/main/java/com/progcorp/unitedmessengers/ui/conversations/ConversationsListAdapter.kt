@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.ListItemConversationBinding
 import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
-import com.progcorp.unitedmessengers.interfaces.IMessageContent
 
 class ConversationsListAdapter internal constructor(private val viewModel: IConversationsViewModel) :
     ListAdapter<(Conversation), ConversationsListAdapter.ViewHolder>(ConversationDiffCallback()) {
@@ -20,11 +19,6 @@ class ConversationsListAdapter internal constructor(private val viewModel: IConv
             binding.conversation = item
             binding.executePendingBindings()
         }
-    }
-
-    override fun registerAdapterDataObserver(observer: RecyclerView.AdapterDataObserver) {
-        super.registerAdapterDataObserver(observer)
-
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

@@ -87,7 +87,6 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
         }
     }
 
-    //TODO: Notify change
     private fun notifyItemInserted(position: Int) {
         _notifyItemInsertedEvent.value = Event(position)
     }

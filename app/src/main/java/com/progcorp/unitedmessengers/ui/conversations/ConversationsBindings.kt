@@ -3,6 +3,7 @@
 package com.progcorp.unitedmessengers.ui.conversations
 
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -31,8 +32,13 @@ fun TextView.bindReadState(unreadCount: Int) {
 @BindingAdapter("bind_unread_count")
 fun TextView.bindUnreadCount(unreadCount: Int) {
     when {
-        unreadCount <= 0 -> {
+        unreadCount == 0 -> {
             this.visibility = View.INVISIBLE
+        }
+        unreadCount == -1 -> {
+            this.visibility = View.VISIBLE
+            this.width = 7
+            this.height = 7
         }
         unreadCount > 9999 -> {
             this.text = resources.getString(
@@ -40,14 +46,19 @@ fun TextView.bindUnreadCount(unreadCount: Int) {
                 (unreadCount / 1000).toString()
             )
             this.visibility = View.VISIBLE
+            this.width = WindowManager.LayoutParams.WRAP_CONTENT
+            this.width = WindowManager.LayoutParams.WRAP_CONTENT
         }
         else -> {
             this.text = unreadCount.toString()
             this.visibility = View.VISIBLE
+            this.width = WindowManager.LayoutParams.WRAP_CONTENT
+            this.width = WindowManager.LayoutParams.WRAP_CONTENT
         }
     }
 }
 
+//TODO: fix
 @BindingAdapter("bind_online")
 fun View.bindOnline(companion: ICompanion) {
     when (companion) {

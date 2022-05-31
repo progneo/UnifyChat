@@ -14,129 +14,110 @@
             type="com.progcorp.unitedmessengers.interfaces.IConversationsViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_marginVertical="@dimen/_3sdp"
-        android:paddingLeft="@dimen/_8sdp"
-        android:paddingRight="@dimen/_8sdp"
+    <LinearLayout
+        android:layout_marginVertical="4dp"
+        android:paddingHorizontal="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="true"
         android:clickable="true"
-        android:onClick="@{() -> viewmodel.selectConversationPressed(conversation)}">
+        android:onClick="@{() -> viewmodel.selectConversationPressed(conversation)}"
+        android:baselineAligned="false">
+        <FrameLayout
+            android:layout_width="64dp"
+            android:layout_height="64dp">
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/photo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="3dp"
+                app:bind_conversation="@{conversation}"
+                app:bind_image_url="@{conversation.photo}"
+                app:shapeAppearanceOverlay="@style/circleImageView"
+                tools:src="@drawable/ic_baseline_account_circle_24"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="3dp"
+                android:background="@drawable/white_stroke"
+                android:visibility="visible"
+                app:bind_online="@{conversation.companion}"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="3dp"
+                android:background="@drawable/online_stroke"
+                android:visibility="visible"
+                app:bind_online="@{conversation.companion}"/>
+        </FrameLayout>
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/photo"
-            android:layout_width="@dimen/_50sdp"
-            android:layout_height="@dimen/_50sdp"
-            android:padding="@dimen/_3sdp"
-            app:bind_conversation="@{conversation}"
-            app:bind_image_url="@{conversation.photo}"
-            app:shapeAppearanceOverlay="@style/circleImageView"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_baseline_account_circle_24"/>
-
-        <View
-            android:id="@+id/is_online"
-            android:layout_width="11dp"
-            android:layout_height="11dp"
-            android:layout_gravity="center"
-            android:background="@drawable/online_dot"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:layout_marginEnd="@dimen/_5sdp"
-            app:layout_constraintRight_toRightOf="@id/photo"
-            app:layout_constraintBottom_toBottomOf="@+id/photo"
-            app:bind_online="@{conversation.companion}"
-            tools:visibility="visible"/>
-
-        <TextView
-            android:id="@+id/name"
+        <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_6sdp"
-            android:layout_marginEnd="@dimen/_6sdp"
-            android:maxLines="1"
-            android:textColor="@color/material_dynamic_neutral0"
-            android:textSize="@dimen/_12ssp"
-            android:textStyle="bold"
-            android:ellipsize="end"
-            app:layout_constraintBottom_toTopOf="@+id/last_message"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/photo"
-            app:layout_constraintRight_toLeftOf="@id/date"
-            app:layout_constraintVertical_chainStyle="packed"
-            app:bind_name="@{conversation.companion}"
-            tools:text="Test" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:maxLines="1"
+                android:textColor="@color/material_dynamic_neutral0"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                app:bind_name="@{conversation.companion}"
+                tools:text="Test" />
 
-        <TextView
-            android:id="@+id/last_message"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_3sdp"
-            android:layout_marginStart="@dimen/_6sdp"
-            android:layout_marginEnd="@dimen/_6sdp"
-            android:maxLines="1"
-            android:textColor="@color/material_dynamic_primary40"
-            android:textSize="@dimen/_11ssp"
-            android:ellipsize="end"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name"
-            app:layout_constraintLeft_toRightOf="@+id/photo"
-            app:layout_constraintRight_toLeftOf="@id/unread_count"
-            app:bind_message_text="@{conversation.lastMessage.content}"
-            tools:text="Message"/>
+            <TextView
+                android:id="@+id/last_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginHorizontal="8dp"
+                android:maxLines="1"
+                android:textColor="@color/material_dynamic_primary40"
+                android:textSize="14sp"
+                android:ellipsize="end"
+                app:bind_message_text="@{conversation.lastMessage.content}"
+                tools:text="Message"/>
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/read_state"
-            android:layout_width="7dp"
-            android:layout_height="7dp"
-            android:layout_gravity="center"
-            android:background="@drawable/unread_messages"
-            android:gravity="center"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/_10ssp"
-            app:bind_read_state="@{conversation.unreadCount}"
-            app:layout_constraintRight_toRightOf="@id/date"
-            app:layout_constraintLeft_toLeftOf="@id/date"
-            app:layout_constraintTop_toTopOf="@+id/last_message"
-            app:layout_constraintBottom_toBottomOf="@+id/last_message"
-            android:visibility="visible"/>
-
-        <TextView
-            android:id="@+id/unread_count"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:minWidth="@dimen/_20sdp"
-            android:maxWidth="@dimen/_32sdp"
-            android:background="@drawable/unread_messages"
-            android:gravity="center"
-            android:textColor="@color/material_dynamic_neutral_variant30"
-            android:textSize="@dimen/_9ssp"
-            android:layout_marginHorizontal="4dp"
-            app:bind_unread_count="@{conversation.unreadCount}"
-            app:layout_constraintRight_toRightOf="@id/date"
-            app:layout_constraintLeft_toLeftOf="@id/date"
-            app:layout_constraintTop_toTopOf="@+id/last_message"
-            app:layout_constraintBottom_toBottomOf="@+id/last_message"
-            tools:text="1"
-            android:visibility="invisible"/>
+            android:layout_height="match_parent"
+            android:minWidth="26dp"
+            android:maxWidth="36dp"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textColor="@color/material_dynamic_secondary40"
+                android:textSize="@dimen/_11ssp"
+                app:bind_epochTimeMsToDate_with_days_ago="@{conversation.lastMessage.timeStamp}"
+                tools:text="20:40"/>
 
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="@dimen/_32sdp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:textColor="@color/material_dynamic_secondary40"
-            android:textSize="@dimen/_11ssp"
-            app:bind_epochTimeMsToDate_with_days_ago="@{conversation.lastMessage.timeStamp}"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/name"
-            app:layout_constraintTop_toTopOf="@id/name"
-            tools:text="20:40"
-            android:visibility="visible"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/unread_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/unread_messages"
+                android:textColor="@color/material_dynamic_neutral_variant30"
+                android:textSize="11sp"
+                android:minWidth="26dp"
+                android:maxWidth="36dp"
+                android:gravity="center"
+                app:bind_unread_count="@{conversation.unreadCount}"
+                tools:text="9999"/>
+        </LinearLayout>
+    </LinearLayout>
 </layout>
