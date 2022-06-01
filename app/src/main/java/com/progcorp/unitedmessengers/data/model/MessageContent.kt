@@ -8,7 +8,7 @@ data class MessageText(
 
 data class MessageSticker(
     override val text: String = "",
-    val path: String = ""
+    var path: String = ""
 ) : IMessageContent
 
 data class MessageChat(
@@ -23,7 +23,7 @@ data class MessageAnimatedEmoji(
 
 data class MessageAnimation(
     override val text: String = "",
-    val path: String = ""
+    var path: String = ""
 ) : IMessageContent
 
 data class MessageCollage(
@@ -57,7 +57,7 @@ data class MessageLocation(
 
 data class MessagePhoto(
     override val text: String = "",
-    val path: String = ""
+    var path: String = ""
 ) : IMessageContent
 
 data class MessagePoll(
@@ -67,12 +67,12 @@ data class MessagePoll(
 
 data class MessageVideo(
     override val text: String = "",
-    val video: String = ""
+    var video: String = ""
 ) : IMessageContent
 
 data class MessageVideoNote(
     override val text: String = "",
-    val video: String = ""
+    var video: String = ""
 ) : IMessageContent
 
 data class MessageVoiceNote(

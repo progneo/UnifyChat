@@ -46,7 +46,6 @@ class ConversationActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        viewModel.backEvent.observe(this, EventObserver { close() } )
         toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
@@ -84,16 +83,9 @@ class ConversationActivity : AppCompatActivity() {
         onBackPressed()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    override fun onDestroy() {
+        super.onDestroy()
         viewModel.stopListeners()
         listAdapter.unregisterAdapterDataObserver(listAdapterObserver)
     }
-
-
-    //override fun onDestroy() {
-    //    super.onDestroy()
-    //    viewModel.stopListeners()
-    //    listAdapter.unregisterAdapterDataObserver(listAdapterObserver)
-    //}
 }

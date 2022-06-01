@@ -43,6 +43,9 @@
         <item name="android:contentInsetStart">0dp</item>
     </style>
 
+    <style name="cornerImageView" parent="">
+        <item name="cornerSize">10dp</item>
+    </style>
     <style name="circleImageView" parent="">
         <item name="cornerSize">50%</item>
     </style>
@@ -83,6 +86,8 @@
         <item name="android:layout_marginRight">@dimen/_10sdp</item>
         <item name="android:maxWidth">@dimen/_180sdp</item>
         <item name="android:gravity">center_vertical</item>
+        <item name="android:autoLink">web</item>
+        <item name="android:textColorLink">@color/material_dynamic_primary60</item>
     </style>
 
     <style name="textview_attachments">
@@ -176,6 +181,14 @@
         <item name="android:orientation">vertical</item>
     </style>
 
+    <style name="layout_message_photo_block">
+        <item name="android:titleMarginStart">@dimen/_3sdp</item>
+        <item name="android:background">@drawable/message_bg</item>
+        <item name="android:backgroundTint">@color/left_message</item>
+        <item name="android:layout_marginStart">6dp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
     <style name="layout_dialog_message_block">
         <item name="android:titleMarginStart">@dimen/_3sdp</item>
         <item name="android:paddingTop">@dimen/_5sdp</item>
@@ -195,10 +208,27 @@
         <item name="android:orientation">vertical</item>
     </style>
 
+    <style name="layout_message_out_photo_block">
+        <item name="android:layout_marginEnd">@dimen/_10sdp</item>
+        <item name="android:background">@drawable/message_bg</item>
+        <item name="android:backgroundTint">@color/material_dynamic_primary90</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
     <style name="imageview_sender_photo">
         <item name="android:layout_width">@dimen/_25sdp</item>
         <item name="android:layout_height">@dimen/_25sdp</item>
         <item name="shapeAppearanceOverlay">@style/circleImageView</item>
+    </style>
+
+    <style name="imageview_photo">
+        <item name="shapeAppearanceOverlay">@style/cornerImageView</item>
+        <item name="android:maxWidth">250dp</item>
+        <item name="android:maxHeight">500dp</item>
+        <item name="android:minWidth">130dp</item>
+        <item name="android:minHeight">70dp</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:adjustViewBounds">true</item>
     </style>
 
     <style name="textview_date_text">

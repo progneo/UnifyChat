@@ -21,7 +21,7 @@ data class Chat(
         fun vkParse(json: JSONObject, peerId: Long) = Chat(
             id = peerId,
             title = json.optString("title"),
-            photo = json.optJSONObject("photo")!!.optString("photo_100"),
+            photo = json.optJSONObject("photo")?.optString("photo_100") ?: "",
             membersCount = json.optInt("members_count"),
             Constants.Messenger.VK
         )

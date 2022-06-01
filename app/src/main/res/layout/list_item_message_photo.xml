@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <data>
+        <import type="android.view.View" />
         <variable
             name="viewmodel"
             type="com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel" />
@@ -20,36 +21,38 @@
             android:id="@+id/dateText"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/_20sdp"
-            style="@style/textview_date_text"
             app:bind_epochTimeMsToDate="@{message.timeStamp}"
             app:bind_message="@{message}"
             app:bind_message_viewModel="@{viewmodel}"
+            style="@style/textview_date_text"
             tools:text="30 april" />
 
         <LinearLayout
             android:id="@+id/layout_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="bottom"
             style="@style/layout_message">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo_sender"
-                style="@style/imageview_sender_photo"
                 app:bind_conversation="@{viewmodel.chat}"
                 app:bind_image_sender="@{message.sender.photo}"
-                tools:src="@drawable/ic_baseline_account_circle_24" />
+                style="@style/imageview_sender_photo"
+                tools:src="@drawable/ic_baseline_account_circle_24"/>
 
             <LinearLayout
                 android:id="@+id/linear_layout_message_left"
-                style="@style/layout_message_block"
+                style="@style/layout_message_photo_block"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toRightOf="@id/photo_sender"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/text_sender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
                     app:bind_name="@{message}"
                     app:bind_conversation="@{viewmodel.chat}"
                     style="@style/textview_name"
@@ -59,17 +62,30 @@
                     android:id="@+id/text_message_left"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:bind_message_text="@{message.content}"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    app:bind_message_text_messages="@{message.content}"
                     style="@style/textview_dialog_message_left"
                     tools:text="Сообщение с чатика"/>
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/photo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:maxWidth="250dp"
+                    app:bind_photo="@{message}"
+                    style="@style/imageview_photo"
+                    android:layout_gravity="center"/>
+
             </LinearLayout>
 
             <TextView
                 android:id="@+id/text_time_left"
-                style="@style/info_text_views"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:bind_message_time="@{message.timeStamp}"
+                style="@style/info_text_views"
                 tools:text="11:46"/>
 
         </LinearLayout>

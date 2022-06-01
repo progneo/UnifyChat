@@ -1,8 +1,11 @@
 package com.progcorp.unitedmessengers.data.model
 
+import android.os.Messenger
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.interfaces.IMessageContent
+import com.progcorp.unitedmessengers.util.Constants
+import com.progcorp.unitedmessengers.util.Constants.MessageType.photo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
@@ -19,7 +22,8 @@ data class Message(
     val sender: ICompanion? = null,
     val isOutgoing: Boolean = false,
     val replyToMessageId: Long = 0,
-    var content: IMessageContent = MessageText()
+    var content: IMessageContent = MessageText(),
+    var messenger: Int = 0
 ) : Serializable {
 
     companion object {
@@ -84,21 +88,24 @@ data class Message(
                     "sticker" -> {
                         val sticker = at.getJSONObject("sticker")
                             .getJSONArray("images")
-                            .getJSONObject(3)
-                            .getString("url")
-                        messageContent = MessageSticker(sticker)
-                    }
-                    "photo" -> {
-                        val photo = at.getJSONObject("photo")
-                            .getJSONArray("sizes")
                             .getJSONObject(4)
                             .getString("url")
-                        messageContent = MessagePhoto(text, photo)
+                        messageContent = MessageSticker(path = sticker)
+                    }
+                    "photo" -> {
+                        val photoArray = at.getJSONObject("photo").getJSONArray("sizes")
+                        for (i in 0 until photoArray.length()) {
+                            val photo = photoArray.getJSONObject(i)
+                            if (photo.getString("type") == "y") {
+                                messageContent = MessagePhoto(text, photo.getString("url"))
+                                break;
+                            }
+                        }
                     }
                     "video" -> {
                         val video = at.getJSONObject("video")
                             .getJSONArray("image")
-                            .getJSONObject(5)
+                            .getJSONObject(4)
                             .getString("url")
                         messageContent = MessageVideo(text, video)
                     }
@@ -169,7 +176,7 @@ data class Message(
                 }
             }
 
-            return Message(id, timeStamp, sender, isOutgoing, replyToMessageId, messageContent)
+            return Message(id, timeStamp, sender, isOutgoing, replyToMessageId, messageContent, Constants.Messenger.VK)
         }
 
         suspend fun tgParse(tgMessage: TdApi.Message): Message {
@@ -214,6 +221,7 @@ data class Message(
             val replyToMessageId = tgMessage.replyToMessageId
 
             var messageContent: IMessageContent = MessageText()
+            var file: TdApi.File? = null
 
             when (tgMessage.content.constructor) {
                 TdApi.MessageText.CONSTRUCTOR -> {
@@ -221,14 +229,8 @@ data class Message(
                 }
                 TdApi.MessageAnimation.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageAnimation
+                    file = content.animation.animation!!
                     messageContent = MessageAnimation()
-                    MainScope().launch {
-                        val result = async { client.downloadableFile(content.animation.animation!!).first() }
-                        val photo = result.await()
-                        if (photo != null) {
-                            messageContent = MessageAnimation(photo)
-                        }
-                    }
                 }
                 TdApi.MessageAudio.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageAudio
@@ -240,14 +242,12 @@ data class Message(
                 }
                 TdApi.MessagePhoto.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessagePhoto
-                    messageContent = MessagePhoto(content.caption.text)
-                    MainScope().launch {
-                        val result = async { client.downloadableFile(content.photo.sizes[0].photo).first() }
-                        val photo = result.await()
-                        if (photo != null) {
-                            messageContent = MessagePhoto(content.caption.text, photo)
-                        }
+                    file = if (content.photo.sizes.size > 1) {
+                        content.photo.sizes[1].photo
+                    } else {
+                        content.photo.sizes[0].photo
                     }
+                    messageContent = MessagePhoto(content.caption.text)
                 }
                 TdApi.MessageExpiredPhoto.CONSTRUCTOR -> {
                     messageContent = MessageExpiredPhoto()
@@ -257,20 +257,15 @@ data class Message(
                     messageContent = if (content.sticker.isAnimated) {
                         MessageText(text = content.sticker.emoji)
                     } else {
-                        MessageSticker(client.downloadableFile(content.sticker.sticker).first()!!)
+                        file = content.sticker.sticker
+                        MessageSticker()
                     }
                 }
                 TdApi.MessageVideo.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageVideo
                     content.video.thumbnail?.let {
                         messageContent = MessagePhoto()
-                        MainScope().launch {
-                            val result = async { client.downloadableFile(it.file).first() }
-                            val photo = result.await()
-                            if (photo != null) {
-                                messageContent = MessagePhoto(photo)
-                            }
-                        }
+                        file = it.file
                     }
                 }
                 TdApi.MessageExpiredVideo.CONSTRUCTOR -> {
@@ -280,13 +275,7 @@ data class Message(
                     val content = tgMessage.content as TdApi.MessageVideoNote
                     content.videoNote.thumbnail?.let {
                         messageContent = MessagePhoto()
-                        MainScope().launch {
-                            val result = async { client.downloadableFile(it.file).first() }
-                            val photo = result.await()
-                            if (photo != null) {
-                                messageContent = MessagePhoto(photo)
-                            }
-                        }
+                        file = it.file
                     }
                 }
                 TdApi.MessageVoiceNote.CONSTRUCTOR -> {
@@ -393,7 +382,55 @@ data class Message(
                 }
             }
 
-            return Message(id, timeStamp, sender, isOutgoing, replyToMessageId, messageContent)
+            val message = Message(id, timeStamp, sender, isOutgoing, replyToMessageId, messageContent, Constants.Messenger.TG)
+            if (file != null) {
+                message.loadFile(file!!)
+            }
+            return message
+        }
+    }
+
+
+    fun loadFile(file: TdApi.File) {
+        val client = App.application.tgClient
+        MainScope().launch {
+            when (content) {
+                is MessageSticker -> {
+                    val result = async { client.downloadableFile(file).first() }
+                    val path = result.await()
+                    if (path != null) {
+                        (content as MessageSticker).path = path
+                    }
+                }
+                is MessagePhoto -> {
+                    val result = async { client.downloadableFile(file).first() }
+                    val path = result.await()
+                    if (path != null) {
+                        (content as MessagePhoto).path = path
+                    }
+                }
+                is MessageAnimation -> {
+                    val result = async { client.downloadableFile(file).first() }
+                    val path = result.await()
+                    if (path != null) {
+                        (content as MessageAnimation).path = path
+                    }
+                }
+                is MessageVideo -> {
+                    val result = async { client.downloadableFile(file).first() }
+                    val path = result.await()
+                    if (path != null) {
+                        (content as MessageVideo).video = path
+                    }
+                }
+                is MessageVideoNote -> {
+                    val result = async { client.downloadableFile(file).first() }
+                    val path = result.await()
+                    if (path != null) {
+                        (content as MessageVideoNote).video = path
+                    }
+                }
+            }
         }
     }
 }

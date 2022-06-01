@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.data.model.*
 import com.progcorp.unitedmessengers.databinding.*
 import com.progcorp.unitedmessengers.util.Constants
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 
 class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAdapter<Message, RecyclerView.ViewHolder>(
     MessageDiffCallback()
@@ -32,6 +34,15 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
     }
 
     class AttachmentViewHolder(private val binding: ListItemMessageAttachmentBinding)  :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
+            binding.viewmodel = viewModel
+            binding.message = item
+            binding.executePendingBindings()
+        }
+    }
+
+    class PhotoViewHolder(private val binding: ListItemMessagePhotoBinding)  :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
@@ -68,6 +79,15 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
     }
 
     class OutAttachmentViewHolder(private val binding: ListItemMessageAttachmentOutBinding)  :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(viewModel: ConversationViewModel, item: Message) {
+            binding.viewmodel = viewModel
+            binding.message = item
+            binding.executePendingBindings()
+        }
+    }
+
+    class OutPhotoViewHolder(private val binding: ListItemMessagePhotoOutBinding)  :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(viewModel: ConversationViewModel, item: Message) {
             binding.viewmodel = viewModel
@@ -233,6 +253,14 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 val binding = ListItemMessageChatBinding.inflate(layoutInflater, parent, false)
                 ChatViewHolder(binding)
             }
+            Constants.MessageType.photo -> {
+                val binding = ListItemMessagePhotoBinding.inflate(layoutInflater, parent, false)
+                PhotoViewHolder(binding)
+            }
+            Constants.MessageType.photoOut -> {
+                val binding = ListItemMessagePhotoOutBinding.inflate(layoutInflater, parent, false)
+                OutPhotoViewHolder(binding)
+            }
             else -> {
                 val binding = ListItemMessageAttachmentBinding.inflate(layoutInflater, parent, false)
                 AttachmentViewHolder(binding)
@@ -262,6 +290,14 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 viewModel,
                 getItem(position)
             )
+            Constants.MessageType.photo -> (holder as PhotoViewHolder).bind(
+                viewModel,
+                getItem(position)
+            )
+            Constants.MessageType.photoOut -> (holder as OutPhotoViewHolder).bind(
+                viewModel,
+                getItem(position)
+            )
             else -> {
                 (holder as AttachmentViewHolder).bind(
                     viewModel,
@@ -278,7 +314,28 @@ class MessageDiffCallback : DiffUtil.ItemCallback<Message>() {
     }
 
     override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean {
+        val isFileSame: Boolean = when (newItem.content) {
+            is MessageSticker -> {
+                (oldItem.content as MessageSticker).path == (newItem.content as MessageSticker).path
+            }
+            is MessagePhoto -> {
+                (oldItem.content as MessagePhoto).path == (newItem.content as MessagePhoto).path
+            }
+            is MessageAnimation -> {
+                (oldItem.content as MessageAnimation).path == (newItem.content as MessageAnimation).path
+            }
+            is MessageVideo -> {
+                (oldItem.content as MessageVideo).video == (newItem.content as MessageVideo).video
+            }
+            is MessageVideoNote -> {
+                (oldItem.content as MessageVideoNote).video == (newItem.content as MessageVideoNote).video
+            }
+            else -> {
+                true
+            }
+        }
         return oldItem.content.text == newItem.content.text &&
-                oldItem.sender?.photo == newItem.sender?.photo
+                oldItem.sender?.photo == newItem.sender?.photo &&
+                isFileSame
     }
 }

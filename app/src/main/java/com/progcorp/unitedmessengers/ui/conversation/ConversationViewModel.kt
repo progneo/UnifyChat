@@ -31,13 +31,9 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
     private var _handler = Handler()
     private var _messagesGetter: Runnable = Runnable {  }
 
-    private val _backEvent = MutableLiveData<Event<Unit>>()
-
     private val _conversation: MutableLiveData<Conversation> = MutableLiveData()
     private val _addedMessage = MutableLiveData<Message>()
     private val _newMessage = MutableLiveData<Message>()
-
-    val backEvent: LiveData<Event<Unit>> = _backEvent
 
     val newMessageText = MutableLiveData<String?>()
     val messagesList = MediatorLiveData<MutableList<Message>>()

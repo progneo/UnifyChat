@@ -2,6 +2,7 @@
 
 package com.progcorp.unitedmessengers.ui.conversation
 
+import android.graphics.BitmapFactory
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,6 +15,7 @@ import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.interfaces.IMessageContent
 import com.progcorp.unitedmessengers.util.Constants
 import com.progcorp.unitedmessengers.util.ConvertTime
+import com.squareup.picasso.Picasso
 
 @BindingAdapter("bind_messages_list")
 fun bindMessagesList(listView: RecyclerView, items: List<Message>?) {
@@ -59,6 +61,33 @@ fun TextView.bindOnlineText(conversation: Conversation) {
     }
 }
 
+@BindingAdapter("bind_conversation", "bind_image_sender")
+fun ImageView.bindMessageSenderImage(conversation: Conversation, path: String?) {
+    if (conversation.companion is Bot || conversation.companion is User) {
+        this.visibility = View.GONE
+    }
+    else {
+        this.visibility = View.VISIBLE
+        when (path) {
+            null -> Unit
+            "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
+                .error(R.drawable.ic_baseline_account_circle_24).into(this)
+            else -> {
+                when (conversation.messenger) {
+                    Constants.Messenger.TG -> {
+                        val bitmap = BitmapFactory.decodeFile(path)
+                        this.setImageBitmap(bitmap)
+                    }
+                    Constants.Messenger.VK -> {
+                        Picasso.get().load(path).error(R.drawable.ic_baseline_account_circle_24)
+                            .into(this)
+                    }
+                }
+            }
+        }
+    }
+}
+
 @BindingAdapter("bind_name")
 fun TextView.bindNameText(sender: ICompanion) {
     when(sender) {
@@ -74,9 +103,98 @@ fun TextView.bindNameText(sender: ICompanion) {
     }
 }
 
-@BindingAdapter("bind_message_image")
-fun ImageView.bindMessageImage(content: IMessageContent) {
+@BindingAdapter("bind_name", "bind_conversation")
+fun TextView.bindNameInChatText(message: Message, conversation: Conversation) {
+    if (conversation.companion is Bot || conversation.companion is User || message.content.text == "") {
+        this.visibility = View.GONE
+    }
+    else {
+        this.visibility = View.VISIBLE
+        when(message.sender) {
+            is User -> {
+                this.text = "${message.sender.firstName} ${message.sender.lastName}"
+            }
+            is Bot -> {
+                this.text = message.sender.title
+            }
+            is Chat -> {
+                this.text = message.sender.title
+            }
+        }
+    }
+}
 
+@BindingAdapter("bind_photo")
+fun ImageView.bindPhoto(message: Message) {
+    when (message.content) {
+        is MessageSticker -> {
+            when((message.content as MessageSticker).path) {
+                null -> Unit
+                "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
+                    .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                else -> {
+                    if (message.messenger == Constants.Messenger.VK) {
+                        Picasso.get().load((message.content as MessageSticker).path)
+                            .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                    }
+                    else {
+                        val bitmap = BitmapFactory.decodeFile((message.content as MessageSticker).path)
+                        this.setImageBitmap(bitmap)
+                    }
+                }
+            }
+        }
+        is MessagePhoto -> {
+            when((message.content as MessagePhoto).path) {
+                null -> Unit
+                "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
+                    .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                else -> {
+                    if (message.messenger == Constants.Messenger.VK) {
+                        Picasso.get().load((message.content as MessagePhoto).path)
+                            .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                    }
+                    else {
+                        val bitmap = BitmapFactory.decodeFile((message.content as MessagePhoto).path)
+                        this.setImageBitmap(bitmap)
+                    }
+                }
+            }
+        }
+        is MessageAnimation -> {
+            when((message.content as MessageAnimation).path) {
+                null -> Unit
+                "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
+                    .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                else -> {
+                    Picasso.get().load((message.content as MessageAnimation).path)
+                        .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                }
+            }
+        }
+        is MessageVideo -> {
+            when((message.content as MessageVideo).video) {
+                null -> Unit
+                "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
+                    .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                else -> {
+                    Picasso.get().load((message.content as MessageVideo).video)
+                        .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                }
+            }
+        }
+        is MessageVideoNote -> {
+            when((message.content as MessageVideoNote).video) {
+                null -> Unit
+                "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
+                    .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                else -> {
+                    Picasso.get().load((message.content as MessageVideoNote).video)
+                        .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                }
+            }
+        }
+    }
 }
 
 @BindingAdapter("bind_extra_info")
@@ -160,6 +278,17 @@ fun TextView.bindMessageText(messageContent: IMessageContent) {
     }
     else {
         this.setTextColor(ContextCompat.getColor(context, com.google.android.material.R.color.material_dynamic_neutral0))
+        this.text = messageContent.text
+    }
+}
+
+@BindingAdapter("bind_message_text_messages")
+fun TextView.bindMessageTextInMessages(messageContent: IMessageContent) {
+    if (messageContent.text == "") {
+        this.visibility = View.GONE
+    }
+    else {
+        this.visibility = View.VISIBLE
         this.text = messageContent.text
     }
 }

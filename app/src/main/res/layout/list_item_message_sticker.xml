@@ -36,7 +36,8 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo_sender"
-                app:bind_image_url="@{message.sender.photo}"
+                app:bind_conversation="@{viewmodel.chat}"
+                app:bind_image_sender="@{message.sender.photo}"
                 style="@style/imageview_sender_photo"
                 tools:src="@drawable/ic_baseline_account_circle_24" />
 
@@ -45,7 +46,7 @@
                 android:id="@+id/photo_sticker_left"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/photo_sender"
-                app:bind_message_image="@{message.content}"
+                app:bind_photo="@{message}"
                 style="@style/imageview_sticker"
                 tools:src="@drawable/sticker"/>
 
