@@ -80,7 +80,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
         val message = getItem(position)
         val type: Int = when (message.content) {
             is MessageText -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.text
                 }
                 else {
@@ -88,7 +88,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 }
             }
             is MessageSticker -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.sticker
                 }
                 else {
@@ -99,7 +99,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 Constants.MessageType.chat
             }
             is MessageAnimatedEmoji -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.animatedEmoji
                 }
                 else {
@@ -107,7 +107,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 }
             }
             is MessageAnimation -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.animation
                 }
                 else {
@@ -115,7 +115,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 }
             }
             is MessageCollage -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.collage
                 }
                 else {
@@ -123,7 +123,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 }
             }
             is MessageDocument -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.document
                 }
                 else {
@@ -131,7 +131,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 }
             }
             is MessageDocuments -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.documents
                 }
                 else {
@@ -139,7 +139,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 }
             }
             is MessageExpiredPhoto -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.expiredPhoto
                 }
                 else {
@@ -147,7 +147,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 }
             }
             is MessageExpiredVideo -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.expiredVideo
                 }
                 else {
@@ -155,7 +155,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 }
             }
             is MessagePhoto -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.photo
                 }
                 else {
@@ -163,7 +163,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 }
             }
             is MessagePoll -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.poll
                 }
                 else {
@@ -171,7 +171,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 }
             }
             is MessageVideo -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.video
                 }
                 else {
@@ -179,7 +179,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 }
             }
             is MessageVideoNote -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.videoNote
                 }
                 else {
@@ -187,7 +187,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 }
             }
             is MessageVoiceNote -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.voiceNote
                 }
                 else {
@@ -195,7 +195,7 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
                 }
             }
             else -> {
-                if (message.isOutgoing) {
+                if (!message.isOutgoing) {
                     Constants.MessageType.unknown
                 }
                 else {
@@ -278,6 +278,7 @@ class MessageDiffCallback : DiffUtil.ItemCallback<Message>() {
     }
 
     override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean {
-        return oldItem.content.text == newItem.content.text
+        return oldItem.content.text == newItem.content.text &&
+                oldItem.sender?.photo == newItem.sender?.photo
     }
 }

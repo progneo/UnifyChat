@@ -9,7 +9,6 @@ import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.data.model.MessageText
 import com.progcorp.unitedmessengers.util.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -25,7 +24,9 @@ class ConversationViewModelFactory(private val conversation: Conversation) :
 
 class ConversationViewModel(private val conversation: Conversation) : ViewModel()  {
 
-    private var _scope = MainScope()
+    private val _tgClient = App.application.tgClient
+    private val _tgRepository = App.application.tgRepository
+    private val _vkRepository = App.application.vkRepository
 
     private var _handler = Handler()
     private var _messagesGetter: Runnable = Runnable {  }
@@ -51,6 +52,9 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
             else {
                 messagesList.updateItemAt(newMessage, messagesList.value!!.indexOf(message))
             }
+            messagesList.value?.sortByDescending {
+                it.timeStamp
+            }
         }
         messagesList.addSource(_newMessage) { newMessage ->
             val message = messagesList.value?.find { it.id == newMessage.id }
@@ -59,6 +63,9 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
             }
             else {
                 messagesList.updateItemAt(newMessage, messagesList.value!!.indexOf(message))
+            }
+            messagesList.value?.sortByDescending {
+                it.timeStamp
             }
         }
         _conversation.value = conversation
@@ -75,7 +82,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                 _handler.postDelayed(_messagesGetter, 0)
             }
             Constants.Messenger.TG -> {
-                App.application.tgClient.conversationViewModel = this
+                _tgClient.conversationViewModel = this
             }
         }
         loadNewMessages()
@@ -87,26 +94,31 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                 _handler.removeCallbacks(_messagesGetter)
             }
             Constants.Messenger.TG -> {
-                App.application.tgClient.conversationViewModel = null
+                _tgClient.conversationViewModel = null
             }
         }
     }
 
     private fun loadSelectedMessages(offset: Int) {
-        when (conversation.messenger) {
-            Constants.Messenger.VK -> {
-                _scope.launch(Dispatchers.Main) {
-                    App.application.vkRepository.getMessages(conversation, offset, 20)
+        viewModelScope.launch(Dispatchers.Main) {
+            when (conversation.messenger) {
+                Constants.Messenger.VK -> {
+                    val data = _vkRepository.getMessages(conversation, offset, 20).first()
+                    for (message in data) {
+                        _addedMessage.value = message
+                    }
                 }
-            }
-            Constants.Messenger.TG -> {
-                if (messagesList.value != null) {
-                    _scope.launch(Dispatchers.Main) {
-                        App.application.tgRepository.getMessages(
+                Constants.Messenger.TG -> {
+                    if (messagesList.value != null) {
+                        val data = _tgRepository.getMessages(
                             conversation.id,
                             messagesList.value!![offset].id,
                             20
-                        )
+                        ).first()
+                        for (item in data) {
+                            val message = Message.tgParse(item)
+                            _addedMessage.value = message
+                        }
                     }
                 }
             }
@@ -114,23 +126,27 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
     }
 
     private fun loadNewMessages() {
-        when (conversation.messenger) {
-            Constants.Messenger.VK -> {
-                _scope.launch(Dispatchers.Main) {
-                    App.application.vkRepository.getMessages(conversation, 0, 20)
+        viewModelScope.launch(Dispatchers.Main) {
+            when (conversation.messenger) {
+                Constants.Messenger.VK -> {
+                    val data = _vkRepository.getMessages(conversation, 0, 20).first()
+                    for (message in data) {
+                        _newMessage.value = message
+                    }
                 }
-            }
-
-            Constants.Messenger.TG -> {
-                _scope.launch(Dispatchers.Main) {
-                    App.application.tgRepository.getMessages(conversation.id, 0,20)
+                Constants.Messenger.TG -> {
+                    val data = _tgRepository.getMessages(conversation.id, 0,20).first()
+                    for (item in data) {
+                        val message = Message.tgParse(item)
+                        _newMessage.value = message
+                    }
                 }
             }
         }
     }
 
     fun sendMessagePressed() {
-        _scope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             if (!newMessageText.value.isNullOrBlank()) {
                 val message = Message(
                     timeStamp = Date().time,
@@ -139,25 +155,22 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                     replyToMessageId = 0,
                     content = MessageText(newMessageText.value!!)
                 )
-                _newMessage.value = message
                 newMessageText.value = null
 
                 when (conversation.messenger) {
                     Constants.Messenger.VK -> {
-                        App.application.vkRepository.sendMessage(chat.value!!.id, message).map {
+                        _newMessage.value = message
+                        _vkRepository.sendMessage(chat.value!!.id, message).map {
                             message.id = it
                         }
                     }
                     Constants.Messenger.TG -> {
-                        App.application.tgRepository.sendMessage(chat.value!!.id, message).first().id
+                        val data = _tgRepository.sendMessage(chat.value!!.id, message).first()
+                        _newMessage.value = Message.tgParse(data)
                     }
                 }
             }
         }
-    }
-
-    fun backPressed() {
-        _backEvent.value = Event(Unit)
     }
 
     fun loadMoreMessages() {
@@ -166,15 +179,16 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
 
     fun updateOnline(data: TdApi.UpdateUserStatus) {
         if (data.userId == chat.value!!.id) {
-            _scope.launch {
+            viewModelScope.launch(Dispatchers.Main) {
                 _conversation.value!!.tgParseOnlineStatus(data)
+                _conversation.postValue(_conversation.value!!.copy())
             }
         }
     }
 
     fun newMessage(data: TdApi.UpdateNewMessage) {
         if (data.message.chatId == chat.value!!.id) {
-            _scope.launch {
+            viewModelScope.launch(Dispatchers.Main) {
                 _newMessage.value = Message.tgParse(data.message)
             }
         }

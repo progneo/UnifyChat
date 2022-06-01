@@ -12,6 +12,9 @@ import com.progcorp.unitedmessengers.util.addNewItem
 import com.progcorp.unitedmessengers.util.removeItem
 import com.progcorp.unitedmessengers.util.updateItemAt
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 
@@ -25,8 +28,6 @@ class VKConversationsViewModelFactory() :
 class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
 
     private val _repository = App.application.vkRepository
-
-    private val _scope: CoroutineScope = viewModelScope
 
     private var _handler = Handler()
     private var _conversationsGetter: Runnable = Runnable {  }
@@ -64,6 +65,9 @@ class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
                     conversationsList.updateItemAt(newConversation, conversationsList.value!!.indexOf(conversation))
                 }
             }
+            conversationsList.value?.sortByDescending {
+                it.lastMessage?.timeStamp
+            }
         }
         conversationsList.addSource(_newConversation) { newConversation ->
             val conversation = conversationsList.value?.find {
@@ -82,10 +86,15 @@ class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
                     conversationsList.updateItemAt(newConversation, conversationsList.value!!.indexOf(conversation))
                 }
             }
+            conversationsList.value?.sortByDescending {
+                it.lastMessage?.timeStamp
+            }
         }
         _loginState.value = (App.application.vkAccountService.token != null)
         if (_loginState.value == true) {
+            _user.value = User()
             setupConversations()
+            getMe()
         }
     }
 
@@ -94,19 +103,18 @@ class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
     }
 
     private fun loadConversations(offset: Int, isNew: Boolean) {
-        _scope.launch {
-            _repository.getConversations(offset).mapNotNull { list ->
-                list.forEach {
-                    if (isNew) {
-                        _newConversation.value = it
-                    }
-                    else {
-                        _updatedConversation.value = it
-                    }
+        MainScope().launch {
+            val data = _repository.getConversations(offset).first()
+            for (conversation in data) {
+                if (isNew) {
+                    _newConversation.value = conversation
+                }
+                else {
+                    _updatedConversation.value = conversation
                 }
             }
-            conversationsList.value?.sortByDescending { it.lastMessage?.timeStamp }
         }
+        conversationsList.value?.sortByDescending { it.lastMessage?.timeStamp }
     }
 
     private fun startGetter() {
@@ -119,6 +127,13 @@ class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
 
     fun loadMoreConversations() {
         loadConversations(conversationsList.value!!.size, false)
+    }
+
+    private fun getMe() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val data = _repository.getUsers().first()
+            _user.postValue(data[0])
+        }
     }
 
     fun goToLoginPressed() {

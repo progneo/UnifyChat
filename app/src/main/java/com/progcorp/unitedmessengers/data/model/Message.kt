@@ -255,7 +255,7 @@ data class Message(
                 TdApi.MessageSticker.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageSticker
                     messageContent = if (content.sticker.isAnimated) {
-                        MessageAnimatedEmoji(emoji = content.sticker.emoji)
+                        MessageText(text = content.sticker.emoji)
                     } else {
                         MessageSticker(client.downloadableFile(content.sticker.sticker).first()!!)
                     }

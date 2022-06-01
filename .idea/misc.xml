@@ -51,11 +51,15 @@
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/toolbar_addon_dialog.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/layout/toolbar_main.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United Messengers/app/src/main/res/menu/bottom_nav_menu.xml" value="0.1" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/background_input.xml" value="0.3265" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/ic_baseline_account_circle_24.xml" value="0.38" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.38" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/ic_baseline_send_24.xml" value="0.38" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/ic_icon_telegram.xml" value="0.38" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/ic_icon_vk.xml" value="0.38" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/inset_attach_file.xml" value="0.3265" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/inset_return.xml" value="0.3265" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/inset_send.xml" value="0.3265" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/left_node_bg.xml" value="0.3345" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/message_bg.xml" value="0.2145" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/online_stroke.xml" value="0.3435" />
@@ -63,7 +67,7 @@
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/rounded_edittext.xml" value="0.3345" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/unread_messages.xml" value="0.374" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/drawable/white_stroke.xml" value="0.4185" />
-        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/activity_conversation.xml" value="0.33" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/activity_conversation.xml" value="0.5" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/activity_main.xml" value="0.3591111111111111" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/activity_main1.xml" value="0.262719298245614" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/activity_telegram_auth.xml" value="0.262719298245614" />
@@ -88,10 +92,12 @@
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_dialog_out_message.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_dialog_out_sticker.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_dialog_sticker.xml" value="0.55" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_message_attachment.xml" value="0.4631578947368421" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_message_attachment_out.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_message_chat.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_message_sticker_out.xml" value="0.55" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_message_text.xml" value="0.2885964912280702" />
+        <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/list_item_message_text_out.xml" value="0.4631578947368421" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/layout/toolbar_vk.xml" value="0.5489583333333333" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/menu/bottom_nav_menu.xml" value="0.36354166666666665" />
         <entry key="..\:/Develop/Kotlin/United_Messengers/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.38" />

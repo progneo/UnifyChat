@@ -19,7 +19,9 @@
     <color name="secondary_text">#FF757575</color>
     <color name="input_background">#FFECECEC</color>
     <color name="error">#FB000220</color>
-    <color name="left_message">#f2f2f2</color>
+    <color name="left_message">
+        #f5f5f5
+    </color>
     <color name="right_message">#cce0ff</color>
     <color name="received_message_background">#FF090D16</color>
 </resources>

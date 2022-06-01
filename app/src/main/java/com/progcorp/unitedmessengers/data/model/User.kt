@@ -27,7 +27,8 @@ data class User(
             firstName = json.optString("first_name", ""),
             lastName = json.optString("last_name", ""),
             photo = json.optString("photo_100", ""),
-            lastSeen = (json.optJSONObject("last_seen")?.optLong("time") ?: 0) * 1000,
+            lastSeen = (json.optJSONObject("online_info")?.optLong("last_seen")
+                ?: json.optJSONObject("last_seen")?.optLong("time") ?: 0) * 1000,
             isOnline = json.optInt("online") != 0,
             deactivated = json.optBoolean("deactivated", false),
             Constants.Messenger.VK
