@@ -22,10 +22,10 @@ class App : Application() {
         lateinit var application: App
     }
 
-    private lateinit var vkRetrofit: Retrofit
-
     lateinit var vkRepository: VKRepository
+    lateinit var vkDataSource: VKDataSource
     lateinit var vkAccountService: IAccountService
+
     lateinit var tgClient: TelegramClient
     lateinit var tgRepository: TelegramDataSource
 
@@ -49,11 +49,14 @@ class App : Application() {
         tgRepository = TelegramDataSource(tgClient)
 
         vkAccountService = VKClient(getSharedPreferences("vk_account", MODE_PRIVATE))
-        vkRetrofit = Retrofit.Builder()
+
+        val vkRetrofit = Retrofit.Builder()
             .baseUrl("https://api.vk.com/method/")
             .addConverterFactory(ScalarsConverterFactory.create())
             .build()
-        vkRepository = VKRepository(VKDataSource(vkRetrofit, vkAccountService as VKClient))
+
+        vkDataSource = VKDataSource(vkRetrofit, vkAccountService as VKClient)
+        vkRepository = VKRepository(vkDataSource)
 
         DynamicColors.applyToActivitiesIfAvailable(this)
     }

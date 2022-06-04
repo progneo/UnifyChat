@@ -4,6 +4,7 @@ import android.util.Log
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.data.model.User
+import com.progcorp.unitedmessengers.data.model.VKLongPollServer
 import com.progcorp.unitedmessengers.enums.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -112,13 +113,31 @@ class VKRepository (private val dataSource: VKDataSource) {
         return flow {
             val response = dataSource.sendMessage(chatId, message)
             if (response.status == Status.SUCCESS) {
-                val result: Long = 0
+                var result: Long = 0
                 val json = response.data?.let { JSONObject(it) }
                 if (json != null) {
                     try {
-                        json.getLong("response")
+                        result = json.getLong("response")
                     } catch (ex: JSONException) {
                         Log.e("${javaClass.simpleName}.sendMessage", ex.stackTraceToString())
+                    }
+                }
+                emit(result)
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getLongPollServer(): Flow<VKLongPollServer> {
+        return flow {
+            val response = dataSource.getLongPollServer()
+            if (response.status == Status.SUCCESS) {
+                var result = VKLongPollServer()
+                val json = response.data?.let { JSONObject(it) }
+                if (json != null) {
+                    try {
+                        result = VKLongPollServer.parse(json.getJSONObject("response"))
+                    } catch (ex: JSONException) {
+                        Log.e("${javaClass.simpleName}.getConversations", ex.stackTraceToString())
                     }
                 }
                 emit(result)

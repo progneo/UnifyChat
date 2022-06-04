@@ -129,7 +129,6 @@ fun ImageView.bindPhoto(message: Message) {
     when (message.content) {
         is MessageSticker -> {
             when((message.content as MessageSticker).path) {
-                null -> Unit
                 "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
                     .error(R.drawable.ic_baseline_account_circle_24).into(this)
                 else -> {
@@ -146,7 +145,6 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessagePhoto -> {
             when((message.content as MessagePhoto).path) {
-                null -> Unit
                 "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
                     .error(R.drawable.ic_baseline_account_circle_24).into(this)
                 else -> {
@@ -163,7 +161,6 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessageAnimation -> {
             when((message.content as MessageAnimation).path) {
-                null -> Unit
                 "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
                     .error(R.drawable.ic_baseline_account_circle_24).into(this)
                 else -> {
@@ -174,7 +171,6 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessageVideo -> {
             when((message.content as MessageVideo).video) {
-                null -> Unit
                 "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
                     .error(R.drawable.ic_baseline_account_circle_24).into(this)
                 else -> {
@@ -185,7 +181,6 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessageVideoNote -> {
             when((message.content as MessageVideoNote).video) {
-                null -> Unit
                 "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
                     .error(R.drawable.ic_baseline_account_circle_24).into(this)
                 else -> {
@@ -239,7 +234,10 @@ fun TextView.bindExtraInfo(companion: ICompanion) {
 
         }
         is Chat -> {
-            companion.membersCount.toString()
+            resources.getString(
+                R.string.members,
+                companion.membersCount.toString()
+            )
         }
         is Bot -> {
             resources.getString(R.string.bot)

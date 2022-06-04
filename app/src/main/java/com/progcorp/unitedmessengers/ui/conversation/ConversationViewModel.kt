@@ -122,7 +122,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
     }
 
     private fun loadNewMessages() {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch {
             when (conversation.messenger) {
                 Constants.Messenger.VK -> {
                     val data = _vkRepository.getMessages(conversation, 0, 20).first()
@@ -142,7 +142,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
     }
 
     fun sendMessagePressed() {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch {
             if (!newMessageText.value.isNullOrBlank()) {
                 val message = Message(
                     timeStamp = Date().time,
@@ -156,9 +156,8 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                 when (conversation.messenger) {
                     Constants.Messenger.VK -> {
                         _newMessage.value = message
-                        _vkRepository.sendMessage(chat.value!!.id, message).map {
-                            message.id = it
-                        }
+                        val data = _vkRepository.sendMessage(chat.value!!.id, message).first()
+                        message.id = data
                     }
                     Constants.Messenger.TG -> {
                         val data = _tgRepository.sendMessage(chat.value!!.id, message).first()
