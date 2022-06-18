@@ -239,7 +239,10 @@ fun TextView.bindExtraInfo(companion: ICompanion) {
 
         }
         is Chat -> {
-            companion.membersCount.toString()
+            resources.getString(
+                R.string.members,
+                companion.membersCount.toString()
+            )
         }
         is Bot -> {
             resources.getString(R.string.bot)

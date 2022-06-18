@@ -156,9 +156,8 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                 when (conversation.messenger) {
                     Constants.Messenger.VK -> {
                         _newMessage.value = message
-                        _vkRepository.sendMessage(chat.value!!.id, message).map {
-                            message.id = it
-                        }
+                        val data = _vkRepository.sendMessage(chat.value!!.id, message).first()
+                        _newMessage.value?.id = data
                     }
                     Constants.Messenger.TG -> {
                         val data = _tgRepository.sendMessage(chat.value!!.id, message).first()

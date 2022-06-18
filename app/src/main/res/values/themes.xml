@@ -176,7 +176,7 @@
         <item name="android:paddingTop">@dimen/_5sdp</item>
         <item name="android:paddingBottom">@dimen/_5sdp</item>
         <item name="android:background">@drawable/message_bg</item>
-        <item name="android:backgroundTint">@color/left_message</item>
+        <item name="android:backgroundTint">@color/material_dynamic_neutral_variant95</item>
         <item name="android:layout_marginStart">@dimen/_3sdp</item>
         <item name="android:orientation">vertical</item>
     </style>
@@ -184,7 +184,7 @@
     <style name="layout_message_photo_block">
         <item name="android:titleMarginStart">@dimen/_3sdp</item>
         <item name="android:background">@drawable/message_bg</item>
-        <item name="android:backgroundTint">@color/left_message</item>
+        <item name="android:backgroundTint">@color/material_dynamic_neutral_variant95</item>
         <item name="android:layout_marginStart">6dp</item>
         <item name="android:orientation">vertical</item>
     </style>
@@ -194,7 +194,7 @@
         <item name="android:paddingTop">@dimen/_5sdp</item>
         <item name="android:paddingBottom">@dimen/_5sdp</item>
         <item name="android:background">@drawable/message_bg</item>
-        <item name="android:backgroundTint">@color/left_message</item>
+        <item name="android:backgroundTint">@color/material_dynamic_neutral_variant95</item>
         <item name="android:layout_marginStart">@dimen/_10sdp</item>
         <item name="android:orientation">vertical</item>
     </style>

@@ -105,7 +105,7 @@ data class Message(
                     "video" -> {
                         val video = at.getJSONObject("video")
                             .getJSONArray("image")
-                            .getJSONObject(4)
+                            .getJSONObject(3)
                             .getString("url")
                         messageContent = MessageVideo(text, video)
                     }
@@ -389,7 +389,6 @@ data class Message(
             return message
         }
     }
-
 
     fun loadFile(file: TdApi.File) {
         val client = App.application.tgClient

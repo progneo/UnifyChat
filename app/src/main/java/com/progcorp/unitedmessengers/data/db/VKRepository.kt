@@ -112,11 +112,11 @@ class VKRepository (private val dataSource: VKDataSource) {
         return flow {
             val response = dataSource.sendMessage(chatId, message)
             if (response.status == Status.SUCCESS) {
-                val result: Long = 0
+                var result: Long = 0
                 val json = response.data?.let { JSONObject(it) }
                 if (json != null) {
                     try {
-                        json.getLong("response")
+                        result = json.getLong("response")
                     } catch (ex: JSONException) {
                         Log.e("${javaClass.simpleName}.sendMessage", ex.stackTraceToString())
                     }
