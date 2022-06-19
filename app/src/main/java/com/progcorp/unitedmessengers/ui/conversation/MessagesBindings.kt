@@ -129,7 +129,6 @@ fun ImageView.bindPhoto(message: Message) {
     when (message.content) {
         is MessageSticker -> {
             when((message.content as MessageSticker).path) {
-                null -> Unit
                 "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
                     .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {
@@ -146,7 +145,6 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessagePhoto -> {
             when((message.content as MessagePhoto).path) {
-                null -> Unit
                 "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
                     .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {
@@ -163,7 +161,6 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessageAnimation -> {
             when((message.content as MessageAnimation).path) {
-                null -> Unit
                 "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
                     .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {
@@ -174,7 +171,6 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessageVideo -> {
             when((message.content as MessageVideo).video) {
-                null -> Unit
                 "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
                     .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {
@@ -185,7 +181,6 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessageVideoNote -> {
             when((message.content as MessageVideoNote).video) {
-                null -> Unit
                 "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
                     .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {

@@ -180,7 +180,6 @@ data class Message(
         }
 
         suspend fun tgParse(tgMessage: TdApi.Message): Message {
-            val client = App.application.tgClient
             val repository = App.application.tgRepository
 
             val id = tgMessage.id

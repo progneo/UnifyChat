@@ -8,12 +8,12 @@ import com.progcorp.unitedmessengers.data.model.MessageText
 import com.progcorp.unitedmessengers.interfaces.requests.*
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class VKDataSource (
     private val retrofit: Retrofit,
     private val accountService: VKClient
 ) {
-
     suspend fun getConversations(offset: Int): Resource<String> {
         val service = retrofit.create(VKConversationsRequest::class.java)
         return getResponse(
@@ -87,6 +87,37 @@ class VKDataSource (
                     (message.content as MessageText).text,
                     0,
                     0
+                )
+            }
+        )
+    }
+
+    suspend fun getLongPollServer(): Resource<String> {
+        val service = retrofit.create(VKGetLongPollServer::class.java)
+        return getResponse(
+            request = {
+                service.messagesLongPollServerGet(
+                    accountService.token!!,
+                    "5.131",
+                    true,
+                    "3"
+                )
+            }
+        )
+    }
+
+    suspend fun getLongPollHistory(retrofit: Retrofit, key: String, ts: Long, pts: Long): Resource<String> {
+        val service = retrofit.create(VKGetLongPollHistory::class.java)
+        return getResponse(
+            request = {
+                service.messagesLongPollHistoryGet(
+                    key,
+                    ts,
+                    pts,
+                    25,
+                    32,
+                    "3",
+                    true
                 )
             }
         )

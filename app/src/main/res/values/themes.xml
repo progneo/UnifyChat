@@ -50,20 +50,6 @@
         <item name="cornerSize">50%</item>
     </style>
 
-    <style name="regular_buttons">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">@dimen/_12ssp</item>
-        <item name="android:background">@drawable/regular_button_background</item>
-    </style>
-
-    <style name="regular_editTexts">
-        <item name="android:textColor">@color/primary</item>
-        <item name="android:textSize">@dimen/_10ssp</item>
-        <item name="android:background">@drawable/rounded_edittext</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:padding">@dimen/_5sdp</item>
-    </style>
-
     <style name="activity_headers">
         <item name="android:textColor">@color/primary_dark</item>
         <item name="android:textSize">@dimen/_16ssp</item>
@@ -79,8 +65,8 @@
         <item name="android:gravity">center_vertical</item>
     </style>
 
-    <style name="textview_dialog_message_left">
-        <item name="android:textColor">@color/black</item>
+    <style name="textview_message_text">
+        <item name="android:textColor">@color/material_dynamic_neutral_variant30</item>
         <item name="android:textSize">@dimen/_11ssp</item>
         <item name="android:layout_marginLeft">@dimen/_10sdp</item>
         <item name="android:layout_marginRight">@dimen/_10sdp</item>
@@ -233,6 +219,7 @@
 
     <style name="textview_date_text">
         <item name="android:layout_gravity">center</item>
+        <item name="android:textColor">@color/material_dynamic_neutral10</item>
         <item name="android:textSize">12sp</item>
         <item name="android:layout_marginTop">@dimen/_4sdp</item>
 
@@ -240,8 +227,8 @@
 
     <style name="imageview_sticker">
         <item name="android:layout_marginStart">@dimen/_3sdp</item>
-        <item name="android:layout_width">@dimen/_100sdp</item>
-        <item name="android:layout_height">@dimen/_100sdp</item>
+        <item name="android:layout_width">@dimen/_110sdp</item>
+        <item name="android:layout_height">@dimen/_110sdp</item>
     </style>
 
     <style name="textview_conversation_name">
