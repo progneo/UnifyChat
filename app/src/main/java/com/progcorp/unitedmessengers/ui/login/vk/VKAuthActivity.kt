@@ -56,7 +56,7 @@ class VKAuthActivity : AppCompatActivity() {
                     }
                     VKAuthStatus.SUCCESS -> {
                         val url = webView.url!!
-                        val tokenMather = Pattern.compile("access_token=\\w+").matcher(url)
+                        val tokenMather = Pattern.compile("access_token=[^&]*").matcher(url)
                         val userIdMather = Pattern.compile("user_id=\\w+").matcher(url)
                         if (tokenMather.find() && userIdMather.find()) {
                             val token = tokenMather.group().replace("access_token=".toRegex(), "")
@@ -66,7 +66,7 @@ class VKAuthActivity : AppCompatActivity() {
                                 App.application.vkAccountService.userId = userId
                             }
                         }
-                        Thread.sleep(2000)
+                        Thread.sleep(4000)
                         triggerRebirth(baseContext)
                     }
                 }

@@ -129,8 +129,8 @@ fun ImageView.bindPhoto(message: Message) {
     when (message.content) {
         is MessageSticker -> {
             when((message.content as MessageSticker).path) {
-                "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
-                    .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
+                    .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {
                     if (message.messenger == Constants.Messenger.VK) {
                         Picasso.get().load((message.content as MessageSticker).path)
@@ -145,12 +145,12 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessagePhoto -> {
             when((message.content as MessagePhoto).path) {
-                "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
-                    .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
+                    .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {
                     if (message.messenger == Constants.Messenger.VK) {
                         Picasso.get().load((message.content as MessagePhoto).path)
-                            .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                            .error(R.drawable.ic_baseline_error_outline_24).into(this)
                     }
                     else {
                         val bitmap = BitmapFactory.decodeFile((message.content as MessagePhoto).path)
@@ -161,31 +161,31 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessageAnimation -> {
             when((message.content as MessageAnimation).path) {
-                "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
-                    .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
+                    .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {
                     Picasso.get().load((message.content as MessageAnimation).path)
-                        .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                        .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 }
             }
         }
         is MessageVideo -> {
             when((message.content as MessageVideo).video) {
-                "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
-                    .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
+                    .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {
                     Picasso.get().load((message.content as MessageVideo).video)
-                        .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                        .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 }
             }
         }
         is MessageVideoNote -> {
             when((message.content as MessageVideoNote).video) {
-                "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
-                    .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
+                    .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {
                     Picasso.get().load((message.content as MessageVideoNote).video)
-                        .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                        .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 }
             }
         }

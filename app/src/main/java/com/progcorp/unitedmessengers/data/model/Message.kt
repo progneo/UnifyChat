@@ -389,7 +389,6 @@ data class Message(
         }
     }
 
-
     fun loadFile(file: TdApi.File) {
         val client = App.application.tgClient
         MainScope().launch {

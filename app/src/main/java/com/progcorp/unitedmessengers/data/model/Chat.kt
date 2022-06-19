@@ -1,6 +1,8 @@
 package com.progcorp.unitedmessengers.data.model
 
+import androidx.databinding.BaseObservable
 import com.progcorp.unitedmessengers.App
+import com.progcorp.unitedmessengers.BR
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.util.Constants
 import kotlinx.coroutines.MainScope
@@ -16,7 +18,7 @@ data class Chat(
     override var photo: String = "",
     val membersCount: Int = 0,
     override var messenger: Int = 0
-) : ICompanion {
+) : ICompanion, BaseObservable() {
     companion object {
         fun vkParse(json: JSONObject, peerId: Long) = Chat(
             id = peerId,
@@ -26,7 +28,7 @@ data class Chat(
             Constants.Messenger.VK
         )
 
-        suspend fun tgParseSupergroup(tdChat: TdApi.Chat, group: TdApi.Supergroup): Chat {
+        fun tgParseSupergroup(tdChat: TdApi.Chat, group: TdApi.Supergroup): Chat {
             val id: Long = group.id
             val title: String = tdChat.title
             val photo = ""
@@ -38,7 +40,7 @@ data class Chat(
             return chat
         }
 
-       suspend fun tgParseBasicGroup(tdChat: TdApi.Chat, group: TdApi.BasicGroup): Chat {
+        fun tgParseBasicGroup(tdChat: TdApi.Chat, group: TdApi.BasicGroup): Chat {
            val id: Long = group.id
            val title: String = tdChat.title
            val photo = ""
@@ -60,5 +62,6 @@ data class Chat(
                 photo = path
             }
         }
+        notifyPropertyChanged(BR.conversation)
     }
 }
