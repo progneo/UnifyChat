@@ -1,4 +1,4 @@
-package com.progcorp.unitedmessengers.data.model
+package com.progcorp.unitedmessengers.data.model.companions
 
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.interfaces.ICompanion

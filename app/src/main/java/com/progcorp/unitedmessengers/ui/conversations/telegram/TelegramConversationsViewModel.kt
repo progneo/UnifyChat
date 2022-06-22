@@ -3,16 +3,12 @@ package com.progcorp.unitedmessengers.ui.conversations.telegram
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
-import com.progcorp.unitedmessengers.data.Resource
 import com.progcorp.unitedmessengers.data.model.Conversation
-import com.progcorp.unitedmessengers.data.model.User
+import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.enums.Status
 import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
 import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
-import com.progcorp.unitedmessengers.ui.conversations.ConversationsListAdapter
 import com.progcorp.unitedmessengers.util.addFrontItem
-import com.progcorp.unitedmessengers.util.removeItem
-import com.progcorp.unitedmessengers.util.updateItemAt
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.drinkless.td.libcore.telegram.TdApi

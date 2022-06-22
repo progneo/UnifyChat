@@ -12,10 +12,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.EventObserver
-import com.progcorp.unitedmessengers.data.model.Bot
-import com.progcorp.unitedmessengers.data.model.Chat
+import com.progcorp.unitedmessengers.data.model.companions.Bot
+import com.progcorp.unitedmessengers.data.model.companions.Chat
 import com.progcorp.unitedmessengers.data.model.Conversation
-import com.progcorp.unitedmessengers.data.model.User
+import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.databinding.FragmentVkBinding
 import com.progcorp.unitedmessengers.ui.conversation.ConversationActivity
 import com.progcorp.unitedmessengers.ui.conversations.ConversationsListAdapter

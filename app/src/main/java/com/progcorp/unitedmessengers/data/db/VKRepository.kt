@@ -3,7 +3,7 @@ package com.progcorp.unitedmessengers.data.db
 import android.util.Log
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
-import com.progcorp.unitedmessengers.data.model.User
+import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.data.model.VKLongPollServer
 import com.progcorp.unitedmessengers.enums.Status
 import kotlinx.coroutines.Dispatchers

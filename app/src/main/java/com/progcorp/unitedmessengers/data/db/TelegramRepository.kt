@@ -3,10 +3,10 @@
 package com.progcorp.unitedmessengers.data.db
 
 import com.progcorp.unitedmessengers.data.Resource
-import com.progcorp.unitedmessengers.data.model.Chat
+import com.progcorp.unitedmessengers.data.model.companions.Chat
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
-import com.progcorp.unitedmessengers.data.model.User
+import com.progcorp.unitedmessengers.data.model.companions.User
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*

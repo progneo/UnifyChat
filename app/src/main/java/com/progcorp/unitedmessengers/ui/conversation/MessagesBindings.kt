@@ -11,6 +11,9 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.model.*
+import com.progcorp.unitedmessengers.data.model.companions.Bot
+import com.progcorp.unitedmessengers.data.model.companions.Chat
+import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.interfaces.IMessageContent
 import com.progcorp.unitedmessengers.util.Constants

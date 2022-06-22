@@ -12,9 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
-import com.progcorp.unitedmessengers.data.model.User
+import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.interfaces.ICompanion
-import com.progcorp.unitedmessengers.ui.bindConversationImageWithPicasso
 import com.progcorp.unitedmessengers.util.Constants
 import com.squareup.picasso.Picasso
 

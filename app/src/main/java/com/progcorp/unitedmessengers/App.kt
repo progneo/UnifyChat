@@ -12,6 +12,9 @@ import com.progcorp.unitedmessengers.data.db.TelegramRepository
 import com.progcorp.unitedmessengers.data.db.VKDataSource
 import com.progcorp.unitedmessengers.data.db.VKRepository
 import com.progcorp.unitedmessengers.interfaces.IAccountService
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -22,12 +25,12 @@ class App : Application() {
         lateinit var application: App
     }
 
-    lateinit var vkRepository: VKRepository
     lateinit var vkDataSource: VKDataSource
+    lateinit var vkRepository: VKRepository
     lateinit var vkAccountService: IAccountService
 
-    lateinit var tgClient: TelegramClient
     lateinit var tgRepository: TelegramDataSource
+    lateinit var tgClient: TelegramClient
 
     override fun onCreate() {
         super.onCreate()
@@ -48,15 +51,21 @@ class App : Application() {
         })
         tgRepository = TelegramDataSource(tgClient)
 
-        vkAccountService = VKClient(getSharedPreferences("vk_account", MODE_PRIVATE))
-
         val vkRetrofit = Retrofit.Builder()
             .baseUrl("https://api.vk.com/method/")
             .addConverterFactory(ScalarsConverterFactory.create())
             .build()
 
-        vkDataSource = VKDataSource(vkRetrofit, vkAccountService as VKClient)
-        vkRepository = VKRepository(vkDataSource)
+        MainScope().launch {
+            val longPollServer = vkRepository.getLongPollServer().first()
+            val longPollRetrofit = Retrofit.Builder()
+                .baseUrl("https://${longPollServer.server}?act=a_check")
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .build()
+            vkAccountService = VKClient(getSharedPreferences("vk_account", MODE_PRIVATE), longPollServer, longPollRetrofit)
+            vkDataSource = VKDataSource(vkRetrofit, vkAccountService as VKClient)
+            vkRepository = VKRepository(vkDataSource)
+        }
 
         DynamicColors.applyToActivitiesIfAvailable(this)
     }

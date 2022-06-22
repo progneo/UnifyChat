@@ -1,12 +1,12 @@
 package com.progcorp.unitedmessengers.data.model
 
-import android.os.Messenger
 import com.progcorp.unitedmessengers.App
+import com.progcorp.unitedmessengers.data.model.companions.Bot
+import com.progcorp.unitedmessengers.data.model.companions.Chat
+import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.interfaces.IMessageContent
 import com.progcorp.unitedmessengers.util.Constants
-import com.progcorp.unitedmessengers.util.Constants.MessageType.photo
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
