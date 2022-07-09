@@ -5,7 +5,7 @@ import org.json.JSONObject
 data class VKLongPollServer(
     val server: String = "",
     val key: String = "",
-    val ts: Long = 0,
+    var ts: Long = 0,
     val pts: Long = 0
 ) {
     companion object {

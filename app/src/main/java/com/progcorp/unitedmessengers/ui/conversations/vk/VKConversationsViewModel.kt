@@ -25,7 +25,7 @@ class VKConversationsViewModelFactory() :
 
 class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
 
-    private val _repository = App.application.vkRepository
+    private val _repository = App.application.vkClient.repository
 
     private var _handler = Handler()
     private var _conversationsGetter: Runnable = Runnable {  }
@@ -88,7 +88,7 @@ class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
                 it.lastMessage?.timeStamp
             }
         }
-        _loginState.value = (App.application.vkAccountService.token != null)
+        _loginState.value = (App.application.vkClient.token != null)
         if (_loginState.value == true) {
             _user.value = User()
             setupConversations()

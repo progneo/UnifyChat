@@ -25,8 +25,8 @@ class ConversationViewModelFactory(private val conversation: Conversation) :
 class ConversationViewModel(private val conversation: Conversation) : ViewModel()  {
 
     private val _tgClient = App.application.tgClient
-    private val _tgRepository = App.application.tgRepository
-    private val _vkRepository = App.application.vkRepository
+    private val _tgRepository = App.application.tgClient.resositrory
+    private val _vkRepository = App.application.vkClient.repository
 
     private var _handler = Handler()
     private var _messagesGetter: Runnable = Runnable {  }

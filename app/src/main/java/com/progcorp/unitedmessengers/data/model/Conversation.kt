@@ -1,14 +1,12 @@
 package com.progcorp.unitedmessengers.data.model
 
 import com.progcorp.unitedmessengers.App
+import com.progcorp.unitedmessengers.data.model.companions.Bot
+import com.progcorp.unitedmessengers.data.model.companions.Chat
+import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.util.Constants
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONArray
 import org.json.JSONObject
@@ -57,7 +55,7 @@ data class Conversation(
     }
 
     suspend fun tgParseLastMessage(update: TdApi.UpdateChatLastMessage) {
-        val repository = App.application.tgRepository
+        val repository = App.application.tgClient.resositrory
 
         if (update.lastMessage != null) {
             lastMessage = Message.tgParse(update.lastMessage!!)
@@ -66,7 +64,7 @@ data class Conversation(
     }
 
     suspend fun tgParseNewMessage(update: TdApi.UpdateNewMessage) {
-        val repository = App.application.tgRepository
+        val repository = App.application.tgClient.resositrory
 
         if (update.message != null) {
             lastMessage = Message.tgParse(update.message!!)
@@ -75,7 +73,7 @@ data class Conversation(
     }
 
     suspend fun tgParseOnlineStatus(update: TdApi.UpdateUserStatus) {
-        val repository = App.application.tgRepository
+        val repository = App.application.tgClient.resositrory
 
         val user = User.tgParse(repository.getUser(update.userId).first())
         companion as User
@@ -130,7 +128,7 @@ data class Conversation(
         }
 
         suspend fun tgParse(conversation: TdApi.Chat): Conversation? {
-            val repository = App.application.tgRepository
+            val repository = App.application.tgClient.resositrory
 
             if (conversation.positions.isEmpty()) {
                 return null

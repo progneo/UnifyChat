@@ -180,7 +180,7 @@ data class Message(
         }
 
         suspend fun tgParse(tgMessage: TdApi.Message): Message {
-            val repository = App.application.tgRepository
+            val repository = App.application.tgClient.resositrory
 
             val id = tgMessage.id
             val timeStamp: Long = (tgMessage.date).toLong() * 1000

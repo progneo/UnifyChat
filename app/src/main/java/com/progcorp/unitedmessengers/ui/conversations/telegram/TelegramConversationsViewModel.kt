@@ -23,7 +23,7 @@ class TelegramConversationsViewModelFactory :
 class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
 
     private val _client = App.application.tgClient
-    private val _repository = App.application.tgRepository
+    private val _repository = App.application.tgClient.resositrory
 
     private val _loginEvent = MutableLiveData<Event<Unit>>()
 
@@ -76,6 +76,7 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     }
 
     private fun fetchChats() {
+        conversationsList.value?.clear()
         MainScope().launch {
             val data = _repository.getConversations(1000).first()
             for (conversation in data) {

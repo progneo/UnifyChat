@@ -1,14 +1,11 @@
 package com.progcorp.unitedmessengers
 
 import android.app.Application
-import android.content.res.Configuration
 import android.os.Build
-import androidx.core.view.WindowCompat
 import com.google.android.material.color.DynamicColors
 import com.progcorp.unitedmessengers.data.clients.TelegramClient
 import com.progcorp.unitedmessengers.data.clients.VKClient
 import com.progcorp.unitedmessengers.data.db.TelegramDataSource
-import com.progcorp.unitedmessengers.data.db.TelegramRepository
 import com.progcorp.unitedmessengers.data.db.VKDataSource
 import com.progcorp.unitedmessengers.data.db.VKRepository
 import com.progcorp.unitedmessengers.interfaces.IAccountService
@@ -25,11 +22,7 @@ class App : Application() {
         lateinit var application: App
     }
 
-    lateinit var vkDataSource: VKDataSource
-    lateinit var vkRepository: VKRepository
-    lateinit var vkAccountService: IAccountService
-
-    lateinit var tgRepository: TelegramDataSource
+    lateinit var vkClient: VKClient
     lateinit var tgClient: TelegramClient
 
     override fun onCreate() {
@@ -37,6 +30,7 @@ class App : Application() {
         setLocale()
         application = this
 
+        vkClient = VKClient(getSharedPreferences("vk_account", MODE_PRIVATE))
         tgClient = TelegramClient(TdApi.TdlibParameters().apply {
             apiId = applicationContext.resources.getInteger(R.integer.telegram_api_id)
             apiHash = applicationContext.getString(R.string.telegram_api_hash)
@@ -49,23 +43,6 @@ class App : Application() {
             applicationVersion = "1.0.0"
             enableStorageOptimizer = true
         })
-        tgRepository = TelegramDataSource(tgClient)
-
-        val vkRetrofit = Retrofit.Builder()
-            .baseUrl("https://api.vk.com/method/")
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-
-        MainScope().launch {
-            val longPollServer = vkRepository.getLongPollServer().first()
-            val longPollRetrofit = Retrofit.Builder()
-                .baseUrl("https://${longPollServer.server}?act=a_check")
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .build()
-            vkAccountService = VKClient(getSharedPreferences("vk_account", MODE_PRIVATE), longPollServer, longPollRetrofit)
-            vkDataSource = VKDataSource(vkRetrofit, vkAccountService as VKClient)
-            vkRepository = VKRepository(vkDataSource)
-        }
 
         DynamicColors.applyToActivitiesIfAvailable(this)
     }

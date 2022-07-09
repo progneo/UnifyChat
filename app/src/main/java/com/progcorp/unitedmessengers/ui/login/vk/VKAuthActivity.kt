@@ -20,7 +20,7 @@ class VKAuthActivity : AppCompatActivity() {
     private lateinit var viewDataBinding: ActivityVkAuthBinding
     private lateinit var webView: WebView
 
-    private val _client = App.application.vkAccountService
+    private val _client = App.application.vkClient
     private val _authParams = StringBuilder("https://oauth.vk.com/authorize?").apply {
         append(String.format("%s=%s", URLEncoder.encode("client_id", "UTF-8"), URLEncoder.encode("2685278", "UTF-8")) + "&")
         append(String.format("%s=%s", URLEncoder.encode("redirect_uri", "UTF-8"), URLEncoder.encode("https://oauth.vk.com/blank.html", "UTF-8")) + "&")
@@ -62,8 +62,8 @@ class VKAuthActivity : AppCompatActivity() {
                             val token = tokenMather.group().replace("access_token=".toRegex(), "")
                             val userId = userIdMather.group().replace("user_id=".toRegex(), "")
                             if (token.isNotEmpty() && userId.isNotEmpty()) {
-                                App.application.vkAccountService.token = token
-                                App.application.vkAccountService.userId = userId
+                                App.application.vkClient.token = token
+                                App.application.vkClient.userId = userId
                             }
                         }
                         Thread.sleep(4000)
@@ -87,7 +87,7 @@ class VKAuthActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (App.application.vkAccountService.token == null) {
+        if (App.application.vkClient.token == null) {
             showAuthWindow()
         }
     }
