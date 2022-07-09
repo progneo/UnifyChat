@@ -8,7 +8,6 @@
         android:maxSdkVersion="28"
         tools:ignore="ScopedStorage"/>
     <application
-        android:allowBackup="true"
         android:name="com.progcorp.unitedmessengers.App"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
