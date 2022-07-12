@@ -113,7 +113,16 @@ class VKDataSource (private val client: VKClient) {
             val service = client.lpRetrofit!!.create(VKGetLongPollHistory::class.java)
             getResponse(
                 request = {
-                    service.messagesLongPollHistoryGet()
+                    service.messagesLongPollHistoryGet(
+                        client.lpServer!!.server,
+                        client.lpServer!!.key,
+                        client.lpServer!!.ts,
+                        client.lpServer!!.pts,
+                        25,
+                        32,
+                        "3",
+                        true
+                    )
                 }
             )
         }

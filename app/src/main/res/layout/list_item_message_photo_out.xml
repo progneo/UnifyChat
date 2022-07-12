@@ -20,11 +20,11 @@
         <TextView
             android:id="@+id/dateText"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="wrap_content"
             app:bind_epochTimeMsToDate="@{message.timeStamp}"
             app:bind_message="@{message}"
             app:bind_message_viewModel="@{viewmodel}"
-            style="@style/textview_date_text"
+            style="@style/Widget.UM.TextView.Message.Date"
             tools:text="30 april" />
 
         <LinearLayout
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            style="@style/layout_message_out">
+            style="@style/Widget.UM.Layout.Message">
 
             <TextView
                 android:id="@+id/text_time_right"
@@ -40,23 +40,21 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 app:bind_message_time="@{message.timeStamp}"
-                style="@style/info_text_views_out"
+                style="@style/Widget.UM.TextView.Message.Time"
                 tools:text="11:47"/>
 
             <LinearLayout
                 android:id="@+id/linear_layout_message_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/layout_message_out_photo_block">
+                style="@style/Widget.UM.Layout.Message.Block.Out">
 
                 <TextView
-                    android:paddingTop="@dimen/_5sdp"
                     android:id="@+id/text_message_left"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
                     app:bind_message_text_messages="@{message.content}"
-                    style="@style/textview_message_text"
+                    style="@style/Widget.UM.TextView.Message.Text"
                     tools:text="Сообщение с чатика"/>
 
                 <com.google.android.material.imageview.ShapeableImageView
@@ -65,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     app:bind_photo="@{message}"
-                    style="@style/imageview_photo"/>
+                    style="@style/Widget.UM.ImageView.Message.Photo"/>
 
             </LinearLayout>
 

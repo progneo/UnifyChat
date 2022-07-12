@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_40sdp"
             android:text="@string/telegram"
-            android:textColor="@color/primary_text"
+            android:textColor="?attr/colorOnBackground"
             android:textSize="@dimen/_18ssp"
             android:textStyle="bold" />
 
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_4sdp"
             android:text="@string/login_text"
-            android:textColor="@color/secondary_text"
+            android:textColor="?attr/colorOnBackground"
             android:textSize="@dimen/_12ssp"
             android:textStyle="bold" />
 
@@ -69,10 +69,10 @@
                     android:layout_marginTop="@dimen/_20sdp"
                     android:text="@string/action_next"
                     android:textAlignment="center"
-                    android:textColor="@color/white"
+                    android:textColor="?attr/colorOnPrimary"
                     android:textSize="@dimen/_13ssp"
                     android:textStyle="bold"
-                    android:backgroundTint="@color/material_dynamic_primary40"
+                    android:backgroundTint="?attr/colorPrimary"
                     android:onClick="@{() -> viewmodel.insertPhoneNumber()}"
                     app:cornerRadius="@dimen/_8sdp"/>
             </LinearLayout>
@@ -105,11 +105,10 @@
                     android:layout_marginTop="@dimen/_20sdp"
                     android:text="@string/action_login"
                     android:textAlignment="center"
-                    android:textColor="@color/white"
+                    android:textColor="?attr/colorOnPrimary"
                     android:textSize="@dimen/_13ssp"
                     android:textStyle="bold"
-                    android:maxLength="6"
-                    android:backgroundTint="@color/material_dynamic_primary40"
+                    android:backgroundTint="?attr/colorPrimary"
                     android:onClick="@{() -> viewmodel.insertCode()}"
                     app:cornerRadius="@dimen/_8sdp"/>
             </LinearLayout>
@@ -142,10 +141,10 @@
                     android:layout_marginTop="@dimen/_20sdp"
                     android:text="@string/action_login"
                     android:textAlignment="center"
-                    android:textColor="@color/white"
+                    android:textColor="?attr/colorOnPrimary"
                     android:textSize="@dimen/_13ssp"
                     android:textStyle="bold"
-                    android:backgroundTint="@color/material_dynamic_primary40"
+                    android:backgroundTint="?attr/colorPrimary"
                     android:onClick="@{() -> viewmodel.insertPassword()}"
                     app:cornerRadius="@dimen/_8sdp"/>
             </LinearLayout>
@@ -158,9 +157,10 @@
             android:layout_height="@dimen/_50sdp"
             android:text="@string/action_logout"
             android:textAlignment="center"
-            android:textColor="@color/white"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="@dimen/_13ssp"
             android:textStyle="bold"
+            android:backgroundTint="?attr/colorPrimary"
             android:onClick="@{() -> viewmodel.logout()}"
             android:visibility="invisible"
             app:cornerRadius="@dimen/_8sdp"/>

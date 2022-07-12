@@ -1,27 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="light_green">#16c41e</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="primary">#4169E1</color>
-    <color name="dark_blue">#FF1C2E46</color>
-    <color name="accent">#d7dce7</color>
+    <!-- Base colors. -->
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
     <color name="gray">#a8a8a8</color>
-    <color name="royal_blue">#4169E1</color>
     <color name="blue">#224ad4</color>
-    <color name="primary_dark">#FF142232</color>
-    <color name="primary_text">#FF212121</color>
-    <color name="secondary_text">#FF757575</color>
-    <color name="input_background">#FFECECEC</color>
-    <color name="error">#FB000220</color>
-    <color name="left_message">
-        #f5f5f5
-    </color>
-    <color name="right_message">#cce0ff</color>
-    <color name="received_message_background">#FF090D16</color>
+    <color name="boulder">#757575</color>
+    <color name="royal_blue">#4169E1</color>
+    <color name="vivid_violet">#8032a6</color>
+    <color name="malachite">#16c41e</color>
+    <color name="cloud_burst">#1c2e46</color>
+    <color name="geyser">#d7dce7</color>
+    <!-- Base light theme colors. -->
+    <color name="primary">#494dce</color>
+    <color name="onPrimary">#ffffff</color>
+    <color name="primaryContainer">#e1e0ff</color>
+    <color name="onPrimaryContainer">#05006d</color>
+    <color name="secondary">#5c5d72</color>
+    <color name="onSecondary">#ffffff</color>
+    <color name="secondaryContainer">#e2e0f9</color>
+    <color name="onSecondaryContainer">#191a2c</color>
+    <color name="tertiary">#79536a</color>
+    <color name="onTertiary">#ffffff</color>
+    <color name="tertiaryContainer">#ffd8ed</color>
+    <color name="onTertiaryContainer">#2e1125</color>
+    <color name="error">#ba1a1a</color>
+    <color name="onError">#ffffff</color>
+    <color name="errorContainer">#ffdad6</color>
+    <color name="onErrorContainer">#410002</color>
+    <color name="background">#fffbff</color>
+    <color name="onBackground">#1c1b1f</color>
+    <color name="surface">#fffbff</color>
+    <color name="onSurface">#1c1b1f</color>
+    <color name="outline">#777680</color>
+    <color name="surfaceVariant">#e4e1ec</color>
+    <color name="onSurfaceVariant">#46464f</color>
+    <!-- Base dark theme colors. -->
+    <color name="primaryDark">#D0BCFF</color>
+    <color name="onPrimaryDark">#381E72</color>
+    <color name="primaryContainerDark">#4F378B</color>
+    <color name="onPrimaryContainerDark">#EADDFF</color>
+    <color name="secondaryDark">#c5c4dd</color>
+    <color name="onSecondaryDark">#2e2f42</color>
+    <color name="secondaryContainerDark">#454559</color>
+    <color name="onSecondaryContainerDark">#e2e0f9</color>
+    <color name="tertiaryDark">#e8b9d4</color>
+    <color name="onTertiaryDark">#46263b</color>
+    <color name="tertiaryContainerDark">#5f3c52</color>
+    <color name="onTertiaryContainerDark">#ffd8ed</color>
+    <color name="errorDark">#ffb4ab</color>
+    <color name="onErrorDark">#690005</color>
+    <color name="errorContainerDark">#93000a</color>
+    <color name="onErrorContainerDark">#ffdad6</color>
+    <color name="backgroundDark">#1c1b1f</color>
+    <color name="onBackgroundDark">#e5e1e6</color>
+    <color name="surfaceDark">#1c1b1f</color>
+    <color name="onSurfaceDark">#1c1b1f</color>
+    <color name="outlineDark">#918f9a</color>
+    <color name="surfaceVariantDark">#46464f</color>
+    <color name="onSurfaceVariantDark">#c7c5d0</color>
 </resources>

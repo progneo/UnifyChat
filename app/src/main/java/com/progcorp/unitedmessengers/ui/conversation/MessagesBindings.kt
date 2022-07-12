@@ -3,6 +3,7 @@
 package com.progcorp.unitedmessengers.ui.conversation
 
 import android.graphics.BitmapFactory
+import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -259,7 +260,10 @@ fun TextView.bindMessageTime(timeStamp: Long) {
 @BindingAdapter("bind_message_text")
 fun TextView.bindMessageText(messageContent: IMessageContent) {
     if (messageContent.text == "") {
-        this.setTextColor(ContextCompat.getColor(context, com.google.android.material.R.color.material_dynamic_primary40))
+        val color = TypedValue()
+        context.theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, color, true)
+        this.setTextColor(color.data)
+
         when (messageContent) {
             is MessageSticker -> this.text = "Стикер"
             is MessagePoll -> this.text = "Голосование"
@@ -278,7 +282,6 @@ fun TextView.bindMessageText(messageContent: IMessageContent) {
         }
     }
     else {
-        this.setTextColor(ContextCompat.getColor(context, com.google.android.material.R.color.material_dynamic_neutral0))
         this.text = messageContent.text
     }
 }

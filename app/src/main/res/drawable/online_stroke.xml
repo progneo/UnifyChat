@@ -3,5 +3,5 @@
     android:shape="oval">
     <stroke
         android:width="2dp"
-        android:color="@color/material_dynamic_primary40" />
+        android:color="?attr/colorPrimary" />
 </shape>

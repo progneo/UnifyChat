@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:bind_message_text="@{message.content}"
-            style="@style/textview_date_text"
+            style="@style/Widget.UM.TextView.Message.Date"
             tools:text="User was kicked"/>
     </LinearLayout>
 </layout>

@@ -19,30 +19,30 @@
         <TextView
             android:id="@+id/dateText"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/_20sdp"
-            style="@style/textview_date_text"
+            android:layout_height="wrap_content"
+            style="@style/Widget.UM.TextView.Message.Date"
             app:bind_epochTimeMsToDate="@{message.timeStamp}"
             app:bind_message="@{message}"
             app:bind_message_viewModel="@{viewmodel}"
-            tools:text="30 april" />
+            tools:text="30 april"/>
 
         <LinearLayout
             android:id="@+id/layout_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="bottom"
-            style="@style/layout_message">
+            style="@style/Widget.UM.Layout.Message">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo_sender"
-                style="@style/imageview_sender_photo"
+                style="@style/Widget.UM.ImageView.Message.Author"
                 app:bind_conversation="@{viewmodel.chat}"
                 app:bind_image_sender="@{message.sender.photo}"
-                tools:src="@drawable/ic_baseline_account_circle_24" />
+                tools:src="@drawable/avatar" />
 
             <LinearLayout
                 android:id="@+id/linear_layout_message_left"
-                style="@style/layout_message_block"
+                style="@style/Widget.UM.Layout.Message.Block"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     app:bind_name="@{message}"
                     app:bind_conversation="@{viewmodel.chat}"
-                    style="@style/textview_name"
+                    style="@style/Widget.UM.TextView.Message.Author"
                     tools:text="Имя Фамилия"/>
 
                 <TextView
@@ -60,13 +60,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:bind_message_text="@{message.content}"
-                    style="@style/textview_message_text"
+                    style="@style/Widget.UM.TextView.Message.Text"
                     tools:text="Сообщение с чатика"/>
             </LinearLayout>
 
             <TextView
                 android:id="@+id/text_time_left"
-                style="@style/info_text_views"
+                style="@style/Widget.UM.TextView.Message.Time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:bind_message_time="@{message.timeStamp}"

@@ -1,250 +1,39 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="DefaultTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">@color/primary</item>
-        <item name="colorOnPrimary">@color/white</item>
-
-        <item name="colorSecondary">@color/secondary_text</item>
-        <item name="colorSecondaryVariant">@color/secondary_text</item>
-        <item name="colorOnSecondary">@color/black</item>
-
-        <item name="colorAccent">@color/accent</item>
-
-        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
-        <item name="android:fitsSystemWindows">true</item>
-    </style>
-
     <style name="AppTheme.DayNight" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-    </style>
-
-    <style name="AppTheme.Light" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/onPrimary</item>
+        <item name="colorPrimaryContainer">@color/primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/onPrimaryContainer</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/onSecondary</item>
+        <item name="colorSecondaryContainer">@color/secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/onSecondaryContainer</item>
+        <!-- Tertiary brand color. -->
+        <item name="colorTertiary">@color/tertiary</item>
+        <item name="colorOnTertiary">@color/onTertiary</item>
+        <item name="colorTertiaryContainer">@color/tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/onTertiaryContainer</item>
+        <!-- Error color. -->
+        <item name="colorError">@color/error</item>
+        <item name="colorOnError">@color/onError</item>
+        <item name="colorErrorContainer">@color/errorContainer</item>
+        <item name="colorOnErrorContainer">@color/onErrorContainer</item>
+        <!-- Other colors. -->
+        <item name="colorBackgroundFloating">@color/background</item>
+        <item name="colorOnBackground">@color/onBackground</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/onSurface</item>
+        <item name="colorOutline">@color/outline</item>
+        <item name="colorSurfaceVariant">@color/surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/onSurfaceVariant</item>
+        <!-- Status bar. -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
+        <!-- Navigation bar. -->
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
-    </style>
-
-    <style name="AppTheme.Dark" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
-    </style>
-
-    <style name="WhiteActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="background">@color/white</item>
-    </style>
-
-    <style name="ToolbarStyle" parent="@style/Widget.AppCompat.Toolbar">
-        <item name="contentInsetStart">0dp</item>
-        <item name="android:contentInsetStart">0dp</item>
-    </style>
-
-    <style name="cornerImageView" parent="">
-        <item name="cornerSize">10dp</item>
-    </style>
-    <style name="circleImageView" parent="">
-        <item name="cornerSize">50%</item>
-    </style>
-
-    <style name="activity_headers">
-        <item name="android:textColor">@color/primary_dark</item>
-        <item name="android:textSize">@dimen/_16ssp</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="textview_message_left">
-        <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">@dimen/_11ssp</item>
-        <item name="android:layout_marginLeft">@dimen/_10sdp</item>
-        <item name="android:layout_marginRight">@dimen/_10sdp</item>
-        <item name="android:maxWidth">@dimen/_180sdp</item>
-        <item name="android:gravity">center_vertical</item>
-    </style>
-
-    <style name="textview_message_text">
-        <item name="android:textColor">@color/material_dynamic_neutral_variant30</item>
-        <item name="android:textSize">@dimen/_11ssp</item>
-        <item name="android:layout_marginLeft">@dimen/_10sdp</item>
-        <item name="android:layout_marginRight">@dimen/_10sdp</item>
-        <item name="android:maxWidth">@dimen/_180sdp</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:autoLink">web</item>
-        <item name="android:textColorLink">@color/material_dynamic_primary60</item>
-    </style>
-
-    <style name="textview_attachments">
-        <item name="android:textColor">@color/gray</item>
-        <item name="android:textSize">@dimen/_11ssp</item>
-        <item name="android:layout_marginLeft">@dimen/_10sdp</item>
-        <item name="android:layout_marginRight">@dimen/_10sdp</item>
-        <item name="android:maxWidth">@dimen/_180sdp</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingTop">1dp</item>
-    </style>
-
-    <style name="textview_attachments_out">
-        <item name="android:textColor">@color/gray</item>
-        <item name="android:textSize">@dimen/_11ssp</item>
-        <item name="android:layout_marginLeft">@dimen/_10sdp</item>
-        <item name="android:layout_marginRight">@dimen/_10sdp</item>
-        <item name="android:maxWidth">@dimen/_180sdp</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingTop">1dp</item>
-    </style>
-
-    <style name="textview_name">
-        <item name="android:textColor">@color/material_dynamic_primary40</item>
-        <item name="android:textSize">@dimen/_9ssp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:layout_marginLeft">@dimen/_10sdp</item>
-        <item name="android:layout_marginRight">@dimen/_10sdp</item>
-        <item name="android:maxWidth">@dimen/_180sdp</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingBottom">0dp</item>
-        <item name="android:autoLink">web</item>
-        <item name="android:textColorLink">@color/royal_blue</item>
-    </style>
-
-    <style name="textview_message_right">
-        <item name="android:textColor">@color/material_dynamic_primary10</item>
-        <item name="android:textSize">@dimen/_11ssp</item>
-        <item name="android:layout_marginLeft">@dimen/_10sdp</item>
-        <item name="android:layout_marginRight">@dimen/_10sdp</item>
-        <item name="android:maxWidth">@dimen/_180sdp</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:paddingBottom">0dp</item>
-        <item name="android:autoLink">web</item>
-        <item name="android:textColorLink">@color/material_dynamic_primary40</item>
-    </style>
-
-    <style name="info_text_views">
-        <item name="android:textColor">@color/gray</item>
-        <item name="android:textSize">@dimen/_8ssp</item>
-        <item name="android:gravity">center</item>
-        <item name="android:layout_marginBottom">@dimen/_2sdp</item>
-        <item name="android:layout_marginStart">@dimen/_3sdp</item>
-    </style>
-
-    <style name="info_text_views_out">
-        <item name="android:textColor">@color/gray</item>
-        <item name="android:textSize">@dimen/_8ssp</item>
-        <item name="android:gravity">center</item>
-        <item name="android:layout_marginBottom">@dimen/_2sdp</item>
-        <item name="android:layout_marginEnd">@dimen/_3sdp</item>
-    </style>
-
-    <style name="return_button">
-        <item name="android:gravity">center</item>
-        <item name="background">@drawable/ic_baseline_arrow_back_24</item>
-    </style>
-
-    <style name="layout_message">
-        <item name="android:layout_marginTop">@dimen/_1sdp</item>
-        <item name="android:layout_marginBottom">@dimen/_6sdp</item>
-        <item name="android:layout_marginStart">@dimen/_10sdp</item>
-        <item name="android:layout_marginEnd">@dimen/_10sdp</item>
-        <item name="android:orientation">horizontal</item>
-        <item name="android:gravity">bottom</item>
-    </style>
-
-    <style name="layout_message_out">
-        <item name="android:layout_marginTop">@dimen/_1sdp</item>
-        <item name="android:layout_marginBottom">@dimen/_6sdp</item>
-        <item name="android:orientation">horizontal</item>
-    </style>
-
-    <style name="layout_message_block">
-        <item name="android:titleMarginStart">@dimen/_3sdp</item>
-        <item name="android:paddingTop">@dimen/_5sdp</item>
-        <item name="android:paddingBottom">@dimen/_5sdp</item>
-        <item name="android:background">@drawable/message_bg</item>
-        <item name="android:backgroundTint">@color/material_dynamic_neutral_variant95</item>
-        <item name="android:layout_marginStart">@dimen/_3sdp</item>
-        <item name="android:orientation">vertical</item>
-    </style>
-
-    <style name="layout_message_photo_block">
-        <item name="android:titleMarginStart">@dimen/_3sdp</item>
-        <item name="android:background">@drawable/message_bg</item>
-        <item name="android:backgroundTint">@color/material_dynamic_neutral_variant95</item>
-        <item name="android:layout_marginStart">6dp</item>
-        <item name="android:orientation">vertical</item>
-    </style>
-
-    <style name="layout_dialog_message_block">
-        <item name="android:titleMarginStart">@dimen/_3sdp</item>
-        <item name="android:paddingTop">@dimen/_5sdp</item>
-        <item name="android:paddingBottom">@dimen/_5sdp</item>
-        <item name="android:background">@drawable/message_bg</item>
-        <item name="android:backgroundTint">@color/material_dynamic_neutral_variant95</item>
-        <item name="android:layout_marginStart">@dimen/_10sdp</item>
-        <item name="android:orientation">vertical</item>
-    </style>
-
-    <style name="layout_message_out_block">
-        <item name="android:layout_marginEnd">@dimen/_10sdp</item>
-        <item name="android:paddingTop">@dimen/_5sdp</item>
-        <item name="android:paddingBottom">@dimen/_5sdp</item>
-        <item name="android:background">@drawable/message_bg</item>
-        <item name="android:backgroundTint">@color/material_dynamic_primary90</item>
-        <item name="android:orientation">vertical</item>
-    </style>
-
-    <style name="layout_message_out_photo_block">
-        <item name="android:layout_marginEnd">@dimen/_10sdp</item>
-        <item name="android:background">@drawable/message_bg</item>
-        <item name="android:backgroundTint">@color/material_dynamic_primary90</item>
-        <item name="android:orientation">vertical</item>
-    </style>
-
-    <style name="imageview_sender_photo">
-        <item name="android:layout_width">@dimen/_25sdp</item>
-        <item name="android:layout_height">@dimen/_25sdp</item>
-        <item name="shapeAppearanceOverlay">@style/circleImageView</item>
-    </style>
-
-    <style name="imageview_photo">
-        <item name="shapeAppearanceOverlay">@style/cornerImageView</item>
-        <item name="android:maxWidth">250dp</item>
-        <item name="android:maxHeight">500dp</item>
-        <item name="android:minWidth">130dp</item>
-        <item name="android:minHeight">70dp</item>
-        <item name="android:scaleType">fitXY</item>
-        <item name="android:adjustViewBounds">true</item>
-    </style>
-
-    <style name="textview_date_text">
-        <item name="android:layout_gravity">center</item>
-        <item name="android:textColor">@color/material_dynamic_neutral10</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:layout_marginTop">@dimen/_4sdp</item>
-
-    </style>
-
-    <style name="imageview_sticker">
-        <item name="android:layout_marginStart">@dimen/_3sdp</item>
-        <item name="android:layout_width">@dimen/_110sdp</item>
-        <item name="android:layout_height">@dimen/_110sdp</item>
-    </style>
-
-    <style name="textview_conversation_name">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/primary_text</item>
-    </style>
-
-    <style name="textview_conversation_extra">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:ellipsize">end</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:textColor">@color/secondary_text</item>
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
 </resources>

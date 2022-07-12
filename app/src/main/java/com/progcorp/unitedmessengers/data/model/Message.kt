@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.Serializable
 
@@ -81,99 +82,104 @@ data class Message(
                 }
             }
 
-            val attachmentsObject = json.getJSONArray("attachments")
-            if (attachmentsObject.length() == 1) {
-                val at = attachmentsObject.getJSONObject(0)
-                when (at.getString("type")) {
-                    "sticker" -> {
-                        val sticker = at.getJSONObject("sticker")
-                            .getJSONArray("images")
-                            .getJSONObject(4)
-                            .getString("url")
-                        messageContent = MessageSticker(path = sticker)
+            try {
+                val attachmentsObject = json.getJSONArray("attachments")
+                if (attachmentsObject.length() == 1) {
+                    val at = attachmentsObject.getJSONObject(0)
+                    when (at.getString("type")) {
+                        "sticker" -> {
+                            val sticker = at.getJSONObject("sticker")
+                                .getJSONArray("images")
+                                .getJSONObject(4)
+                                .getString("url")
+                            messageContent = MessageSticker(path = sticker)
+                        }
+                        "photo" -> {
+                            val photoArray = at.getJSONObject("photo").getJSONArray("sizes")
+                            for (i in 0 until photoArray.length()) {
+                                val photo = photoArray.getJSONObject(i)
+                                if (photo.getString("type") == "y") {
+                                    messageContent = MessagePhoto(text, photo.getString("url"))
+                                    break;
+                                }
+                            }
+                        }
+                        "video" -> {
+                            val video = at.getJSONObject("video")
+                                .getJSONArray("image")
+                                .getJSONObject(3)
+                                .getString("url")
+                            messageContent = MessageVideo(text, video)
+                        }
+                        "audio" -> {
+                            val audioObj = at.getJSONObject("audio")
+                            val name = audioObj.getString("artist") +
+                                    " " + audioObj.getString("title")
+                            messageContent = MessageUnknown(text, name)
+                        }
+                        "audio_message" -> {
+                            val audio = at.getJSONObject("audio_message")
+                                .getString("link_mp3")
+                            messageContent = MessageVoiceNote(text, audio)
+
+                        }
+                        "doc" -> {
+                            val doc = at.getJSONObject("doc")
+                                .getString("title")
+                            messageContent = MessageDocument(text, doc)
+                        }
+                        "link" -> {}
+                        "market" -> {
+                            messageContent = MessageUnknown(text, "Товар")
+                        }
+                        "market_album" -> {
+                            messageContent = MessageUnknown(text, "Подборка товаров")
+                        }
+                        "wall" -> {
+                            messageContent = MessageUnknown(text, "Запись со стены")
+                        }
+                        "wall_reply" -> {
+                            messageContent = MessageUnknown(text, "Комментарий к записи")
+                        }
+                        "gift" -> {
+                            messageContent = MessageUnknown(text, "Подарок")
+                        }
                     }
-                    "photo" -> {
-                        val photoArray = at.getJSONObject("photo").getJSONArray("sizes")
-                        for (i in 0 until photoArray.length()) {
-                            val photo = photoArray.getJSONObject(i)
-                            if (photo.getString("type") == "y") {
-                                messageContent = MessagePhoto(text, photo.getString("url"))
-                                break;
+                }
+                else if (attachmentsObject.length() > 1) {
+                    var items = arrayListOf<String>()
+                    for (i in 0 until attachmentsObject.length()) {
+                        val at = attachmentsObject.getJSONObject(i)
+                        when (at.getString("type")) {
+                            "photo" -> {
+                                items.add(at.getJSONObject("photo")
+                                    .getJSONArray("sizes")
+                                    .getJSONObject(4)
+                                    .getString("url")
+                                )
+                            }
+                            "video" -> {
+                                items.add(at.getJSONObject("video")
+                                    .getJSONArray("image")
+                                    .getJSONObject(5)
+                                    .getString("url")
+                                )
+                            }
+                            else -> {
+                                items = arrayListOf()
+                                break
                             }
                         }
                     }
-                    "video" -> {
-                        val video = at.getJSONObject("video")
-                            .getJSONArray("image")
-                            .getJSONObject(3)
-                            .getString("url")
-                        messageContent = MessageVideo(text, video)
-                    }
-                    "audio" -> {
-                        val audioObj = at.getJSONObject("audio")
-                        val name = audioObj.getString("artist") +
-                                " " + audioObj.getString("title")
-                        messageContent = MessageUnknown(text, name)
-                    }
-                    "audio_message" -> {
-                        val audio = at.getJSONObject("audio_message")
-                            .getString("link_mp3")
-                        messageContent = MessageVoiceNote(text, audio)
-
-                    }
-                    "doc" -> {
-                        val doc = at.getJSONObject("doc")
-                            .getString("title")
-                        messageContent = MessageDocument(text, doc)
-                    }
-                    "link" -> {}
-                    "market" -> {
-                        messageContent = MessageUnknown(text, "Товар")
-                    }
-                    "market_album" -> {
-                        messageContent = MessageUnknown(text, "Подборка товаров")
-                    }
-                    "wall" -> {
-                        messageContent = MessageUnknown(text, "Запись со стены")
-                    }
-                    "wall_reply" -> {
-                        messageContent = MessageUnknown(text, "Комментарий к записи")
-                    }
-                    "gift" -> {
-                        messageContent = MessageUnknown(text, "Подарок")
+                    messageContent = if (items.size > 0) {
+                        MessageCollage(text, items)
+                    } else {
+                        MessageUnknown(text, "Вложения")
                     }
                 }
             }
-            else if (attachmentsObject.length() > 1) {
-                var items = arrayListOf<String>()
-                for (i in 0 until attachmentsObject.length()) {
-                    val at = attachmentsObject.getJSONObject(i)
-                    when (at.getString("type")) {
-                        "photo" -> {
-                            items.add(at.getJSONObject("photo")
-                                .getJSONArray("sizes")
-                                .getJSONObject(4)
-                                .getString("url")
-                            )
-                        }
-                        "video" -> {
-                            items.add(at.getJSONObject("video")
-                                .getJSONArray("image")
-                                .getJSONObject(5)
-                                .getString("url")
-                            )
-                        }
-                        else -> {
-                            items = arrayListOf()
-                            break
-                        }
-                    }
-                }
-                messageContent = if (items.size > 0) {
-                    MessageCollage(text, items)
-                } else {
-                    MessageUnknown(text, "Вложения")
-                }
+            catch (ex: JSONException) {
+                messageContent = MessageUnknown("Необработанное сообщение")
             }
 
             return Message(id, timeStamp, sender, isOutgoing, replyToMessageId, messageContent, Constants.Messenger.VK)

@@ -20,11 +20,11 @@
         <TextView
             android:id="@+id/dateText"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="wrap_content"
             app:bind_epochTimeMsToDate="@{message.timeStamp}"
             app:bind_message="@{message}"
             app:bind_message_viewModel="@{viewmodel}"
-            style="@style/textview_date_text"
+            style="@style/Widget.UM.TextView.Message.Date"
             tools:text="30 april" />
 
         <LinearLayout
@@ -32,13 +32,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="bottom"
-            style="@style/layout_message">
+            style="@style/Widget.UM.Layout.Message">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo_sender"
                 app:bind_conversation="@{viewmodel.chat}"
                 app:bind_image_sender="@{message.sender.photo}"
-                style="@style/imageview_sender_photo"
+                style="@style/Widget.UM.ImageView.Message.Author"
                 tools:src="@drawable/ic_baseline_account_circle_24" />
 
 
@@ -47,12 +47,12 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/photo_sender"
                 app:bind_photo="@{message}"
-                style="@style/imageview_sticker"
+                style="@style/Widget.UM.ImageView.Message.Sticker"
                 tools:src="@drawable/sticker"/>
 
             <TextView
                 android:id="@+id/text_time_left"
-                style="@style/info_text_views"
+                style="@style/Widget.UM.TextView.Message.Time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:bind_message_time="@{message.timeStamp}"

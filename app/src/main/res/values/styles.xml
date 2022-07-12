@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="WhiteActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="background">@color/white</item>
+    </style>
+
+    <style name="ToolbarStyle" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="contentInsetStart">0dp</item>
+        <item name="android:contentInsetStart">0dp</item>
+    </style>
+
+    <style name="CornerImageView" parent="">
+        <item name="cornerSize">10dp</item>
+    </style>
+    <style name="CircleImageView" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Message layouts. -->
+    <style name="Widget.UM.Layout.Message" parent="">
+        <item name="android:titleMarginStart">6dp</item>
+        <item name="android:layout_marginVertical">3dp</item>
+        <item name="android:layout_marginHorizontal">16dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">bottom</item>
+    </style>
+
+    <style name="Widget.UM.Layout.Message.Block">
+        <item name="android:paddingVertical">8dp</item>
+        <item name="android:background">@drawable/message_bg</item>
+        <item name="android:backgroundTint">?attr/colorSecondaryContainer</item>
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Widget.UM.Layout.Message.Block.Out" parent="Widget.UM.Layout.Message.Block">
+        <item name="android:backgroundTint">?attr/colorPrimaryContainer</item>
+    </style>
+
+    <!-- Message TextViews. -->
+    <style name="Widget.UM.TextView.Message.Text" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:maxWidth">@dimen/_180sdp</item>
+        <item name="android:layout_marginHorizontal">12dp</item>
+        <item name="android:autoLink">web</item>
+        <item name="android:textColorLink">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Widget.UM.TextView.Message.Author" parent="Widget.UM.TextView.Message.Text">
+        <item name="android:textColor">?attr/colorTertiary</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Widget.UM.TextView.Message.Attachment" parent="Widget.UM.TextView.Message.Text">
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+
+    <style name="Widget.UM.TextView.Message.Time" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginBottom">2dp</item>
+        <item name="android:layout_marginHorizontal">4dp</item>
+    </style>
+
+    <style name="Widget.UM.TextView.Message.Date" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginVertical">2dp</item>
+    </style>
+
+    <!-- Message ImageViews. -->
+    <style name="Widget.UM.ImageView.Message.Author" parent="">
+        <item name="android:layout_width">35dp</item>
+        <item name="android:layout_height">35dp</item>
+        <item name="shapeAppearanceOverlay">@style/CircleImageView</item>
+    </style>
+
+    <style name="Widget.UM.ImageView.Message.Photo" parent="">
+        <item name="shapeAppearanceOverlay">@style/CornerImageView</item>
+        <item name="android:maxWidth">250dp</item>
+        <item name="android:maxHeight">500dp</item>
+        <item name="android:minWidth">130dp</item>
+        <item name="android:minHeight">10dp</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:adjustViewBounds">true</item>
+    </style>
+
+    <style name="Widget.UM.ImageView.Message.Sticker" parent="">
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:layout_width">140dp</item>
+        <item name="android:layout_height">140dp</item>
+    </style>
+
+    <!-- Conversation TextViews. -->
+    <style name="Widget.UM.TextView.Conversation" parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="Widget.UM.TextView.Conversation.Name" parent="Widget.UM.TextView.Conversation">
+        <item name="android:textAppearance">?attr/textAppearanceTitleMedium</item>
+    </style>
+
+    <style name="Widget.UM.TextView.Conversation.Extra" parent="Widget.UM.TextView.Conversation">
+        <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+    </style>
+</resources>

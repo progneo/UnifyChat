@@ -15,21 +15,21 @@ class VKClient (private val _sharedPreference: SharedPreferences) : IAccountServ
     private var _dataSource: VKDataSource = VKDataSource(this)
     var repository: VKRepository = VKRepository(_dataSource)
 
-    private var _lpServer: VKLongPollServer? = null
+    var lpServer: VKLongPollServer? = null
     var lpRetrofit: Retrofit? = null
 
     init {
-        MainScope().launch {
-            _lpServer = repository.getLongPollServer().first()
-            lpRetrofit = Retrofit.Builder()
-                .baseUrl("https://${_lpServer!!.server}?act=a_check&key=${_lpServer!!.key}&ts=${_lpServer!!.ts}&pts=${_lpServer!!.pts}&wait=25&mode=32&version=3&extended=true/")
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .build()
-        }
+        //MainScope().launch {
+        //    lpServer = repository.getLongPollServer().first()
+        //    lpRetrofit = Retrofit.Builder()
+        //        .baseUrl("https://im.vk.com/")
+        //        .addConverterFactory(ScalarsConverterFactory.create())
+        //        .build()
+        //}
     }
 
     fun updateLpServer(ts: Long) {
-        _lpServer!!.ts = ts
+        lpServer!!.ts = ts
     }
 
     override var token: String?

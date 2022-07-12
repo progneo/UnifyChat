@@ -20,33 +20,31 @@
         <TextView
             android:id="@+id/dateText"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/_20sdp"
+            android:layout_height="wrap_content"
             app:bind_epochTimeMsToDate="@{message.timeStamp}"
             app:bind_message="@{message}"
             app:bind_message_viewModel="@{viewmodel}"
-            style="@style/textview_date_text"
+            style="@style/Widget.UM.TextView.Message.Date"
             tools:text="30 april" />
 
         <LinearLayout
             android:id="@+id/layout_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/layout_message">
+            style="@style/Widget.UM.Layout.Message">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo_sender"
                 app:bind_conversation="@{viewmodel.chat}"
                 app:bind_image_sender="@{message.sender.photo}"
-                style="@style/imageview_sender_photo"
-                tools:src="@drawable/ic_baseline_account_circle_24"/>
+                style="@style/Widget.UM.ImageView.Message.Author"
+                tools:src="@drawable/avatar"/>
 
             <LinearLayout
                 android:id="@+id/linear_layout_message_left"
-                style="@style/layout_message_block"
+                style="@style/Widget.UM.Layout.Message.Block"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintLeft_toRightOf="@id/photo_sender"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/text_sender"
@@ -54,7 +52,7 @@
                     android:layout_height="wrap_content"
                     app:bind_name="@{message}"
                     app:bind_conversation="@{viewmodel.chat}"
-                    style="@style/textview_name"
+                    style="@style/Widget.UM.TextView.Message.Author"
                     tools:text="Имя Фамилия"/>
 
                 <TextView
@@ -62,7 +60,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:bind_message_text="@{message.content}"
-                    style="@style/textview_message_text"
+                    style="@style/Widget.UM.TextView.Message.Text"
                     tools:text="Сообщение с чатика"/>
 
                 <TextView
@@ -70,7 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{message.content.toString()}"
-                    style="@style/textview_attachments"
+                    style="@style/Widget.UM.TextView.Message.Attachment"
                     tools:text="Вложение"/>
 
             </LinearLayout>
@@ -80,7 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:bind_message_time="@{message.timeStamp}"
-                style="@style/info_text_views"
+                style="@style/Widget.UM.TextView.Message.Time"
                 tools:text="11:46"/>
 
         </LinearLayout>

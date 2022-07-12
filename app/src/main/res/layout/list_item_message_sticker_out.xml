@@ -20,8 +20,8 @@
         <TextView
             android:id="@+id/dateText"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/_20sdp"
-            style="@style/textview_date_text"
+            android:layout_height="wrap_content"
+            style="@style/Widget.UM.TextView.Message.Date"
             app:bind_epochTimeMsToDate="@{message.timeStamp}"
             app:bind_message="@{message}"
             app:bind_message_viewModel="@{viewmodel}"
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            style="@style/layout_message">
+            style="@style/Widget.UM.Layout.Message">
 
             <TextView
                 android:id="@+id/text_time_right"
@@ -40,13 +40,13 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 app:bind_message_time="@{message.timeStamp}"
-                style="@style/info_text_views_out"
+                style="@style/Widget.UM.TextView.Message.Time"
                 tools:text="11:48"/>
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo_sticker_right"
                 app:bind_photo="@{message}"
-                style="@style/imageview_sticker"
+                style="@style/Widget.UM.ImageView.Message.Sticker"
                 tools:src="@drawable/sticker"/>
 
         </LinearLayout>
