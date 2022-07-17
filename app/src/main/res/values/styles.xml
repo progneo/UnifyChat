@@ -20,7 +20,7 @@
     <style name="Widget.UM.Layout.Message" parent="">
         <item name="android:titleMarginStart">6dp</item>
         <item name="android:layout_marginVertical">3dp</item>
-        <item name="android:layout_marginHorizontal">16dp</item>
+        <item name="android:layout_marginHorizontal">8dp</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:gravity">bottom</item>
     </style>
@@ -28,7 +28,7 @@
     <style name="Widget.UM.Layout.Message.Block">
         <item name="android:paddingVertical">8dp</item>
         <item name="android:background">@drawable/message_bg</item>
-        <item name="android:backgroundTint">?attr/colorSecondaryContainer</item>
+        <item name="android:backgroundTint">?attr/colorSurfaceVariant</item>
         <item name="android:layout_marginStart">5dp</item>
         <item name="android:orientation">vertical</item>
     </style>

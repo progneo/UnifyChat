@@ -78,7 +78,7 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     private fun fetchChats() {
         conversationsList.value?.clear()
         MainScope().launch {
-            val data = _repository.getConversations(1000).first()
+            val data = _repository.getConversations(100).first()
             for (conversation in data) {
                 val chat = Conversation.tgParse(conversation)
                 chat?.let { _observableConversation.value = it }
@@ -90,8 +90,6 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
         viewModelScope.launch(Dispatchers.IO) {
             val data = _repository.getMe().first()
             val user = User.tgParse(data)
-            _user.postValue(user)
-            Thread.sleep(1000)
             _user.postValue(user)
         }
     }
