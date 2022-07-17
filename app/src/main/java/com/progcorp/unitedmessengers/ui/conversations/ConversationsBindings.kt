@@ -108,11 +108,8 @@ fun ImageView.bindAppbarImage(user: User?) {
                         val view = this
 
                         MainScope().launch {
-                            val file = user.photo.toInt().let {
-                                client.resositrory.getFile(it).first()
-                            }
-                            val photo = client.downloadableFile(file).first()
-                            user.photo = file.local.path
+                            val photo = client.download(user.photo.toInt())
+                            user.photo = photo!!
                             val bitmap = BitmapFactory.decodeFile(photo)
                             view.setImageBitmap(bitmap)
                         }

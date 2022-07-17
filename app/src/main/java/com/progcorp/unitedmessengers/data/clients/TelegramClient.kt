@@ -4,6 +4,7 @@ package com.progcorp.unitedmessengers.data.clients
 
 import android.util.Log
 import com.progcorp.unitedmessengers.data.db.TelegramDataSource
+import com.progcorp.unitedmessengers.data.model.MessagePhoto
 import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
 import com.progcorp.unitedmessengers.ui.conversations.telegram.TelegramConversationsViewModel
@@ -243,6 +244,16 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
         }
     }
 
+    suspend fun download(id: Int): String? {
+        var file = id.let {
+            resositrory.getFile(it).first()
+        }
+        if (file.local?.isDownloadingCompleted == false) {
+            file = downloadFile(file.id).first()
+        }
+        return file.local?.path
+    }
+    
     fun downloadableFile(file: TdApi.File): Flow<String?> =
         file.takeIf {
             it.local?.isDownloadingCompleted == false
@@ -250,15 +261,18 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
             downloadFile(fileId).map { file.local?.path }
         } ?: flowOf(file.local?.path)
 
-    private fun downloadFile(fileId: Int): Flow<Unit> = callbackFlow {
+    private fun downloadFile(fileId: Int): Flow<TdApi.File> = callbackFlow {
         client.send(TdApi.DownloadFile(fileId, 1, 0, 0, true)) {
             when (it.constructor) {
-                TdApi.Ok.CONSTRUCTOR -> {
-                    trySend(Unit).isSuccess
+                TdApi.File.CONSTRUCTOR -> {
+                    trySend((it as TdApi.File)).isSuccess
                 }
                 else -> {
+                    Log.e(
+                        "${javaClass.simpleName}.downloadFile",
+                        "Unknown error"
+                    )
                     cancel("", Exception(""))
-
                 }
             }
         }

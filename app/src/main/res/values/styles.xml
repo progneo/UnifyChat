@@ -10,7 +10,7 @@
     </style>
 
     <style name="CornerImageView" parent="">
-        <item name="cornerSize">10dp</item>
+        <item name="cornerSize">20dp</item>
     </style>
     <style name="CircleImageView" parent="">
         <item name="cornerSize">50%</item>
@@ -82,13 +82,11 @@
     </style>
 
     <style name="Widget.UM.ImageView.Message.Photo" parent="">
-        <item name="shapeAppearanceOverlay">@style/CornerImageView</item>
-        <item name="android:maxWidth">250dp</item>
-        <item name="android:maxHeight">500dp</item>
-        <item name="android:minWidth">130dp</item>
-        <item name="android:minHeight">10dp</item>
-        <item name="android:scaleType">fitXY</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:scaleType">centerCrop</item>
         <item name="android:adjustViewBounds">true</item>
+        <item name="shapeAppearanceOverlay">@style/CornerImageView</item>
     </style>
 
     <style name="Widget.UM.ImageView.Message.Sticker" parent="">

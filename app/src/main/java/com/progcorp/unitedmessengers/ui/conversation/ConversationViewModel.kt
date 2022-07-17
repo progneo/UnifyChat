@@ -49,7 +49,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                 messagesList.updateItemAt(newMessage, messagesList.value!!.indexOf(message))
             }
             messagesList.value?.sortByDescending {
-                it.timeStamp
+                it.id
             }
         }
         messagesList.addSource(_newMessage) { newMessage ->
@@ -61,7 +61,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                 messagesList.updateItemAt(newMessage, messagesList.value!!.indexOf(message))
             }
             messagesList.value?.sortByDescending {
-                it.timeStamp
+                it.id
             }
         }
         _conversation.value = conversation

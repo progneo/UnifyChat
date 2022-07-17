@@ -52,11 +52,8 @@ fun ImageView.bindConversationImage(conversation: Conversation) {
                         val view = this
 
                         MainScope().launch {
-                            val file = conversation.getPhoto()!!.toInt().let {
-                                client.resositrory.getFile(it).first()
-                            }
-                            val photo = client.downloadableFile(file).first()
-                            conversation.companion!!.photo = file.local.path
+                            val photo = client.download(conversation.getPhoto()!!.toInt())
+                            conversation.companion!!.photo = photo!!
                             val bitmap = BitmapFactory.decodeFile(photo)
                             view.setImageBitmap(bitmap)
                         }

@@ -3,14 +3,23 @@
 package com.progcorp.unitedmessengers.ui.conversation
 
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.net.Uri
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.text.isDigitsOnly
+import androidx.core.view.marginTop
+import androidx.core.view.setMargins
 import androidx.databinding.BindingAdapter
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.model.*
@@ -24,9 +33,14 @@ import com.progcorp.unitedmessengers.ui.conversations.bindAppbarImage
 import com.progcorp.unitedmessengers.util.Constants
 import com.progcorp.unitedmessengers.util.ConvertTime
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
+import java.io.File
+import java.lang.Exception
 
 @BindingAdapter("bind_messages_list")
 fun bindMessagesList(listView: RecyclerView, items: List<Message>?) {
@@ -94,11 +108,8 @@ fun ImageView.bindMessageSenderImage(conversation: Conversation, user: ICompanio
                             val view = this
 
                             MainScope().launch {
-                                val file = user.photo.toInt().let {
-                                    client.resositrory.getFile(it).first()
-                                }
-                                val photo = client.downloadableFile(file).first()
-                                user.photo = file.local.path
+                                val photo = client.download(user.photo.toInt())
+                                user.photo = photo!!
                                 val bitmap = BitmapFactory.decodeFile(photo)
                                 view.setImageBitmap(bitmap)
                             }
@@ -152,11 +163,13 @@ fun TextView.bindNameInChatText(message: Message, conversation: Conversation) {
 
 @BindingAdapter("bind_photo")
 fun ImageView.bindPhoto(message: Message) {
+    val param = this.layoutParams as ViewGroup.MarginLayoutParams
+    param.setMargins(0, if (message.content.text == "") 0 else 12, 0, 0)
+    this.layoutParams = param
     when (message.content) {
         is MessageSticker -> {
             when((message.content as MessageSticker).path) {
-                "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
-                    .error(R.drawable.ic_baseline_error_outline_24).into(this)
+                "" -> this.setImageDrawable(null)
                 else -> {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
@@ -173,11 +186,8 @@ fun ImageView.bindPhoto(message: Message) {
                                 val view = this
 
                                 MainScope().launch {
-                                    val file = (message.content as MessageSticker).path.toInt().let {
-                                        client.resositrory.getFile(it).first()
-                                    }
-                                    val photo = client.downloadableFile(file).first()
-                                    (message.content as MessageSticker).path = file.local.path
+                                    val photo = client.download((message.content as MessageSticker).path.toInt())
+                                    (message.content as MessageSticker).path = photo!!
                                     val bitmap = BitmapFactory.decodeFile(photo)
                                     view.setImageBitmap(bitmap)
                                 }
@@ -189,8 +199,7 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessagePhoto -> {
             when((message.content as MessagePhoto).path) {
-                "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
-                    .error(R.drawable.ic_baseline_error_outline_24).into(this)
+                "" -> this.setImageDrawable(null)
                 else -> {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
@@ -205,13 +214,10 @@ fun ImageView.bindPhoto(message: Message) {
                             else {
                                 val client = App.application.tgClient
                                 val view = this
-
+                                this.setImageDrawable(null)
                                 MainScope().launch {
-                                    val file = (message.content as MessagePhoto).path.toInt().let {
-                                        client.resositrory.getFile(it).first()
-                                    }
-                                    val photo = client.downloadableFile(file).first()
-                                    (message.content as MessagePhoto).path = file.local.path
+                                    val photo = client.download((message.content as MessagePhoto).path.toInt())
+                                    (message.content as MessagePhoto).path = photo!!
                                     val bitmap = BitmapFactory.decodeFile(photo)
                                     view.setImageBitmap(bitmap)
                                 }
@@ -223,8 +229,7 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessageAnimation -> {
             when((message.content as MessageAnimation).path) {
-                "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
-                    .error(R.drawable.ic_baseline_error_outline_24).into(this)
+                "" -> this.setImageDrawable(null)
                 else -> {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
@@ -241,11 +246,8 @@ fun ImageView.bindPhoto(message: Message) {
                                 val view = this
 
                                 MainScope().launch {
-                                    val file = (message.content as MessageAnimation).path.toInt().let {
-                                        client.resositrory.getFile(it).first()
-                                    }
-                                    val photo = client.downloadableFile(file).first()
-                                    (message.content as MessageAnimation).path = file.local.path
+                                    val photo = client.download((message.content as MessageAnimation).path.toInt())
+                                    (message.content as MessageAnimation).path = photo!!
                                     val bitmap = BitmapFactory.decodeFile(photo)
                                     view.setImageBitmap(bitmap)
                                 }
@@ -257,8 +259,7 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessageVideo -> {
             when((message.content as MessageVideo).video) {
-                "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
-                    .error(R.drawable.ic_baseline_error_outline_24).into(this)
+                "" -> this.setImageDrawable(null)
                 else -> {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
@@ -275,11 +276,8 @@ fun ImageView.bindPhoto(message: Message) {
                                 val view = this
 
                                 MainScope().launch {
-                                    val file = (message.content as MessageVideo).video.toInt().let {
-                                        client.resositrory.getFile(it).first()
-                                    }
-                                    val photo = client.downloadableFile(file).first()
-                                    (message.content as MessageVideo).video = file.local.path
+                                    val photo = client.download((message.content as MessageVideo).video.toInt())
+                                    (message.content as MessageVideo).video = photo!!
                                     val bitmap = BitmapFactory.decodeFile(photo)
                                     view.setImageBitmap(bitmap)
                                 }
@@ -291,8 +289,7 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessageVideoNote -> {
             when((message.content as MessageVideoNote).video) {
-                "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
-                    .error(R.drawable.ic_baseline_error_outline_24).into(this)
+                "" -> this.setImageDrawable(null)
                 else -> {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
@@ -309,11 +306,8 @@ fun ImageView.bindPhoto(message: Message) {
                                 val view = this
 
                                 MainScope().launch {
-                                    val file = (message.content as MessageVideoNote).video.toInt().let {
-                                        client.resositrory.getFile(it).first()
-                                    }
-                                    val photo = client.downloadableFile(file).first()
-                                    (message.content as MessageVideoNote).video = file.local.path
+                                    val photo = client.download((message.content as MessageVideoNote).video.toInt())
+                                    (message.content as MessageVideoNote).video = photo!!
                                     val bitmap = BitmapFactory.decodeFile(photo)
                                     view.setImageBitmap(bitmap)
                                 }

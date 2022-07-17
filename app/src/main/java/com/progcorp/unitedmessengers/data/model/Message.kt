@@ -261,7 +261,7 @@ data class Message(
                     messageContent = if (content.sticker.isAnimated) {
                         MessageText(text = content.sticker.emoji)
                     } else {
-                        MessageSticker(content.sticker.sticker.id.toString())
+                        MessageSticker(path = content.sticker.sticker.id.toString())
                     }
                 }
                 TdApi.MessageVideo.CONSTRUCTOR -> {
