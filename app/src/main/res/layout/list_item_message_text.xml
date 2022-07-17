@@ -37,7 +37,7 @@
                 android:id="@+id/photo_sender"
                 style="@style/Widget.UM.ImageView.Message.Author"
                 app:bind_conversation="@{viewmodel.chat}"
-                app:bind_image_sender="@{message.sender.photo}"
+                app:bind_image_sender="@{message.sender}"
                 tools:src="@drawable/avatar" />
 
             <LinearLayout

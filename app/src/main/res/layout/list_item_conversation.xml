@@ -33,7 +33,6 @@
                 android:layout_height="match_parent"
                 android:padding="3dp"
                 app:bind_conversation="@{conversation}"
-                app:bind_image_url="@{conversation.photo}"
                 app:shapeAppearanceOverlay="@style/CircleImageView"
                 tools:src="@drawable/avatar"/>
             <View

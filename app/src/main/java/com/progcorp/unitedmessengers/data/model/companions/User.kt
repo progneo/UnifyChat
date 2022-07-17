@@ -34,13 +34,16 @@ data class User(
             Constants.Messenger.VK
         )
 
-        suspend fun tgParse(tdUser: TdApi.User): User {
+        fun tgParse(tdUser: TdApi.User): User {
             val id = tdUser.id
             val firstName = tdUser.firstName
             val lastName = tdUser.lastName
             var isOnline = false
             val lastSeen: Long
-            val photo = ""
+            var photo = ""
+            if (tdUser.profilePhoto != null) {
+                photo = tdUser.profilePhoto!!.small.id.toString()
+            }
             when (tdUser.status.constructor) {
                 TdApi.UserStatusEmpty.CONSTRUCTOR -> {
                     lastSeen = Constants.LastSeen.unknown
@@ -52,7 +55,8 @@ data class User(
                     lastSeen = Constants.LastSeen.lastWeek
                 }
                 TdApi.UserStatusOffline.CONSTRUCTOR -> {
-                    lastSeen = ((tdUser.status as TdApi.UserStatusOffline).wasOnline).toLong() * 1000
+                    lastSeen =
+                        ((tdUser.status as TdApi.UserStatusOffline).wasOnline).toLong() * 1000
                 }
                 TdApi.UserStatusOnline.CONSTRUCTOR -> {
                     lastSeen = Constants.LastSeen.unknown
@@ -64,22 +68,17 @@ data class User(
                 else -> lastSeen = Constants.LastSeen.unknown
             }
             val deactivated = !tdUser.haveAccess
-            val user = User(id, firstName, lastName, photo, lastSeen, isOnline, deactivated, Constants.Messenger.TG)
-            if (tdUser.profilePhoto != null) {
-                user.loadPhoto(tdUser.profilePhoto!!.small)
-            }
-            return user
-        }
-    }
 
-    override fun loadPhoto(file: TdApi.File) {
-        val client = App.application.tgClient
-        MainScope().launch {
-            val result = async { client.downloadableFile(file).first() }
-            val path = result.await()
-            if (path != null) {
-                photo = path
-            }
+            return User(
+                id,
+                firstName,
+                lastName,
+                photo,
+                lastSeen,
+                isOnline,
+                deactivated,
+                Constants.Messenger.TG
+            )
         }
     }
 }

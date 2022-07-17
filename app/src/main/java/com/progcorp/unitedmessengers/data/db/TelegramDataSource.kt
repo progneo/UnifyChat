@@ -225,4 +225,21 @@ class TelegramDataSource (private val client: TelegramClient) {
         }
         awaitClose { }
     }
+
+    fun getFile(fileId: Int): Flow<TdApi.File> = callbackFlow {
+        client.client.send(TdApi.GetFile(fileId)) {
+            when (it.constructor) {
+                TdApi.File.CONSTRUCTOR -> {
+                    trySend(it as TdApi.File).isSuccess
+                }
+                TdApi.Error.CONSTRUCTOR -> {
+                    Log.e("${javaClass.simpleName}.getFile", (it as TdApi.Error).message)
+                }
+                else -> {
+                    Log.e("${javaClass.simpleName}.getFile", "Unknown error")
+                }
+            }
+        }
+        awaitClose { }
+    }
 }

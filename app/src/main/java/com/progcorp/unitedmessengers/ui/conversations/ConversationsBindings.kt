@@ -7,8 +7,10 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.text.isDigitsOnly
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
@@ -16,6 +18,10 @@ import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.util.Constants
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.first
+import okhttp3.Dispatcher
 
 @BindingAdapter("bind_conversations_list")
 fun bindConversationsList(listView: RecyclerView, items: List<Conversation>?) {
@@ -87,13 +93,30 @@ fun TextView.bindUser(user: User?) {
 fun ImageView.bindAppbarImage(user: User?) {
     when (user?.photo) {
         null -> Unit
-        "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png").error(
-            R.drawable.ic_baseline_account_circle_24).into(this)
+        "" -> {
+            this.setImageResource(R.drawable.user)
+        }
         else -> {
             when (user.messenger) {
                 Constants.Messenger.TG -> {
-                    val bitmap = BitmapFactory.decodeFile(user.photo)
-                    this.setImageBitmap(bitmap)
+                    if (!user.photo.isDigitsOnly()) {
+                        val bitmap = BitmapFactory.decodeFile(user.photo)
+                        this.setImageBitmap(bitmap)
+                    }
+                    else {
+                        val client = App.application.tgClient
+                        val view = this
+
+                        MainScope().launch {
+                            val file = user.photo.toInt().let {
+                                client.resositrory.getFile(it).first()
+                            }
+                            val photo = client.downloadableFile(file).first()
+                            user.photo = file.local.path
+                            val bitmap = BitmapFactory.decodeFile(photo)
+                            view.setImageBitmap(bitmap)
+                        }
+                    }
                 }
                 Constants.Messenger.VK -> {
                     Picasso.get().load(user.photo).error(R.drawable.ic_baseline_account_circle_24).into(this)

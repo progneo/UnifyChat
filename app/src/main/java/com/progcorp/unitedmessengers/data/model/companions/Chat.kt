@@ -1,14 +1,8 @@
 package com.progcorp.unitedmessengers.data.model.companions
 
 import androidx.databinding.BaseObservable
-import com.progcorp.unitedmessengers.App
-import com.progcorp.unitedmessengers.BR
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.util.Constants
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONObject
 
@@ -31,37 +25,23 @@ data class Chat(
         fun tgParseSupergroup(tdChat: TdApi.Chat, group: TdApi.Supergroup): Chat {
             val id: Long = group.id
             val title: String = tdChat.title
-            val photo = ""
+            var photo = ""
             val membersCount: Int = group.memberCount
-            val chat = Chat(id, title, photo, membersCount, Constants.Messenger.TG)
             if (tdChat.photo != null) {
-                chat.loadPhoto(tdChat.photo!!.small)
+                photo = tdChat.photo!!.small.id.toString()
             }
-            return chat
+            return Chat(id, title, photo, membersCount, Constants.Messenger.TG)
         }
 
         fun tgParseBasicGroup(tdChat: TdApi.Chat, group: TdApi.BasicGroup): Chat {
-           val id: Long = group.id
-           val title: String = tdChat.title
-           val photo = ""
-           val membersCount: Int = group.memberCount
-           val chat = Chat(id, title, photo, membersCount, Constants.Messenger.TG)
-           if (tdChat.photo != null) {
-               chat.loadPhoto(tdChat.photo!!.small)
-           }
-            return chat
-        }
-    }
-
-    override fun loadPhoto(file: TdApi.File) {
-        val client = App.application.tgClient
-        MainScope().launch {
-            val result = async { client.downloadableFile(file).first() }
-            val path = result.await()
-            if (path != null) {
-                photo = path
+            val id: Long = group.id
+            val title: String = tdChat.title
+            var photo = ""
+            val membersCount: Int = group.memberCount
+            if (tdChat.photo != null) {
+                photo = tdChat.photo!!.small.id.toString()
             }
+            return Chat(id, title, photo, membersCount, Constants.Messenger.TG)
         }
-        notifyPropertyChanged(BR.conversation)
     }
 }

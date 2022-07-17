@@ -8,8 +8,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.text.isDigitsOnly
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.model.*
 import com.progcorp.unitedmessengers.data.model.companions.Bot
@@ -17,9 +19,14 @@ import com.progcorp.unitedmessengers.data.model.companions.Chat
 import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.interfaces.IMessageContent
+import com.progcorp.unitedmessengers.ui.bindConversationImage
+import com.progcorp.unitedmessengers.ui.conversations.bindAppbarImage
 import com.progcorp.unitedmessengers.util.Constants
 import com.progcorp.unitedmessengers.util.ConvertTime
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @BindingAdapter("bind_messages_list")
 fun bindMessagesList(listView: RecyclerView, items: List<Message>?) {
@@ -66,24 +73,39 @@ fun TextView.bindOnlineText(conversation: Conversation) {
 }
 
 @BindingAdapter("bind_conversation", "bind_image_sender")
-fun ImageView.bindMessageSenderImage(conversation: Conversation, path: String?) {
+fun ImageView.bindMessageSenderImage(conversation: Conversation, user: ICompanion) {
     if (conversation.companion is Bot || conversation.companion is User) {
         this.visibility = View.GONE
     }
     else {
         this.visibility = View.VISIBLE
-        when (path) {
-            null -> Unit
+        when (user.photo) {
             "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
                 .error(R.drawable.ic_baseline_account_circle_24).into(this)
             else -> {
-                when (conversation.messenger) {
+                when (user.messenger) {
                     Constants.Messenger.TG -> {
-                        val bitmap = BitmapFactory.decodeFile(path)
-                        this.setImageBitmap(bitmap)
+                        if (!user.photo.isDigitsOnly()) {
+                            val bitmap = BitmapFactory.decodeFile(user.photo)
+                            this.setImageBitmap(bitmap)
+                        }
+                        else {
+                            val client = App.application.tgClient
+                            val view = this
+
+                            MainScope().launch {
+                                val file = user.photo.toInt().let {
+                                    client.resositrory.getFile(it).first()
+                                }
+                                val photo = client.downloadableFile(file).first()
+                                user.photo = file.local.path
+                                val bitmap = BitmapFactory.decodeFile(photo)
+                                view.setImageBitmap(bitmap)
+                            }
+                        }
                     }
                     Constants.Messenger.VK -> {
-                        Picasso.get().load(path).error(R.drawable.ic_baseline_account_circle_24)
+                        Picasso.get().load(user.photo).error(R.drawable.ic_baseline_account_circle_24)
                             .into(this)
                     }
                 }
@@ -136,13 +158,31 @@ fun ImageView.bindPhoto(message: Message) {
                 "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
                     .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {
-                    if (message.messenger == Constants.Messenger.VK) {
-                        Picasso.get().load((message.content as MessageSticker).path)
-                            .error(R.drawable.ic_baseline_account_circle_24).into(this)
-                    }
-                    else {
-                        val bitmap = BitmapFactory.decodeFile((message.content as MessageSticker).path)
-                        this.setImageBitmap(bitmap)
+                    when (message.messenger) {
+                        Constants.Messenger.VK -> {
+                            Picasso.get().load((message.content as MessageSticker).path)
+                                .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                        }
+                        Constants.Messenger.TG -> {
+                            if (!(message.content as MessageSticker).path.isDigitsOnly()) {
+                                val bitmap = BitmapFactory.decodeFile((message.content as MessageSticker).path)
+                                this.setImageBitmap(bitmap)
+                            }
+                            else {
+                                val client = App.application.tgClient
+                                val view = this
+
+                                MainScope().launch {
+                                    val file = (message.content as MessageSticker).path.toInt().let {
+                                        client.resositrory.getFile(it).first()
+                                    }
+                                    val photo = client.downloadableFile(file).first()
+                                    (message.content as MessageSticker).path = file.local.path
+                                    val bitmap = BitmapFactory.decodeFile(photo)
+                                    view.setImageBitmap(bitmap)
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -152,13 +192,31 @@ fun ImageView.bindPhoto(message: Message) {
                 "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
                     .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {
-                    if (message.messenger == Constants.Messenger.VK) {
-                        Picasso.get().load((message.content as MessagePhoto).path)
-                            .error(R.drawable.ic_baseline_error_outline_24).into(this)
-                    }
-                    else {
-                        val bitmap = BitmapFactory.decodeFile((message.content as MessagePhoto).path)
-                        this.setImageBitmap(bitmap)
+                    when (message.messenger) {
+                        Constants.Messenger.VK -> {
+                            Picasso.get().load((message.content as MessagePhoto).path)
+                                .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                        }
+                        Constants.Messenger.TG -> {
+                            if (!(message.content as MessagePhoto).path.isDigitsOnly()) {
+                                val bitmap = BitmapFactory.decodeFile((message.content as MessagePhoto).path)
+                                this.setImageBitmap(bitmap)
+                            }
+                            else {
+                                val client = App.application.tgClient
+                                val view = this
+
+                                MainScope().launch {
+                                    val file = (message.content as MessagePhoto).path.toInt().let {
+                                        client.resositrory.getFile(it).first()
+                                    }
+                                    val photo = client.downloadableFile(file).first()
+                                    (message.content as MessagePhoto).path = file.local.path
+                                    val bitmap = BitmapFactory.decodeFile(photo)
+                                    view.setImageBitmap(bitmap)
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -168,8 +226,32 @@ fun ImageView.bindPhoto(message: Message) {
                 "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
                     .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {
-                    Picasso.get().load((message.content as MessageAnimation).path)
-                        .error(R.drawable.ic_baseline_error_outline_24).into(this)
+                    when (message.messenger) {
+                        Constants.Messenger.VK -> {
+                            Picasso.get().load((message.content as MessageAnimation).path)
+                                .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                        }
+                        Constants.Messenger.TG -> {
+                            if (!(message.content as MessageAnimation).path.isDigitsOnly()) {
+                                val bitmap = BitmapFactory.decodeFile((message.content as MessageAnimation).path)
+                                this.setImageBitmap(bitmap)
+                            }
+                            else {
+                                val client = App.application.tgClient
+                                val view = this
+
+                                MainScope().launch {
+                                    val file = (message.content as MessageAnimation).path.toInt().let {
+                                        client.resositrory.getFile(it).first()
+                                    }
+                                    val photo = client.downloadableFile(file).first()
+                                    (message.content as MessageAnimation).path = file.local.path
+                                    val bitmap = BitmapFactory.decodeFile(photo)
+                                    view.setImageBitmap(bitmap)
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -178,8 +260,32 @@ fun ImageView.bindPhoto(message: Message) {
                 "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
                     .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {
-                    Picasso.get().load((message.content as MessageVideo).video)
-                        .error(R.drawable.ic_baseline_error_outline_24).into(this)
+                    when (message.messenger) {
+                        Constants.Messenger.VK -> {
+                            Picasso.get().load((message.content as MessageVideo).video)
+                                .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                        }
+                        Constants.Messenger.TG -> {
+                            if (!(message.content as MessageVideo).video.isDigitsOnly()) {
+                                val bitmap = BitmapFactory.decodeFile((message.content as MessageVideo).video)
+                                this.setImageBitmap(bitmap)
+                            }
+                            else {
+                                val client = App.application.tgClient
+                                val view = this
+
+                                MainScope().launch {
+                                    val file = (message.content as MessageVideo).video.toInt().let {
+                                        client.resositrory.getFile(it).first()
+                                    }
+                                    val photo = client.downloadableFile(file).first()
+                                    (message.content as MessageVideo).video = file.local.path
+                                    val bitmap = BitmapFactory.decodeFile(photo)
+                                    view.setImageBitmap(bitmap)
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -188,8 +294,32 @@ fun ImageView.bindPhoto(message: Message) {
                 "" -> Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Blank1x1.svg/1px-Blank1x1.svg.png")
                     .error(R.drawable.ic_baseline_error_outline_24).into(this)
                 else -> {
-                    Picasso.get().load((message.content as MessageVideoNote).video)
-                        .error(R.drawable.ic_baseline_error_outline_24).into(this)
+                    when (message.messenger) {
+                        Constants.Messenger.VK -> {
+                            Picasso.get().load((message.content as MessageVideoNote).video)
+                                .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                        }
+                        Constants.Messenger.TG -> {
+                            if (!(message.content as MessageVideoNote).video.isDigitsOnly()) {
+                                val bitmap = BitmapFactory.decodeFile((message.content as MessageVideoNote).video)
+                                this.setImageBitmap(bitmap)
+                            }
+                            else {
+                                val client = App.application.tgClient
+                                val view = this
+
+                                MainScope().launch {
+                                    val file = (message.content as MessageVideoNote).video.toInt().let {
+                                        client.resositrory.getFile(it).first()
+                                    }
+                                    val photo = client.downloadableFile(file).first()
+                                    (message.content as MessageVideoNote).video = file.local.path
+                                    val bitmap = BitmapFactory.decodeFile(photo)
+                                    view.setImageBitmap(bitmap)
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

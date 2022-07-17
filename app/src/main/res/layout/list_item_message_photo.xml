@@ -36,7 +36,7 @@
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo_sender"
                 app:bind_conversation="@{viewmodel.chat}"
-                app:bind_image_sender="@{message.sender.photo}"
+                app:bind_image_sender="@{message.sender}"
                 style="@style/Widget.UM.ImageView.Message.Author"
                 tools:src="@drawable/avatar"/>
 

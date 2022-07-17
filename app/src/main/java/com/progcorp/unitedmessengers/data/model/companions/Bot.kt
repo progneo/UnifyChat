@@ -24,26 +24,14 @@ data class Bot(
             Constants.Messenger.VK
         )
 
-        suspend fun tgParse(tdUser: TdApi.User): Bot {
+        fun tgParse(tdUser: TdApi.User): Bot {
             val id = tdUser.id
             val title = tdUser.firstName
-            val photo = ""
-            val bot = Bot(id, title, photo, Constants.Messenger.TG)
+            var photo = ""
             if (tdUser.profilePhoto != null) {
-                bot.loadPhoto(tdUser.profilePhoto!!.small)
+                photo = tdUser.profilePhoto!!.small.id.toString()
             }
-            return bot
-        }
-    }
-
-    override fun loadPhoto(file: TdApi.File) {
-        val client = App.application.tgClient
-        MainScope().launch {
-            val result = async { client.downloadableFile(file).first() }
-            val path = result.await()
-            if (path != null) {
-                photo = path
-            }
+            return Bot(id, title, photo, Constants.Messenger.TG)
         }
     }
 }
