@@ -60,17 +60,41 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_gravity="top"
-            app:bind_messages_list="@{viewmodel.messagesList}"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:itemAnimator="@{null}"
-            app:reverseLayout="true"
-            tools:listitem="@layout/list_item_message_sticker" />
+            android:layout_weight="1">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="top"
+                app:bind_messages_list="@{viewmodel.messagesList}"
+                app:itemAnimator="@{null}"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:reverseLayout="true"
+                tools:listitem="@layout/list_item_message_sticker" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/float_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="?attr/colorTertiaryContainer"
+                android:contentDescription="@string/to_bottom"
+                android:onClick="@{() -> viewmodel.toBottomPressed()}"
+                android:src="@drawable/ic_arrow_down"
+                android:visibility="invisible"
+                app:fabSize="mini"
+                tools:visibility="visible" />
+        </RelativeLayout>
+
         <LinearLayout
             android:id="@+id/user_input"
             android:layout_width="match_parent"
@@ -83,6 +107,7 @@
             <Button
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:onClick="@{() -> viewmodel.addAttachmentsPressed()}"
                 app:backgroundTint="?attr/colorPrimary"
                 android:background="@drawable/inset_attach_file" />
 

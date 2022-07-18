@@ -10,7 +10,6 @@ import com.progcorp.unitedmessengers.data.model.MessageText
 import com.progcorp.unitedmessengers.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 import java.util.*
@@ -35,9 +34,15 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
     private val _addedMessage = MutableLiveData<Message>()
     private val _newMessage = MutableLiveData<Message>()
 
+    private val _addAttachmentsPressed = MutableLiveData<Event<Unit>>()
+    private val _toBottomPressed = MutableLiveData<Event<Unit>>()
+
     val newMessageText = MutableLiveData<String?>()
     val messagesList = MediatorLiveData<MutableList<Message>>()
     val chat: LiveData<Conversation> = _conversation
+
+    val toBottomPressed: LiveData<Event<Unit>> = _toBottomPressed
+    val addAttachmentPressed: LiveData<Event<Unit>> = _addAttachmentsPressed
 
     init {
         messagesList.addSource(_addedMessage) { newMessage ->
@@ -166,6 +171,14 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                 }
             }
         }
+    }
+
+    fun toBottomPressed() {
+        _toBottomPressed.value = Event(Unit)
+    }
+
+    fun addAttachmentsPressed() {
+        _addAttachmentsPressed.value = Event(Unit)
     }
 
     fun loadMoreMessages() {

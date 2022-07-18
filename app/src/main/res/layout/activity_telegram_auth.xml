@@ -55,7 +55,7 @@
                     android:id="@+id/phoneSend"
                     android:onClick="@{() -> viewmodel.insertPhoneNumber()}"
                     android:text="@string/action_next"
-                    app:icon="@drawable/arrow_right"
+                    app:icon="@drawable/ic_arrow_follow"
                     style="@style/Widget.UM.Button.Login"/>
             </LinearLayout>
 

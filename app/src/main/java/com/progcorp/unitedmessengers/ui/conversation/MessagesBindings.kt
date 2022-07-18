@@ -24,6 +24,7 @@ import com.progcorp.unitedmessengers.util.ConvertTime
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import java.lang.NumberFormatException
 
 @BindingAdapter("bind_messages_list")
 fun bindMessagesList(listView: RecyclerView, items: List<Message>?) {
@@ -199,8 +200,14 @@ fun ImageView.bindPhoto(message: Message) {
                                 val view = this
                                 this.setImageDrawable(null)
                                 MainScope().launch {
-                                    val photo = client.download((message.content as MessagePhoto).path.toInt())
-                                    (message.content as MessagePhoto).path = photo!!
+                                    var photo: String?
+                                    try {
+                                        photo = client.download((message.content as MessagePhoto).path.toInt())
+                                        (message.content as MessagePhoto).path = photo!!
+                                    }
+                                    catch (exception: NumberFormatException){
+                                        photo = (message.content as MessagePhoto).path
+                                    }
                                     val bitmap = BitmapFactory.decodeFile(photo)
                                     view.setImageBitmap(bitmap)
                                 }

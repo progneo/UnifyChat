@@ -35,4 +35,8 @@
     <string name="bot">Бот</string>
     <string name="login_to_account">Сначала вам нужно авторизоваться</string>
     <string name="outgoing">Вы:</string>
+    <string name="unavailable">Функция недоступна</string>
+    <string name="in_develop">Данная функция находится в разработке</string>
+    <string name="ok">Ок</string>
+    <string name="to_bottom">В конец диалога</string>
 </resources>

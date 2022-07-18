@@ -11,6 +11,7 @@
     <color name="malachite">#16c41e</color>
     <color name="cloud_burst">#1c2e46</color>
     <color name="geyser">#d7dce7</color>
+    <color name="transparent">#00000000</color>
     <!-- Base light theme colors. -->
     <color name="primary">#494dce</color>
     <color name="onPrimary">#ffffff</color>

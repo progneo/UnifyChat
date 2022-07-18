@@ -2,15 +2,12 @@ package com.progcorp.unitedmessengers.ui.conversation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.data.model.*
 import com.progcorp.unitedmessengers.databinding.*
 import com.progcorp.unitedmessengers.util.Constants
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.first
 
 class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAdapter<Message, RecyclerView.ViewHolder>(
     MessageDiffCallback()
