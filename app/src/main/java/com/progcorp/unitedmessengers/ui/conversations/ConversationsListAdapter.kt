@@ -2,9 +2,11 @@ package com.progcorp.unitedmessengers.ui.conversations
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.ListItemConversationBinding
 import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
@@ -23,6 +25,8 @@ class ConversationsListAdapter internal constructor(private val viewModel: IConv
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(viewModel, getItem(position))
+
+        holder.itemView.animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.fade_in_animation)
     }
 
     override fun getItemViewType(position: Int): Int {

@@ -29,7 +29,11 @@ data class Bot(
             val title = tdUser.firstName
             var photo = ""
             if (tdUser.profilePhoto != null) {
-                photo = tdUser.profilePhoto!!.small.id.toString()
+                photo = if (tdUser.profilePhoto!!.small.local.isDownloadingCompleted){
+                    tdUser.profilePhoto!!.small.local.path
+                } else {
+                    tdUser.profilePhoto!!.small.id.toString()
+                }
             }
             return Bot(id, title, photo, Constants.Messenger.TG)
         }

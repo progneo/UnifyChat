@@ -3,6 +3,7 @@
 package com.progcorp.unitedmessengers.ui.conversation
 
 import android.graphics.BitmapFactory
+import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,8 @@ import com.progcorp.unitedmessengers.util.ConvertTime
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import java.io.File
+import java.lang.Exception
 import java.lang.NumberFormatException
 
 @BindingAdapter("bind_messages_list")
@@ -78,24 +81,29 @@ fun ImageView.bindMessageSenderImage(conversation: Conversation, user: ICompanio
     else {
         this.visibility = View.VISIBLE
         when (user.photo) {
-            "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
-                .error(R.drawable.ic_account_circle).into(this)
+            "" -> this.setImageResource(R.drawable.ic_account_circle)
             else -> {
                 when (user.messenger) {
                     Constants.Messenger.TG -> {
                         if (!user.photo.isDigitsOnly()) {
-                            val bitmap = BitmapFactory.decodeFile(user.photo)
-                            this.setImageBitmap(bitmap)
+                            val file = File(user.photo)
+                            Picasso.get().load(file).into(this)
                         }
                         else {
                             val client = App.application.tgClient
                             val view = this
 
                             MainScope().launch {
-                                val photo = client.download(user.photo.toInt())
-                                user.photo = photo!!
-                                val bitmap = BitmapFactory.decodeFile(photo)
-                                view.setImageBitmap(bitmap)
+                                var photo: String?
+                                try {
+                                    photo = client.download(user.photo.toInt())
+                                    user.photo = photo!!
+                                }
+                                catch (exception: Exception) {
+                                    photo = user.photo
+                                }
+                                val file = File(photo!!)
+                                Picasso.get().load(file).into(view)
                             }
                         }
                     }
@@ -153,7 +161,7 @@ fun ImageView.bindPhoto(message: Message) {
     when (message.content) {
         is MessageSticker -> {
             when((message.content as MessageSticker).path) {
-                "" -> this.setImageDrawable(null)
+                "" -> this.setImageResource(R.drawable.ic_image)
                 else -> {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
@@ -162,18 +170,24 @@ fun ImageView.bindPhoto(message: Message) {
                         }
                         Constants.Messenger.TG -> {
                             if (!(message.content as MessageSticker).path.isDigitsOnly()) {
-                                val bitmap = BitmapFactory.decodeFile((message.content as MessageSticker).path)
-                                this.setImageBitmap(bitmap)
+                                val file = File((message.content as MessagePhoto).path)
+                                Picasso.get().load(file).into(this)
                             }
                             else {
                                 val client = App.application.tgClient
                                 val view = this
 
                                 MainScope().launch {
-                                    val photo = client.download((message.content as MessageSticker).path.toInt())
-                                    (message.content as MessageSticker).path = photo!!
-                                    val bitmap = BitmapFactory.decodeFile(photo)
-                                    view.setImageBitmap(bitmap)
+                                    var photo: String?
+                                    try {
+                                        photo = client.download((message.content as MessageSticker).path.toInt())
+                                        (message.content as MessageSticker).path = photo!!
+                                    }
+                                    catch (exception: Exception) {
+                                        photo = (message.content as MessageSticker).path
+                                    }
+                                    val file = File(photo!!)
+                                    Picasso.get().load(file).into(view)
                                 }
                             }
                         }
@@ -183,7 +197,7 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessagePhoto -> {
             when((message.content as MessagePhoto).path) {
-                "" -> this.setImageDrawable(null)
+                "" -> this.setImageResource(R.drawable.ic_image)
                 else -> {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
@@ -192,13 +206,13 @@ fun ImageView.bindPhoto(message: Message) {
                         }
                         Constants.Messenger.TG -> {
                             if (!(message.content as MessagePhoto).path.isDigitsOnly()) {
-                                val bitmap = BitmapFactory.decodeFile((message.content as MessagePhoto).path)
-                                this.setImageBitmap(bitmap)
+                                val file = File((message.content as MessagePhoto).path)
+                                Picasso.get().load(file).into(this)
                             }
                             else {
                                 val client = App.application.tgClient
                                 val view = this
-                                this.setImageDrawable(null)
+                                this.setImageResource(R.drawable.ic_image)
                                 MainScope().launch {
                                     var photo: String?
                                     try {
@@ -208,8 +222,8 @@ fun ImageView.bindPhoto(message: Message) {
                                     catch (exception: NumberFormatException){
                                         photo = (message.content as MessagePhoto).path
                                     }
-                                    val bitmap = BitmapFactory.decodeFile(photo)
-                                    view.setImageBitmap(bitmap)
+                                    val file = File(photo!!)
+                                    Picasso.get().load(file).into(view)
                                 }
                             }
                         }
@@ -219,7 +233,7 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessageAnimation -> {
             when((message.content as MessageAnimation).path) {
-                "" -> this.setImageDrawable(null)
+                "" -> this.setImageResource(R.drawable.ic_image)
                 else -> {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
@@ -228,8 +242,8 @@ fun ImageView.bindPhoto(message: Message) {
                         }
                         Constants.Messenger.TG -> {
                             if (!(message.content as MessageAnimation).path.isDigitsOnly()) {
-                                val bitmap = BitmapFactory.decodeFile((message.content as MessageAnimation).path)
-                                this.setImageBitmap(bitmap)
+                                val file = File((message.content as MessagePhoto).path)
+                                Picasso.get().load(file).into(this)
                             }
                             else {
                                 val client = App.application.tgClient
@@ -238,8 +252,8 @@ fun ImageView.bindPhoto(message: Message) {
                                 MainScope().launch {
                                     val photo = client.download((message.content as MessageAnimation).path.toInt())
                                     (message.content as MessageAnimation).path = photo!!
-                                    val bitmap = BitmapFactory.decodeFile(photo)
-                                    view.setImageBitmap(bitmap)
+                                    val file = File(photo)
+                                    Picasso.get().load(file).into(view)
                                 }
                             }
                         }
@@ -249,7 +263,7 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessageVideo -> {
             when((message.content as MessageVideo).video) {
-                "" -> this.setImageDrawable(null)
+                "" -> this.setImageResource(R.drawable.ic_image)
                 else -> {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
@@ -258,8 +272,8 @@ fun ImageView.bindPhoto(message: Message) {
                         }
                         Constants.Messenger.TG -> {
                             if (!(message.content as MessageVideo).video.isDigitsOnly()) {
-                                val bitmap = BitmapFactory.decodeFile((message.content as MessageVideo).video)
-                                this.setImageBitmap(bitmap)
+                                val file = File((message.content as MessagePhoto).path)
+                                Picasso.get().load(file).into(this)
                             }
                             else {
                                 val client = App.application.tgClient
@@ -268,8 +282,8 @@ fun ImageView.bindPhoto(message: Message) {
                                 MainScope().launch {
                                     val photo = client.download((message.content as MessageVideo).video.toInt())
                                     (message.content as MessageVideo).video = photo!!
-                                    val bitmap = BitmapFactory.decodeFile(photo)
-                                    view.setImageBitmap(bitmap)
+                                    val file = File(photo)
+                                    Picasso.get().load(file).into(view)
                                 }
                             }
                         }
@@ -279,7 +293,7 @@ fun ImageView.bindPhoto(message: Message) {
         }
         is MessageVideoNote -> {
             when((message.content as MessageVideoNote).video) {
-                "" -> this.setImageDrawable(null)
+                "" -> this.setImageResource(R.drawable.ic_image)
                 else -> {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
@@ -288,8 +302,8 @@ fun ImageView.bindPhoto(message: Message) {
                         }
                         Constants.Messenger.TG -> {
                             if (!(message.content as MessageVideoNote).video.isDigitsOnly()) {
-                                val bitmap = BitmapFactory.decodeFile((message.content as MessageVideoNote).video)
-                                this.setImageBitmap(bitmap)
+                                val file = File((message.content as MessagePhoto).path)
+                                Picasso.get().load(file).into(this)
                             }
                             else {
                                 val client = App.application.tgClient
@@ -298,8 +312,8 @@ fun ImageView.bindPhoto(message: Message) {
                                 MainScope().launch {
                                     val photo = client.download((message.content as MessageVideoNote).video.toInt())
                                     (message.content as MessageVideoNote).video = photo!!
-                                    val bitmap = BitmapFactory.decodeFile(photo)
-                                    view.setImageBitmap(bitmap)
+                                    val file = File(photo)
+                                    Picasso.get().load(file).into(view)
                                 }
                             }
                         }

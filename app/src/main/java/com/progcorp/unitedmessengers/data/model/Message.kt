@@ -251,9 +251,19 @@ data class Message(
                 TdApi.MessagePhoto.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessagePhoto
                     val photo = if (content.photo.sizes.size > 1) {
-                        content.photo.sizes[1].photo.id
+                        if (content.photo.sizes[1].photo.local.isDownloadingCompleted){
+                            content.photo.sizes[1].photo.local.path
+                        }
+                        else {
+                            content.photo.sizes[1].photo.id
+                        }
                     } else {
-                        content.photo.sizes[0].photo.id
+                        if (content.photo.sizes[0].photo.local.isDownloadingCompleted){
+                            content.photo.sizes[0].photo.local.path
+                        }
+                        else {
+                            content.photo.sizes[0].photo.id
+                        }
                     }
                     messageContent = MessagePhoto(content.caption.text, path = photo.toString())
                 }
@@ -265,13 +275,22 @@ data class Message(
                     messageContent = if (content.sticker.isAnimated) {
                         MessageText(text = content.sticker.emoji)
                     } else {
-                        MessageSticker(path = content.sticker.sticker.id.toString())
+                        if (content.sticker.sticker.local.isDownloadingCompleted) {
+                            MessageSticker(path = content.sticker.sticker.local.path)
+                        }
+                        else {
+                            MessageSticker(path = content.sticker.sticker.id.toString())
+                        }
                     }
                 }
                 TdApi.MessageVideo.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageVideo
                     content.video.thumbnail?.let {
-                        messageContent = MessagePhoto(path = it.file.id.toString())
+                        messageContent = if (it.file.local.isDownloadingCompleted) {
+                            MessagePhoto(path = it.file.local.path)
+                        } else {
+                            MessagePhoto(path = it.file.id.toString())
+                        }
                     }
                 }
                 TdApi.MessageExpiredVideo.CONSTRUCTOR -> {
@@ -280,7 +299,11 @@ data class Message(
                 TdApi.MessageVideoNote.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageVideoNote
                     content.videoNote.thumbnail?.let {
-                        messageContent = MessagePhoto(path = it.file.id.toString())
+                        messageContent = if (it.file.local.isDownloadingCompleted) {
+                            MessagePhoto(path = it.file.local.path)
+                        } else {
+                            MessagePhoto(path = it.file.id.toString())
+                        }
                     }
                 }
                 TdApi.MessageVoiceNote.CONSTRUCTOR -> {

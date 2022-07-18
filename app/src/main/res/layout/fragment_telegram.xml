@@ -59,7 +59,6 @@
                 app:bind_conversations_list="@{viewmodel.conversationsList}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                app:itemAnimator="@{null}"
                 tools:visibility="visible"
                 tools:listitem="@layout/list_item_conversation" />
 

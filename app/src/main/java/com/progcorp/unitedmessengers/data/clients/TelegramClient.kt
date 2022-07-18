@@ -74,9 +74,9 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
                 conversationViewModel?.newMessage(data as TdApi.UpdateNewMessage)
             }
             //TODO:
-            //TdApi.UpdateSupergroupFullInfo.CONSTRUCTOR -> {
+            TdApi.UpdateSupergroupFullInfo.CONSTRUCTOR -> {
 
-            //}
+            }
 
             //TdApi.UpdateUser.CONSTRUCTOR -> {
 

@@ -43,7 +43,11 @@ data class User(
             val lastSeen: Long
             var photo = ""
             if (tdUser.profilePhoto != null) {
-                photo = tdUser.profilePhoto!!.small.id.toString()
+                photo = if (tdUser.profilePhoto!!.small.local.isDownloadingCompleted){
+                    tdUser.profilePhoto!!.small.local.path
+                } else {
+                    tdUser.profilePhoto!!.small.id.toString()
+                }
             }
             when (tdUser.status.constructor) {
                 TdApi.UserStatusEmpty.CONSTRUCTOR -> {

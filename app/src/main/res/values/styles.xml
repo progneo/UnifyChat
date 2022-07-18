@@ -84,8 +84,10 @@
     <style name="Widget.UM.ImageView.Message.Photo" parent="">
         <item name="android:paddingStart">8dp</item>
         <item name="android:paddingEnd">8dp</item>
-        <item name="android:scaleType">centerCrop</item>
+        <item name="android:maxWidth">235dp</item>
+        <item name="android:scaleType">fitXY</item>
         <item name="android:adjustViewBounds">true</item>
+        <item name="android:src">@drawable/ic_image</item>
         <item name="shapeAppearanceOverlay">@style/CornerImageView</item>
     </style>
 

@@ -5,7 +5,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
-import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.EventObserver
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.ActivityConversationBinding
@@ -26,52 +25,52 @@ class ConversationActivity : AppCompatActivity() {
         )
     }
 
-    private lateinit var viewDataBinding: ActivityConversationBinding
-    private lateinit var listAdapter: MessagesListAdapter
-    private lateinit var listAdapterObserver: RecyclerView.AdapterDataObserver
-    private lateinit var toolbar: MaterialToolbar
+    private var _viewDataBinding: ActivityConversationBinding? = null
+    private var _listAdapter: MessagesListAdapter? = null
+    private var _listAdapterObserver: RecyclerView.AdapterDataObserver? = null
+    private var _toolbar: MaterialToolbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewDataBinding = ActivityConversationBinding.inflate(layoutInflater)
+        _viewDataBinding = ActivityConversationBinding.inflate(layoutInflater)
             .apply { viewmodel = viewModel }
-        viewDataBinding.lifecycleOwner = this
-        val view = viewDataBinding.root
-        toolbar = view.toolbar
-        setSupportActionBar(toolbar)
+        _viewDataBinding?.lifecycleOwner = this
+        val view = _viewDataBinding?.root
+        _toolbar = view?.toolbar
+        setSupportActionBar(_toolbar)
         setContentView(view)
         setupListAdapter()
         setupObservers()
     }
 
     private fun setupObservers() {
-        toolbar.setNavigationOnClickListener {
+        _toolbar?.setNavigationOnClickListener {
             onBackPressed()
         }
         viewModel.addAttachmentPressed.observe(this, EventObserver {
             functionalityNotAvailable(this)
         })
         viewModel.toBottomPressed.observe(this, EventObserver {
-            viewDataBinding.recyclerView.scrollToPosition(0)
+            _viewDataBinding?.recyclerView?.scrollToPosition(0)
         })
     }
 
     private fun setupListAdapter() {
-        val viewModel = viewDataBinding.viewmodel
+        val viewModel = _viewDataBinding?.viewmodel
         if (viewModel != null) {
-            listAdapterObserver = (object : RecyclerView.AdapterDataObserver() {
+            _listAdapterObserver = (object : RecyclerView.AdapterDataObserver() {
                 override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                     if (positionStart == 0) {
                         recycler_view.scrollToPosition(positionStart)
                     }
                 }
             })
-            listAdapter = MessagesListAdapter(viewModel)
-            listAdapter.registerAdapterDataObserver(listAdapterObserver)
-            viewDataBinding.recyclerView.adapter = listAdapter
+            _listAdapter = MessagesListAdapter(viewModel)
+            _listAdapter?.registerAdapterDataObserver(_listAdapterObserver!!)
+            _viewDataBinding?.recyclerView?.adapter = _listAdapter
 
-            viewDataBinding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            _viewDataBinding?.recyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener(){
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
 
@@ -80,19 +79,19 @@ class ConversationActivity : AppCompatActivity() {
                     }
 
                     if (!recyclerView.canScrollVertically(1)) {
-                        if (viewDataBinding.floatButton.isShown) {
-                            viewDataBinding.floatButton.hide()
+                        if (_viewDataBinding?.floatButton!!.isShown) {
+                            _viewDataBinding?.floatButton!!.hide()
                         }
                     }
 
                     if (dy > 0) {
-                        if (!viewDataBinding.floatButton.isShown) {
-                            viewDataBinding.floatButton.show()
+                        if (!_viewDataBinding?.floatButton!!.isShown) {
+                            _viewDataBinding?.floatButton!!.show()
                         }
                     }
                     else if (dy < 0) {
-                        if (viewDataBinding.floatButton.isShown) {
-                            viewDataBinding.floatButton.hide()
+                        if (_viewDataBinding?.floatButton!!.isShown) {
+                            _viewDataBinding?.floatButton!!.hide()
                         }
                     }
                 }
@@ -103,13 +102,13 @@ class ConversationActivity : AppCompatActivity() {
         }
     }
 
-    private fun close() {
-        onBackPressed()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         viewModel.stopListeners()
-        listAdapter.unregisterAdapterDataObserver(listAdapterObserver)
+        _listAdapter?.unregisterAdapterDataObserver(_listAdapterObserver!!)
+        _viewDataBinding = null
+        _listAdapter = null
+        _listAdapterObserver = null
+        _toolbar = null
     }
 }

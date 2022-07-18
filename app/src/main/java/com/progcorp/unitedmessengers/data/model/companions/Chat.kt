@@ -25,21 +25,34 @@ data class Chat(
         fun tgParseSupergroup(tdChat: TdApi.Chat, group: TdApi.Supergroup): Chat {
             val id: Long = group.id
             val title: String = tdChat.title
-            var photo = ""
             val membersCount: Int = group.memberCount
-            if (tdChat.photo != null) {
-                photo = tdChat.photo!!.small.id.toString()
+            val photo: String = if (tdChat.photo != null) {
+                if (tdChat.photo!!.small.local.isDownloadingCompleted){
+                    tdChat.photo!!.small.local.path
+                } else {
+                    tdChat.photo!!.small.id.toString()
+                }
             }
+            else {
+                ""
+            }
+
             return Chat(id, title, photo, membersCount, Constants.Messenger.TG)
         }
 
         fun tgParseBasicGroup(tdChat: TdApi.Chat, group: TdApi.BasicGroup): Chat {
             val id: Long = group.id
             val title: String = tdChat.title
-            var photo = ""
             val membersCount: Int = group.memberCount
-            if (tdChat.photo != null) {
-                photo = tdChat.photo!!.small.id.toString()
+            val photo: String = if (tdChat.photo != null) {
+                if (tdChat.photo!!.small.local.isDownloadingCompleted){
+                    tdChat.photo!!.small.local.path
+                } else {
+                    tdChat.photo!!.small.id.toString()
+                }
+            }
+            else {
+                ""
             }
             return Chat(id, title, photo, membersCount, Constants.Messenger.TG)
         }

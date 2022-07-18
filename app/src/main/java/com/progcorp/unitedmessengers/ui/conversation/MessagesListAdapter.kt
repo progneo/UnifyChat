@@ -2,9 +2,11 @@ package com.progcorp.unitedmessengers.ui.conversation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.model.*
 import com.progcorp.unitedmessengers.databinding.*
 import com.progcorp.unitedmessengers.util.Constants
@@ -268,39 +270,61 @@ class MessagesListAdapter(private val viewModel: ConversationViewModel) : ListAd
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.itemViewType) {
-            Constants.MessageType.text -> (holder as MessageViewHolder).bind(
-                viewModel,
-                getItem(position)
-            )
-            Constants.MessageType.textOut -> (holder as OutMessageViewHolder).bind(
-                viewModel,
-                getItem(position)
-            )
-            Constants.MessageType.sticker -> (holder as StickerViewHolder).bind(
-                viewModel,
-                getItem(position)
-            )
-            Constants.MessageType.stickerOut -> (holder as OutStickerViewHolder).bind(
-                viewModel,
-                getItem(position)
-            )
-            Constants.MessageType.chat -> (holder as ChatViewHolder).bind(
-                viewModel,
-                getItem(position)
-            )
-            Constants.MessageType.photo -> (holder as PhotoViewHolder).bind(
-                viewModel,
-                getItem(position)
-            )
-            Constants.MessageType.photoOut -> (holder as OutPhotoViewHolder).bind(
-                viewModel,
-                getItem(position)
-            )
+            Constants.MessageType.text -> {
+                (holder as MessageViewHolder).bind(
+                    viewModel,
+                    getItem(position)
+                )
+                holder.itemView.animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_right_animation)
+            }
+            Constants.MessageType.textOut -> {
+                (holder as OutMessageViewHolder).bind(
+                    viewModel,
+                    getItem(position)
+                )
+                holder.itemView.animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_left_animation)
+            }
+            Constants.MessageType.sticker -> {
+                (holder as StickerViewHolder).bind(
+                    viewModel,
+                    getItem(position)
+                )
+                holder.itemView.animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_right_animation)
+            }
+            Constants.MessageType.stickerOut -> {
+                (holder as OutStickerViewHolder).bind(
+                    viewModel,
+                    getItem(position)
+                )
+                holder.itemView.animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_left_animation)
+            }
+            Constants.MessageType.chat -> {
+                (holder as ChatViewHolder).bind(
+                    viewModel,
+                    getItem(position)
+                )
+                holder.itemView.animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_right_animation)
+            }
+            Constants.MessageType.photo -> {
+                (holder as PhotoViewHolder).bind(
+                    viewModel,
+                    getItem(position)
+                )
+                holder.itemView.animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_right_animation)
+            }
+            Constants.MessageType.photoOut -> {
+                (holder as OutPhotoViewHolder).bind(
+                    viewModel,
+                    getItem(position)
+                )
+                holder.itemView.animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_left_animation)
+            }
             else -> {
                 (holder as AttachmentViewHolder).bind(
                     viewModel,
                     getItem(position)
                 )
+                holder.itemView.animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.slide_right_animation)
             }
         }
     }
