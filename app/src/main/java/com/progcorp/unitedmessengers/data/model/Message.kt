@@ -88,10 +88,17 @@ data class Message(
                     val at = attachmentsObject.getJSONObject(0)
                     when (at.getString("type")) {
                         "sticker" -> {
-                            val sticker = at.getJSONObject("sticker")
+                            val stickers = at.getJSONObject("sticker")
                                 .getJSONArray("images")
-                                .getJSONObject(4)
-                                .getString("url")
+                            val sticker: String = if (stickers.length() == 5) {
+                                stickers
+                                    .getJSONObject(4)
+                                    .getString("url")
+                            } else {
+                                stickers
+                                    .getJSONObject(1)
+                                    .getString("url")
+                            }
                             messageContent = MessageSticker(path = sticker)
                         }
                         "photo" -> {

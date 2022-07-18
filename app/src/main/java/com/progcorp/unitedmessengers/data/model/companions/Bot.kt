@@ -20,7 +20,7 @@ data class Bot(
         fun vkParse(json: JSONObject) = Bot(
             id = json.optLong("id"),
             title = json.optString("name"),
-            photo = json.optJSONObject("photo")?.optString("photo_100") ?: "",
+            photo = json.optString("photo_100") ?: "",
             Constants.Messenger.VK
         )
 
