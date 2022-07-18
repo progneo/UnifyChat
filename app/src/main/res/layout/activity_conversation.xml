@@ -24,14 +24,14 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+                app:navigationIcon="@drawable/ic_arrow_back"
                 app:navigationIconTint="?attr/colorPrimary">
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:layout_width="?attr/actionBarSize"
                     android:layout_height="?attr/actionBarSize"
                     android:padding="12dp"
-                    android:src="@drawable/ic_baseline_account_circle_24"
+                    android:src="@drawable/ic_account_circle"
                     app:bind_conversation="@{viewmodel.chat}"
                     app:shapeAppearanceOverlay="@style/CircleImageView"/>
                 <LinearLayout

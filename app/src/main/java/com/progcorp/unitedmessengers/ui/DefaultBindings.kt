@@ -2,25 +2,19 @@ package com.progcorp.unitedmessengers.ui
 
 import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
-import android.graphics.drawable.GradientDrawable
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.text.isDigitsOnly
-import androidx.core.view.setPadding
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.model.Conversation
-import com.progcorp.unitedmessengers.interfaces.ICompanion
-import com.progcorp.unitedmessengers.ui.conversations.bindAppbarImage
 import com.progcorp.unitedmessengers.util.Constants
 import com.progcorp.unitedmessengers.util.ConvertTime
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -30,8 +24,8 @@ import java.util.concurrent.TimeUnit
 fun ImageView.bindImageWithPicasso(url: String?) {
     when (url) {
         null -> Unit
-        "" -> this.setBackgroundResource(R.drawable.ic_baseline_account_circle_24)
-        else -> Picasso.get().load(url).error(R.drawable.ic_baseline_account_circle_24).into(this)
+        "" -> this.setBackgroundResource(R.drawable.ic_account_circle)
+        else -> Picasso.get().load(url).error(R.drawable.ic_account_circle).into(this)
     }
 }
 
@@ -39,7 +33,7 @@ fun ImageView.bindImageWithPicasso(url: String?) {
 fun ImageView.bindConversationImage(conversation: Conversation) {
     when (conversation.getPhoto()) {
         null -> Unit
-        "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png").error(R.drawable.ic_baseline_account_circle_24).into(this)
+        "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png").error(R.drawable.ic_account_circle).into(this)
         else -> {
             when (conversation.messenger) {
                 Constants.Messenger.TG -> {
@@ -60,7 +54,7 @@ fun ImageView.bindConversationImage(conversation: Conversation) {
                     }
                 }
                 Constants.Messenger.VK -> {
-                    Picasso.get().load(conversation.getPhoto()).error(R.drawable.ic_baseline_account_circle_24).into(this)
+                    Picasso.get().load(conversation.getPhoto()).error(R.drawable.ic_account_circle).into(this)
                 }
             }
         }

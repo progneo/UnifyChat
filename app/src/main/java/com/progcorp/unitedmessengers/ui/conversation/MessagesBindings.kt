@@ -3,23 +3,14 @@
 package com.progcorp.unitedmessengers.ui.conversation
 
 import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.net.Uri
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.text.isDigitsOnly
-import androidx.core.view.marginTop
-import androidx.core.view.setMargins
 import androidx.databinding.BindingAdapter
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.model.*
@@ -28,19 +19,11 @@ import com.progcorp.unitedmessengers.data.model.companions.Chat
 import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.interfaces.IMessageContent
-import com.progcorp.unitedmessengers.ui.bindConversationImage
-import com.progcorp.unitedmessengers.ui.conversations.bindAppbarImage
 import com.progcorp.unitedmessengers.util.Constants
 import com.progcorp.unitedmessengers.util.ConvertTime
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
-import java.io.File
-import java.lang.Exception
 
 @BindingAdapter("bind_messages_list")
 fun bindMessagesList(listView: RecyclerView, items: List<Message>?) {
@@ -95,7 +78,7 @@ fun ImageView.bindMessageSenderImage(conversation: Conversation, user: ICompanio
         this.visibility = View.VISIBLE
         when (user.photo) {
             "" -> Picasso.get().load("https://connect2id.com/assets/learn/oauth-2/user.png")
-                .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                .error(R.drawable.ic_account_circle).into(this)
             else -> {
                 when (user.messenger) {
                     Constants.Messenger.TG -> {
@@ -116,7 +99,7 @@ fun ImageView.bindMessageSenderImage(conversation: Conversation, user: ICompanio
                         }
                     }
                     Constants.Messenger.VK -> {
-                        Picasso.get().load(user.photo).error(R.drawable.ic_baseline_account_circle_24)
+                        Picasso.get().load(user.photo).error(R.drawable.ic_account_circle)
                             .into(this)
                     }
                 }
@@ -174,7 +157,7 @@ fun ImageView.bindPhoto(message: Message) {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
                             Picasso.get().load((message.content as MessageSticker).path)
-                                .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                                .error(R.drawable.ic_account_circle).into(this)
                         }
                         Constants.Messenger.TG -> {
                             if (!(message.content as MessageSticker).path.isDigitsOnly()) {
@@ -204,7 +187,7 @@ fun ImageView.bindPhoto(message: Message) {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
                             Picasso.get().load((message.content as MessagePhoto).path)
-                                .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                                .error(R.drawable.ic_account_circle).into(this)
                         }
                         Constants.Messenger.TG -> {
                             if (!(message.content as MessagePhoto).path.isDigitsOnly()) {
@@ -234,7 +217,7 @@ fun ImageView.bindPhoto(message: Message) {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
                             Picasso.get().load((message.content as MessageAnimation).path)
-                                .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                                .error(R.drawable.ic_account_circle).into(this)
                         }
                         Constants.Messenger.TG -> {
                             if (!(message.content as MessageAnimation).path.isDigitsOnly()) {
@@ -264,7 +247,7 @@ fun ImageView.bindPhoto(message: Message) {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
                             Picasso.get().load((message.content as MessageVideo).video)
-                                .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                                .error(R.drawable.ic_account_circle).into(this)
                         }
                         Constants.Messenger.TG -> {
                             if (!(message.content as MessageVideo).video.isDigitsOnly()) {
@@ -294,7 +277,7 @@ fun ImageView.bindPhoto(message: Message) {
                     when (message.messenger) {
                         Constants.Messenger.VK -> {
                             Picasso.get().load((message.content as MessageVideoNote).video)
-                                .error(R.drawable.ic_baseline_account_circle_24).into(this)
+                                .error(R.drawable.ic_account_circle).into(this)
                         }
                         Constants.Messenger.TG -> {
                             if (!(message.content as MessageVideoNote).video.isDigitsOnly()) {

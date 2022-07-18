@@ -31,7 +31,7 @@
                     android:layout_width="?attr/actionBarSize"
                     android:layout_height="?attr/actionBarSize"
                     android:padding="16dp"
-                    android:src="@drawable/ic_baseline_login_24"
+                    android:src="@drawable/ic_login_appbar"
                     android:onClick="@{() -> viewmodel.goToLoginPressed()}"
                     app:bind_appbar_image="@{viewmodel.user}"
                     app:shapeAppearanceOverlay="@style/CircleImageView"/>

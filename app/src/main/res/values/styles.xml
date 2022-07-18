@@ -110,4 +110,24 @@
         <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
+
+    <!-- Login screen. -->
+    <!-- EditTexts. -->
+    <style name="Widget.UM.EditText.Login" parent="">
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:background">@drawable/rounded_edittext</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyLarge</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <!-- Buttons. -->
+    <style name="Widget.UM.Button.Login" parent="Widget.Material3.Button.Icon">
+        <item name="android:layout_width">130dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+    </style>
+
 </resources>

@@ -19,9 +19,6 @@ import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.util.Constants
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.first
-import okhttp3.Dispatcher
 
 @BindingAdapter("bind_conversations_list")
 fun bindConversationsList(listView: RecyclerView, items: List<Conversation>?) {
@@ -116,7 +113,7 @@ fun ImageView.bindAppbarImage(user: User?) {
                     }
                 }
                 Constants.Messenger.VK -> {
-                    Picasso.get().load(user.photo).error(R.drawable.ic_baseline_account_circle_24).into(this)
+                    Picasso.get().load(user.photo).error(R.drawable.ic_account_circle).into(this)
                 }
             }
         }

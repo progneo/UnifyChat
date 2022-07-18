@@ -17,26 +17,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="@dimen/_24sdp"
+        android:padding="@dimen/_64sdp"
         android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_40sdp"
-            android:text="@string/telegram"
-            android:textColor="?attr/colorOnBackground"
-            android:textSize="@dimen/_18ssp"
-            android:textStyle="bold" />
+            android:textAppearance="?attr/textAppearanceTitleLarge"
+            android:textStyle="bold"
+            android:text="@string/telegram"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_4sdp"
-            android:text="@string/login_text"
-            android:textColor="?attr/colorOnBackground"
-            android:textSize="@dimen/_12ssp"
-            android:textStyle="bold" />
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:text="@string/login_text"/>
 
         <RelativeLayout
             android:layout_height="wrap_content"
@@ -45,72 +40,46 @@
                 android:id="@+id/phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="visible">
 
                 <EditText
                     android:id="@+id/phoneText"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_40sdp"
-                    android:layout_marginTop="@dimen/_20sdp"
-                    android:background="@drawable/rounded_edittext"
                     android:hint="@string/enter_phone_hint"
-                    android:gravity="center"
-                    android:textSize="@dimen/_16ssp"
-                    android:inputType="phone"
                     android:text="@={viewmodel.phoneNumberText}"
-                    android:autofillHints="phone" />
+                    android:inputType="phone"
+                    android:autofillHints="phone"
+                    style="@style/Widget.UM.EditText.Login"/>
 
-                <com.google.android.material.button.MaterialButton
+                <Button
                     android:id="@+id/phoneSend"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_50sdp"
-                    android:layout_marginTop="@dimen/_20sdp"
-                    android:text="@string/action_next"
-                    android:textAlignment="center"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:textSize="@dimen/_13ssp"
-                    android:textStyle="bold"
-                    android:backgroundTint="?attr/colorPrimary"
                     android:onClick="@{() -> viewmodel.insertPhoneNumber()}"
-                    app:cornerRadius="@dimen/_8sdp"/>
+                    android:text="@string/action_next"
+                    app:icon="@drawable/arrow_right"
+                    style="@style/Widget.UM.Button.Login"/>
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/securityCode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="invisible">
 
                 <EditText
                     android:id="@+id/codeText"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_40sdp"
-                    android:layout_marginTop="@dimen/_20sdp"
-                    android:background="@drawable/rounded_edittext"
                     android:hint="@string/enter_code_hint"
-                    android:gravity="center"
-                    android:textSize="@dimen/_16ssp"
-                    android:importantForAutofill="no"
                     android:text="@={viewmodel.codeText}"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    android:importantForAutofill="no"
+                    style="@style/Widget.UM.EditText.Login"/>
 
-                <com.google.android.material.button.MaterialButton
+                <Button
                     android:id="@+id/codeSend"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_50sdp"
-                    android:layout_marginTop="@dimen/_20sdp"
-                    android:text="@string/action_login"
-                    android:textAlignment="center"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:textSize="@dimen/_13ssp"
-                    android:textStyle="bold"
-                    android:backgroundTint="?attr/colorPrimary"
                     android:onClick="@{() -> viewmodel.insertCode()}"
-                    app:cornerRadius="@dimen/_8sdp"/>
+                    android:text="@string/action_login"
+                    app:icon="@drawable/ic_login"
+                    style="@style/Widget.UM.Button.Login"/>
             </LinearLayout>
 
             <LinearLayout
@@ -123,46 +92,28 @@
 
                 <EditText
                     android:id="@+id/passwordText"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_40sdp"
-                    android:layout_marginTop="@dimen/_20sdp"
-                    android:background="@drawable/rounded_edittext"
+                    style="@style/Widget.UM.EditText.Login"
                     android:hint="@string/enter_password_hint"
-                    android:gravity="center"
+                    android:importantForAutofill="no"
                     android:inputType="textPassword"
-                    android:textSize="@dimen/_16ssp"
-                    android:text="@={viewmodel.passwordText}"
-                    android:importantForAutofill="no" />
+                    android:text="@={viewmodel.passwordText}" />
 
-                <com.google.android.material.button.MaterialButton
+                <Button
                     android:id="@+id/passwordSend"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_50sdp"
-                    android:layout_marginTop="@dimen/_20sdp"
-                    android:text="@string/action_login"
-                    android:textAlignment="center"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:textSize="@dimen/_13ssp"
-                    android:textStyle="bold"
-                    android:backgroundTint="?attr/colorPrimary"
+                    style="@style/Widget.UM.Button.Login"
                     android:onClick="@{() -> viewmodel.insertPassword()}"
-                    app:cornerRadius="@dimen/_8sdp"/>
+                    android:text="@string/action_login"
+                    app:icon="@drawable/ic_login" />
             </LinearLayout>
         </RelativeLayout>
 
-
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/logout"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_50sdp"
             android:text="@string/action_logout"
-            android:textAlignment="center"
-            android:textColor="?attr/colorOnPrimary"
-            android:textSize="@dimen/_13ssp"
-            android:textStyle="bold"
-            android:backgroundTint="?attr/colorPrimary"
             android:onClick="@{() -> viewmodel.logout()}"
             android:visibility="invisible"
-            app:cornerRadius="@dimen/_8sdp"/>
+            android:layout_marginTop="0dp"
+            app:icon="@drawable/ic_cancel"
+            style="@style/Widget.UM.Button.Login"/>
     </LinearLayout>
 </layout>
