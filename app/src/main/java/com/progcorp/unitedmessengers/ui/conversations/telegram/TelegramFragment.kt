@@ -22,9 +22,9 @@ import com.progcorp.unitedmessengers.ui.conversations.ConversationsListAdapter
 import java.lang.Exception
 
 class TelegramFragment : Fragment() {
-    private lateinit var viewDataBinding: FragmentTelegramBinding
-    private lateinit var listAdapter: ConversationsListAdapter
-    private lateinit var listAdapterObserver: RecyclerView.AdapterDataObserver
+    private var _viewDataBinding: FragmentTelegramBinding? = null
+    private var _listAdapter: ConversationsListAdapter? = null
+    private var _listAdapterObserver: RecyclerView.AdapterDataObserver? = null
 
     private val viewModel: TelegramConversationsViewModel by viewModels { TelegramConversationsViewModelFactory() }
 
@@ -33,10 +33,10 @@ class TelegramFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewDataBinding = FragmentTelegramBinding
+        _viewDataBinding = FragmentTelegramBinding
             .inflate(inflater, container, false).apply { viewmodel = viewModel }
-        viewDataBinding.lifecycleOwner = this
-        return viewDataBinding.root
+        _viewDataBinding!!.lifecycleOwner = this.viewLifecycleOwner
+        return _viewDataBinding!!.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,13 +46,35 @@ class TelegramFragment : Fragment() {
     }
 
     private fun setupListAdapter() {
-        val viewModel = viewDataBinding.viewmodel
+        val viewModel = _viewDataBinding!!.viewmodel
         if (viewModel != null) {
-            listAdapterObserver = (object : RecyclerView.AdapterDataObserver(){
+            _listAdapterObserver = (object : RecyclerView.AdapterDataObserver(){
             })
-            listAdapter = ConversationsListAdapter(viewModel)
-            listAdapter.registerAdapterDataObserver(listAdapterObserver)
-            viewDataBinding.recyclerView.adapter = listAdapter
+            _listAdapter = ConversationsListAdapter(viewModel)
+            _listAdapter!!.registerAdapterDataObserver(_listAdapterObserver!!)
+            _viewDataBinding!!.recyclerView.adapter = _listAdapter
+
+            _viewDataBinding!!.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    if (!recyclerView.canScrollVertically(-1)) {
+                        if (_viewDataBinding!!.floatButton.isShown) {
+                            _viewDataBinding!!.floatButton.hide()
+                        }
+                    }
+
+                    if (dy > 0) {
+                        if (_viewDataBinding!!.floatButton.isShown) {
+                            _viewDataBinding!!.floatButton.hide()
+                        }
+                    }
+                    else if (dy < 0) {
+                        if (!_viewDataBinding!!.floatButton.isShown) {
+                            _viewDataBinding!!.floatButton.show()
+                        }
+                    }
+                }
+            })
         }
         else {
             throw Exception("The viewmodel is not initialized")
@@ -62,14 +84,15 @@ class TelegramFragment : Fragment() {
     private fun setupObservers() {
         viewModel.selectedConversation.observe(viewLifecycleOwner, EventObserver { navigateToChat(it) } )
         viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver { navigateToLogin() })
+        viewModel.toTopPressed.observe(viewLifecycleOwner, EventObserver { goToTop() })
         viewModel.notifyItemInsertedEvent.observe(viewLifecycleOwner, EventObserver {
-            listAdapter.notifyItemInserted(it)
+            _listAdapter?.notifyItemInserted(it)
         })
         viewModel.notifyItemChangedEvent.observe(viewLifecycleOwner, EventObserver {
-            listAdapter.notifyItemChanged(it)
+            _listAdapter?.notifyItemChanged(it)
         })
         viewModel.notifyItemMovedEvent.observe(viewLifecycleOwner, EventObserver {
-            listAdapter.notifyItemMoved(it.first, it.second)
+            _listAdapter?.notifyItemMoved(it.first, it.second)
         })
     }
 
@@ -91,5 +114,16 @@ class TelegramFragment : Fragment() {
 
     private fun navigateToLogin() {
         findNavController().navigate(R.id.action_navigation_chats_to_tg_auth_activity)
+    }
+
+    private fun goToTop() {
+        _viewDataBinding!!.recyclerView.scrollToPosition(0)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _viewDataBinding = null
+        _listAdapter = null
+        _listAdapterObserver = null
     }
 }

@@ -25,18 +25,18 @@ class VKFragment : Fragment() {
 
     private val viewModel: VKConversationsViewModel by viewModels { VKConversationsViewModelFactory() }
 
-    private lateinit var viewDataBinding: FragmentVkBinding
-    private lateinit var listAdapter: ConversationsListAdapter
+    private var _viewDataBinding: FragmentVkBinding? = null
+    private var _listAdapter: ConversationsListAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewDataBinding =
+        _viewDataBinding =
             FragmentVkBinding.inflate(inflater, container, false).apply { viewmodel = viewModel }
-        viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
-        return viewDataBinding.root
+        _viewDataBinding!!.lifecycleOwner = this.viewLifecycleOwner
+        return _viewDataBinding!!.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,17 +46,34 @@ class VKFragment : Fragment() {
     }
 
     private fun setupListAdapter() {
-        val viewModel = viewDataBinding.viewmodel
+        val viewModel = _viewDataBinding!!.viewmodel
         if (viewModel != null) {
-            listAdapter = ConversationsListAdapter(viewModel)
-            viewDataBinding.recyclerView.adapter = listAdapter
+            _listAdapter = ConversationsListAdapter(viewModel)
+            _viewDataBinding!!.recyclerView.adapter = _listAdapter
 
-            viewDataBinding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            _viewDataBinding!!.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
                     if (!recyclerView.canScrollVertically(1)) {
                         viewModel.loadMoreConversations()
                     }
-                    super.onScrolled(recyclerView, dx, dy)
+
+                    if (!recyclerView.canScrollVertically(-1)) {
+                        if (_viewDataBinding!!.floatButton.isShown) {
+                            _viewDataBinding!!.floatButton.hide()
+                        }
+                    }
+
+                    if (dy > 0) {
+                        if (_viewDataBinding!!.floatButton.isShown) {
+                            _viewDataBinding!!.floatButton.hide()
+                        }
+                    }
+                    else if (dy < 0) {
+                        if (!_viewDataBinding!!.floatButton.isShown) {
+                            _viewDataBinding!!.floatButton.show()
+                        }
+                    }
                 }
             })
         }
@@ -68,6 +85,7 @@ class VKFragment : Fragment() {
     private fun setupObservers() {
         viewModel.selectedConversation.observe(viewLifecycleOwner, EventObserver { navigateToChat(it) } )
         viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver { navigateToLogin() })
+        viewModel.toTopPressed.observe(viewLifecycleOwner, EventObserver { goToTop() })
     }
 
     private fun navigateToChat(conversation: Conversation) {
@@ -88,5 +106,15 @@ class VKFragment : Fragment() {
 
     private fun navigateToLogin() {
         findNavController().navigate(R.id.action_navigation_chats_to_vkAuthFragment)
+    }
+
+    private fun goToTop() {
+        _viewDataBinding!!.recyclerView.scrollToPosition(0)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _viewDataBinding = null
+        _listAdapter = null
     }
 }

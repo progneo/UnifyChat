@@ -14,59 +14,81 @@
 
     </data>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center">
-        <com.google.android.material.appbar.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fitsSystemWindows="true"
-            app:liftOnScroll="true">
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize">
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="?attr/actionBarSize"
-                    android:layout_height="?attr/actionBarSize"
-                    android:padding="16dp"
-                    android:src="@drawable/ic_login_appbar"
-                    android:onClick="@{() -> viewmodel.goToLoginPressed()}"
-                    app:bind_appbar_image="@{viewmodel.user}"
-                    app:shapeAppearanceOverlay="@style/CircleImageView"/>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    app:bind_appbar_name="@{viewmodel.user}"
-                    android:textAppearance="?attr/textAppearanceTitleLarge"
-                    tools:text="@string/login_text"/>
-            </com.google.android.material.appbar.MaterialToolbar>
+        android:layout_height="match_parent">
 
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="top"
-            android:orientation="vertical"
-            android:clipToPadding="false"
-            android:visibility="@{viewmodel.loginState ? View.VISIBLE : View.GONE}"
-            app:bind_conversations_list="@{viewmodel.conversationsList}"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:itemAnimator="@{null}"
-            tools:visibility="visible"
-            tools:listitem="@layout/list_item_conversation" />
+            android:layout_gravity="center">
+            <com.google.android.material.appbar.AppBarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                app:liftOnScroll="true">
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="?attr/actionBarSize"
+                        android:layout_height="?attr/actionBarSize"
+                        android:padding="16dp"
+                        android:src="@drawable/ic_login_appbar"
+                        android:onClick="@{() -> viewmodel.goToLoginPressed()}"
+                        app:bind_appbar_image="@{viewmodel.user}"
+                        app:shapeAppearanceOverlay="@style/CircleImageView"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        app:bind_appbar_name="@{viewmodel.user}"
+                        android:textAppearance="?attr/textAppearanceTitleLarge"
+                        tools:text="@string/login_text"/>
+                </com.google.android.material.appbar.MaterialToolbar>
 
-        <TextView
+            </com.google.android.material.appbar.AppBarLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="top"
+                android:orientation="vertical"
+                android:clipToPadding="false"
+                android:visibility="@{viewmodel.loginState ? View.VISIBLE : View.GONE}"
+                app:bind_conversations_list="@{viewmodel.conversationsList}"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                app:itemAnimator="@{null}"
+                tools:visibility="visible"
+                tools:listitem="@layout/list_item_conversation" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="@{viewmodel.loginState ? View.GONE : View.VISIBLE}"
+                android:text="@string/login_to_account"
+                android:layout_gravity="center"
+                tools:visibility="invisible" />
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/float_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="@{viewmodel.loginState ? View.GONE : View.VISIBLE}"
-            android:text="@string/login_to_account"
-            android:layout_gravity="center"
-            tools:visibility="invisible" />
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="?attr/colorTertiaryContainer"
+            android:contentDescription="@string/to_bottom"
+            android:onClick="@{() -> viewmodel.goToTopPressed()}"
+            android:src="@drawable/ic_arrow_top"
+            android:visibility="invisible"
+            app:fabSize="mini"/>
+    </RelativeLayout>
 </layout>

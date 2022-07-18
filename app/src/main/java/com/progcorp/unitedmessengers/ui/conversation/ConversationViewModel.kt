@@ -134,7 +134,6 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                     for (message in data) {
                         _newMessage.value = message
                     }
-                    markAsRead(messagesList.value!![0])
                 }
                 Constants.Messenger.TG -> {
                     val data = _tgRepository.getMessages(conversation.id, 0,20).first()
@@ -142,8 +141,10 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                         val message = Message.tgParse(item)
                         _newMessage.value = message
                     }
-                    markAsRead(messagesList.value!![0])
                 }
+            }
+            if (messagesList.value!!.size != 0) {
+                markAsRead(messagesList.value!![0])
             }
         }
     }
@@ -213,6 +214,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
         if (data.message.chatId == chat.value!!.id) {
             viewModelScope.launch(Dispatchers.Main) {
                 _newMessage.value = Message.tgParse(data.message)
+                markAsRead(_newMessage.value!!)
             }
         }
     }

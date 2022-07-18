@@ -31,6 +31,7 @@ class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
     private var _conversationsGetter: Runnable = Runnable {  }
 
     private val _loginEvent = MutableLiveData<Event<Unit>>()
+    private val _toTopPressed = MutableLiveData<Event<Unit>>()
 
     private val _newConversation = MutableLiveData<Conversation>()
     private val _updatedConversation = MutableLiveData<Conversation>()
@@ -39,6 +40,7 @@ class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
     private val _user = MutableLiveData<User?>()
 
     val loginEvent: LiveData<Event<Unit>> = _loginEvent
+    val toTopPressed: LiveData<Event<Unit>> = _toTopPressed
 
     var selectedConversation: LiveData<Event<Conversation>> = _selectedConversation
     val conversationsList = MediatorLiveData<MutableList<Conversation>>()
@@ -138,6 +140,10 @@ class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
         if (_loginState.value == false) {
             _loginEvent.value = Event(Unit)
         }
+    }
+
+    fun goToTopPressed() {
+        _toTopPressed.value = Event(Unit)
     }
 
     override fun selectConversationPressed(conversation: Conversation) {

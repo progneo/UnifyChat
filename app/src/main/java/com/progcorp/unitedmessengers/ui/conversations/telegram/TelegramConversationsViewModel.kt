@@ -26,6 +26,7 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     private val _repository = App.application.tgClient.repository
 
     private val _loginEvent = MutableLiveData<Event<Unit>>()
+    private val _toTopPressed = MutableLiveData<Event<Unit>>()
 
     private val _notifyItemInsertedEvent = MutableLiveData<Event<Int>>()
     private val _notifyItemChangedEvent = MutableLiveData<Event<Int>>()
@@ -40,6 +41,7 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     private val _user = MutableLiveData<User?>()
 
     val loginEvent: LiveData<Event<Unit>> = _loginEvent
+    val toTopPressed: LiveData<Event<Unit>> = _toTopPressed
 
     val notifyItemInsertedEvent: LiveData<Event<Int>> = _notifyItemInsertedEvent
     val notifyItemChangedEvent: LiveData<Event<Int>> = _notifyItemChangedEvent
@@ -184,6 +186,10 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
                 notifyItemChanged(it)
             }
         }
+    }
+
+    fun goToTopPressed() {
+        _toTopPressed.value = Event(Unit)
     }
 
     override fun selectConversationPressed(conversation: Conversation) {
