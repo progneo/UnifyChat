@@ -7,10 +7,7 @@ import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.interfaces.IMessageContent
 import com.progcorp.unitedmessengers.util.Constants
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONArray
 import org.json.JSONException
@@ -193,7 +190,7 @@ data class Message(
         }
 
         suspend fun tgParse(tgMessage: TdApi.Message): Message {
-            val repository = App.application.tgClient.resositrory
+            val repository = App.application.tgClient.repository
 
             val id = tgMessage.id
             val timeStamp: Long = (tgMessage.date).toLong() * 1000

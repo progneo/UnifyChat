@@ -23,7 +23,7 @@ class TelegramConversationsViewModelFactory :
 class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
 
     private val _client = App.application.tgClient
-    private val _repository = App.application.tgClient.resositrory
+    private val _repository = App.application.tgClient.repository
 
     private val _loginEvent = MutableLiveData<Event<Unit>>()
 

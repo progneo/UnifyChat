@@ -94,6 +94,21 @@ class VKDataSource (private val client: VKClient) {
         )
     }
 
+    suspend fun markAsRead(chatId: Long, message: Message): Resource<String> {
+        val service = _retrofit.create(VKMarkAsRead::class.java)
+        return getResponse(
+            request = {
+                service.markAsRead(
+                    client.token!!,
+                    "5.131",
+                    chatId,
+                    message.id,
+                    0
+                )
+            }
+        )
+    }
+
     suspend fun getLongPollServer(): Resource<String> {
         val service = _retrofit.create(VKGetLongPollServer::class.java)
         return getResponse(

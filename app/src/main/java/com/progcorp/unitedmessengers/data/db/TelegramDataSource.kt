@@ -185,6 +185,34 @@ class TelegramDataSource (private val client: TelegramClient) {
             awaitClose { }
         }
 
+    fun markAsRead(chatId: Long, message: Message): Flow<Unit> =
+        callbackFlow {
+            client.client.send(TdApi.ViewMessages(
+                chatId,
+                0,
+                longArrayOf(message.id),
+                true)){
+                when (it.constructor) {
+                    TdApi.Ok.CONSTRUCTOR -> {
+                        trySend(Unit).isSuccess
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+                        Log.e(
+                            "${javaClass.simpleName}.markAsRead",
+                            "${(it as TdApi.Error).message}. Chat ID: $chatId"
+                        )
+                    }
+                    else -> {
+                        Log.e(
+                            "${javaClass.simpleName}.markAsRead",
+                            "Unknown error"
+                        )
+                    }
+                }
+            }
+            awaitClose { }
+        }
+
     fun getUser(userId: Long): Flow<TdApi.User> =
         callbackFlow {
             client.client.send(TdApi.GetUser(userId)) {

@@ -1,5 +1,6 @@
 package com.progcorp.unitedmessengers.data.model
 
+import android.util.Log
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.model.companions.Bot
 import com.progcorp.unitedmessengers.data.model.companions.Chat
@@ -55,7 +56,7 @@ data class Conversation(
     }
 
     suspend fun tgParseLastMessage(update: TdApi.UpdateChatLastMessage) {
-        val repository = App.application.tgClient.resositrory
+        val repository = App.application.tgClient.repository
 
         if (update.lastMessage != null) {
             lastMessage = Message.tgParse(update.lastMessage!!)
@@ -64,7 +65,7 @@ data class Conversation(
     }
 
     suspend fun tgParseNewMessage(update: TdApi.UpdateNewMessage) {
-        val repository = App.application.tgClient.resositrory
+        val repository = App.application.tgClient.repository
 
         if (update.message != null) {
             lastMessage = Message.tgParse(update.message!!)
@@ -73,12 +74,12 @@ data class Conversation(
     }
 
     suspend fun tgParseOnlineStatus(update: TdApi.UpdateUserStatus) {
-        val repository = App.application.tgClient.resositrory
+        val repository = App.application.tgClient.repository
 
         val user = User.tgParse(repository.getUser(update.userId).first())
         companion as User
 
-        companion.isOnline = user.isOnline == true
+        companion.isOnline = user.isOnline
         companion.lastSeen = user.lastSeen
     }
 
@@ -128,7 +129,7 @@ data class Conversation(
         }
 
         suspend fun tgParse(conversation: TdApi.Chat): Conversation? {
-            val repository = App.application.tgClient.resositrory
+            val repository = App.application.tgClient.repository
 
             if (conversation.positions.isEmpty()) {
                 return null

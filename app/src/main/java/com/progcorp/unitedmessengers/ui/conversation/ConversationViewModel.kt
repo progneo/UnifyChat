@@ -24,7 +24,7 @@ class ConversationViewModelFactory(private val conversation: Conversation) :
 class ConversationViewModel(private val conversation: Conversation) : ViewModel()  {
 
     private val _tgClient = App.application.tgClient
-    private val _tgRepository = App.application.tgClient.resositrory
+    private val _tgRepository = App.application.tgClient.repository
     private val _vkRepository = App.application.vkClient.repository
 
     private var _handler = Handler()
@@ -134,6 +134,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                     for (message in data) {
                         _newMessage.value = message
                     }
+                    markAsRead(messagesList.value!![0])
                 }
                 Constants.Messenger.TG -> {
                     val data = _tgRepository.getMessages(conversation.id, 0,20).first()
@@ -141,6 +142,20 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                         val message = Message.tgParse(item)
                         _newMessage.value = message
                     }
+                    markAsRead(messagesList.value!![0])
+                }
+            }
+        }
+    }
+
+    private fun markAsRead(message: Message) {
+        viewModelScope.launch {
+            when (conversation.messenger) {
+                Constants.Messenger.VK -> {
+                    _vkRepository.markAsRead(chat.value!!.id, message).first()
+                }
+                Constants.Messenger.TG -> {
+                    _tgRepository.markAsRead(chat.value!!.id, message).first()
                 }
             }
         }

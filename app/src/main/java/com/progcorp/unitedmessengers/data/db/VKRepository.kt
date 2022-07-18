@@ -127,6 +127,24 @@ class VKRepository (private val dataSource: VKDataSource) {
         }.flowOn(Dispatchers.IO)
     }
 
+    suspend fun markAsRead(chatId: Long, message: Message): Flow<Long> {
+        return flow {
+            val response = dataSource.markAsRead(chatId, message)
+            if (response.status == Status.SUCCESS) {
+                var result: Long = 0
+                val json = response.data?.let { JSONObject(it) }
+                if (json != null) {
+                    try {
+                        result = json.getLong("response")
+                    } catch (ex: JSONException) {
+                        Log.e("${javaClass.simpleName}.markAsRead", ex.stackTraceToString())
+                    }
+                }
+                emit(result)
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
     suspend fun getLongPollServer(): Flow<VKLongPollServer> {
         return flow {
             val response = dataSource.getLongPollServer()

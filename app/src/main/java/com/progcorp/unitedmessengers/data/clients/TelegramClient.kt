@@ -4,7 +4,6 @@ package com.progcorp.unitedmessengers.data.clients
 
 import android.util.Log
 import com.progcorp.unitedmessengers.data.db.TelegramDataSource
-import com.progcorp.unitedmessengers.data.model.MessagePhoto
 import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
 import com.progcorp.unitedmessengers.ui.conversations.telegram.TelegramConversationsViewModel
@@ -20,7 +19,7 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
     private val _authState = MutableStateFlow(TelegramAuthStatus.UNKNOWN)
     val authState: StateFlow<TelegramAuthStatus> get() = _authState
 
-    val resositrory: TelegramDataSource = TelegramDataSource(this)
+    val repository: TelegramDataSource = TelegramDataSource(this)
 
     var conversationsViewModel: TelegramConversationsViewModel? = null
     var conversationViewModel: ConversationViewModel? = null
@@ -246,7 +245,7 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
 
     suspend fun download(id: Int): String? {
         var file = id.let {
-            resositrory.getFile(it).first()
+            repository.getFile(it).first()
         }
         if (file.local?.isDownloadingCompleted == false) {
             file = downloadFile(file.id).first()
