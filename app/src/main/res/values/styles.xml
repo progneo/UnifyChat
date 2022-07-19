@@ -12,6 +12,9 @@
     <style name="CornerImageView" parent="">
         <item name="cornerSize">14dp</item>
     </style>
+    <style name="CornerImageViewPercent" parent="">
+        <item name="cornerSize">8%</item>
+    </style>
     <style name="CircleImageView" parent="">
         <item name="cornerSize">50%</item>
     </style>
@@ -88,7 +91,7 @@
         <item name="android:scaleType">fitXY</item>
         <item name="android:adjustViewBounds">true</item>
         <item name="android:src">@drawable/ic_image</item>
-        <item name="shapeAppearanceOverlay">@style/CornerImageView</item>
+        <item name="shapeAppearanceOverlay">@style/CornerImageViewPercent</item>
     </style>
 
     <style name="Widget.UM.ImageView.Message.Sticker" parent="">

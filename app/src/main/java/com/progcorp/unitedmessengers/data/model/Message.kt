@@ -287,9 +287,9 @@ data class Message(
                     val content = tgMessage.content as TdApi.MessageVideo
                     content.video.thumbnail?.let {
                         messageContent = if (it.file.local.isDownloadingCompleted) {
-                            MessagePhoto(path = it.file.local.path)
+                            MessagePhoto(text = content.caption.text, path = it.file.local.path)
                         } else {
-                            MessagePhoto(path = it.file.id.toString())
+                            MessagePhoto(text = content.caption.text, path = it.file.id.toString())
                         }
                     }
                 }

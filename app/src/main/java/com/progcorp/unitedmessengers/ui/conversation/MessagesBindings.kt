@@ -170,7 +170,7 @@ fun ImageView.bindPhoto(message: Message) {
                         }
                         Constants.Messenger.TG -> {
                             if (!(message.content as MessageSticker).path.isDigitsOnly()) {
-                                val file = File((message.content as MessagePhoto).path)
+                                val file = File((message.content as MessageSticker).path)
                                 Picasso.get().load(file).into(this)
                             }
                             else {
@@ -242,7 +242,7 @@ fun ImageView.bindPhoto(message: Message) {
                         }
                         Constants.Messenger.TG -> {
                             if (!(message.content as MessageAnimation).path.isDigitsOnly()) {
-                                val file = File((message.content as MessagePhoto).path)
+                                val file = File((message.content as MessageAnimation).path)
                                 Picasso.get().load(file).into(this)
                             }
                             else {
@@ -272,7 +272,7 @@ fun ImageView.bindPhoto(message: Message) {
                         }
                         Constants.Messenger.TG -> {
                             if (!(message.content as MessageVideo).video.isDigitsOnly()) {
-                                val file = File((message.content as MessagePhoto).path)
+                                val file = File((message.content as MessageVideo).video)
                                 Picasso.get().load(file).into(this)
                             }
                             else {
@@ -302,7 +302,7 @@ fun ImageView.bindPhoto(message: Message) {
                         }
                         Constants.Messenger.TG -> {
                             if (!(message.content as MessageVideoNote).video.isDigitsOnly()) {
-                                val file = File((message.content as MessagePhoto).path)
+                                val file = File((message.content as MessageVideoNote).video)
                                 Picasso.get().load(file).into(this)
                             }
                             else {
