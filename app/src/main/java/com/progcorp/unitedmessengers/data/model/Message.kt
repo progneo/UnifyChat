@@ -1,5 +1,6 @@
 package com.progcorp.unitedmessengers.data.model
 
+import android.util.Log
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.model.companions.Bot
 import com.progcorp.unitedmessengers.data.model.companions.Chat
@@ -19,7 +20,8 @@ data class Message(
     var timeStamp: Long = 0,
     val sender: ICompanion? = null,
     val isOutgoing: Boolean = false,
-    val replyToMessageId: Long = 0,
+    val replyToMessage: Message? = null,
+    val forwardedMessages: List<Message>? = null,
     var content: IMessageContent = MessageText(),
     var messenger: Int = 0
 ) : Serializable {
@@ -54,8 +56,9 @@ data class Message(
                 }
             }
 
-            val isOutgoing: Boolean = json.getInt("out") == 1
-            val replyToMessageId: Long = json.optJSONObject("reply_message")?.getLong("id") ?: 0
+            val isOutgoing: Boolean = json.optInt("out") == 1
+            val replyToMessage: Message? =
+                json.optJSONObject("reply_message")?.let { vkParse(it, profiles, groups) }
 
             val text = json.getString("text")
             var messageContent: IMessageContent = MessageText(text)
@@ -149,24 +152,25 @@ data class Message(
                             messageContent = MessageUnknown(text, "Подарок")
                         }
                     }
-                }
-                else if (attachmentsObject.length() > 1) {
+                } else if (attachmentsObject.length() > 1) {
                     var items = arrayListOf<String>()
                     for (i in 0 until attachmentsObject.length()) {
                         val at = attachmentsObject.getJSONObject(i)
                         when (at.getString("type")) {
                             "photo" -> {
-                                items.add(at.getJSONObject("photo")
-                                    .getJSONArray("sizes")
-                                    .getJSONObject(4)
-                                    .getString("url")
+                                items.add(
+                                    at.getJSONObject("photo")
+                                        .getJSONArray("sizes")
+                                        .getJSONObject(4)
+                                        .getString("url")
                                 )
                             }
                             "video" -> {
-                                items.add(at.getJSONObject("video")
-                                    .getJSONArray("image")
-                                    .getJSONObject(5)
-                                    .getString("url")
+                                items.add(
+                                    at.getJSONObject("video")
+                                        .getJSONArray("image")
+                                        .getJSONObject(5)
+                                        .getString("url")
                                 )
                             }
                             else -> {
@@ -181,12 +185,21 @@ data class Message(
                         MessageUnknown(text, "Вложения")
                     }
                 }
-            }
-            catch (ex: JSONException) {
+            } catch (ex: JSONException) {
+                Log.e("Message.vkParse", ex.stackTraceToString())
                 messageContent = MessageUnknown("Необработанное сообщение")
             }
 
-            return Message(id, timeStamp, sender, isOutgoing, replyToMessageId, messageContent, Constants.Messenger.VK)
+            return Message(
+                id = id,
+                timeStamp = timeStamp,
+                sender = sender,
+                isOutgoing = isOutgoing,
+                replyToMessage = replyToMessage,
+                forwardedMessages = null,
+                content = messageContent,
+                messenger = Constants.Messenger.VK
+            )
         }
 
         suspend fun tgParse(tgMessage: TdApi.Message): Message {
@@ -202,21 +215,11 @@ data class Message(
                 else -> {
                     val conversation = repository.getConversation((tgMessage.senderId as TdApi.MessageSenderChat).chatId).first()
                     when(conversation.type.constructor) {
-                        TdApi.ChatTypePrivate.CONSTRUCTOR -> {
-                            User.tgParse(repository.getUser(id).first())
-                        }
                         TdApi.ChatTypeBasicGroup.CONSTRUCTOR -> {
-                            Chat.tgParseBasicGroup(conversation, repository.getBasicGroup(
-                                (conversation.type as TdApi.ChatTypeBasicGroup).basicGroupId).first()
-                            )
+                            Chat.tgParseBasicGroup(conversation, repository.getBasicGroup((conversation.type as TdApi.ChatTypeBasicGroup).basicGroupId).first())
                         }
                         TdApi.ChatTypeSupergroup.CONSTRUCTOR -> {
-                            Chat.tgParseSupergroup(conversation, repository.getSupergroup(
-                                (conversation.type as TdApi.ChatTypeSupergroup).supergroupId).first()
-                            )
-                        }
-                        TdApi.ChatTypeSecret.CONSTRUCTOR -> {
-                            User.tgParse(repository.getUser(id).first())
+                            Chat.tgParseSupergroup(conversation, repository.getSupergroup((conversation.type as TdApi.ChatTypeSupergroup).supergroupId).first())
                         }
                         else -> {
                             Chat()
@@ -227,7 +230,16 @@ data class Message(
 
             val isOutgoing = tgMessage.isOutgoing
 
-            val replyToMessageId = tgMessage.replyToMessageId
+            val replyToMessage: Message? = if (tgMessage.replyToMessageId != 0.toLong()) {
+                tgParse(repository.getMessage(tgMessage.chatId, tgMessage.replyToMessageId).first())
+            } else {
+                null
+            }
+
+            //    senderId?.let {
+            //    repository.getMessage(tgMessage.replyToMessageId, it).first()
+            //}?.let { tgParse(it) }
+
 
             var messageContent: IMessageContent = MessageText()
 
@@ -410,7 +422,16 @@ data class Message(
                 }
             }
 
-            return Message(id, timeStamp, sender, isOutgoing, replyToMessageId, messageContent, Constants.Messenger.TG)
+            return Message(
+                id = id,
+                timeStamp = timeStamp,
+                sender = sender,
+                isOutgoing = isOutgoing,
+                replyToMessage = replyToMessage,
+                forwardedMessages = null,
+                content = messageContent,
+                messenger = Constants.Messenger.TG
+            )
         }
     }
 }

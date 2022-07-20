@@ -24,7 +24,6 @@ class ConversationViewModelFactory(private val conversation: Conversation) :
 class ConversationViewModel(private val conversation: Conversation) : ViewModel()  {
 
     private val _tgClient = App.application.tgClient
-    private val _tgRepository = App.application.tgClient.repository
     private val _vkRepository = App.application.vkClient.repository
 
     private var _handler = Handler()
@@ -36,6 +35,15 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
 
     private val _addAttachmentsPressed = MutableLiveData<Event<Unit>>()
     private val _toBottomPressed = MutableLiveData<Event<Unit>>()
+    private val _onMessagePressed = MutableLiveData<Event<Message>>()
+
+    private val _messageToReply = MutableLiveData<Event<Message>>()
+    private val _messagesToForward = MutableLiveData<Event<List<Message>>>()
+    private val _textToCopy = MutableLiveData<Event<String>>()
+    private val _messageToEdit = MutableLiveData<Event<Message>>()
+    private val _messageToDelete = MutableLiveData<Event<Message>>()
+
+    val selectedMessage = MutableLiveData<Message?>()
 
     val newMessageText = MutableLiveData<String?>()
     val messagesList = MediatorLiveData<MutableList<Message>>()
@@ -43,6 +51,13 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
 
     val toBottomPressed: LiveData<Event<Unit>> = _toBottomPressed
     val addAttachmentPressed: LiveData<Event<Unit>> = _addAttachmentsPressed
+    val onMessagePressed: LiveData<Event<Message>> = _onMessagePressed
+
+    val messageToReply: LiveData<Event<Message>> = _messageToReply
+    val messagesToForward: LiveData<Event<List<Message>>> = _messagesToForward
+    val textToCopy: LiveData<Event<String>> = _textToCopy
+    val messageToEdit: LiveData<Event<Message>> = _messageToEdit
+    val messageToDelete: LiveData<Event<Message>> = _messageToDelete
 
     init {
         messagesList.addSource(_addedMessage) { newMessage ->
@@ -111,7 +126,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                 }
                 Constants.Messenger.TG -> {
                     if (messagesList.value != null) {
-                        val data = _tgRepository.getMessages(
+                        val data = _tgClient.repository.getMessages(
                             conversation.id,
                             messagesList.value!![offset].id,
                             20
@@ -136,14 +151,14 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                     }
                 }
                 Constants.Messenger.TG -> {
-                    val data = _tgRepository.getMessages(conversation.id, 0,20).first()
+                    val data = _tgClient.repository.getMessages(conversation.id, 0,20).first()
                     for (item in data) {
                         val message = Message.tgParse(item)
                         _newMessage.value = message
                     }
                 }
             }
-            if (messagesList.value!!.size != 0) {
+            if (messagesList.value != null) {
                 markAsRead(messagesList.value!![0])
             }
         }
@@ -156,7 +171,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                     _vkRepository.markAsRead(chat.value!!.id, message).first()
                 }
                 Constants.Messenger.TG -> {
-                    _tgRepository.markAsRead(chat.value!!.id, message).first()
+                    _tgClient.repository.markAsRead(chat.value!!.id, message).first()
                 }
             }
         }
@@ -169,7 +184,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                     timeStamp = Date().time,
                     sender = chat.value!!.companion,
                     isOutgoing = true,
-                    replyToMessageId = 0,
+                    replyToMessage = null,
                     content = MessageText(newMessageText.value!!)
                 )
                 newMessageText.value = null
@@ -181,7 +196,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                         _newMessage.value?.id = data
                     }
                     Constants.Messenger.TG -> {
-                        val data = _tgRepository.sendMessage(chat.value!!.id, message).first()
+                        val data = _tgClient.repository.sendMessage(chat.value!!.id, message).first()
                         _newMessage.value = Message.tgParse(data)
                     }
                 }
@@ -217,6 +232,31 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                 markAsRead(_newMessage.value!!)
             }
         }
+    }
+
+    fun onMessagePressed(message: Message) {
+        selectedMessage.value = message
+        _onMessagePressed.value = Event(message)
+    }
+
+    fun forwardMessage() {
+        _messagesToForward.value = Event(listOf(selectedMessage.value!!))
+    }
+
+    fun replyMessage() {
+        _messageToReply.value = Event(selectedMessage.value!!)
+    }
+
+    fun copyTextToClipboard() {
+        _textToCopy.value = Event(selectedMessage.value!!.content.text)
+    }
+
+    fun editMessage() {
+        _messageToEdit.value = Event(selectedMessage.value!!)
+    }
+
+    fun deleteMessage() {
+        _messageToDelete.value = Event(selectedMessage.value!!)
     }
 
     companion object {

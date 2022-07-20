@@ -32,7 +32,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="bottom"
-            style="@style/Widget.UM.Layout.Message">
+            style="@style/Widget.UM.Layout.Message"
+            android:onClick="@{() -> viewmodel.onMessagePressed(message)}">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo_sender"
@@ -40,7 +41,6 @@
                 app:bind_image_sender="@{message.sender}"
                 style="@style/Widget.UM.ImageView.Message.Author"
                 tools:src="@drawable/ic_account_circle" />
-
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo_sticker_left"

@@ -1,17 +1,23 @@
 package com.progcorp.unitedmessengers.ui.conversation
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.snackbar.Snackbar
+import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.EventObserver
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.ActivityConversationBinding
+import com.progcorp.unitedmessengers.ui.conversation.bottomsheet.BottomSheetFragment
 import com.progcorp.unitedmessengers.util.functionalityNotAvailable
 import kotlinx.android.synthetic.main.activity_conversation.*
 import kotlinx.android.synthetic.main.fragment_telegram.view.*
-import java.lang.Exception
 
 class ConversationActivity : AppCompatActivity() {
     companion object {
@@ -29,6 +35,7 @@ class ConversationActivity : AppCompatActivity() {
     private var _listAdapter: MessagesListAdapter? = null
     private var _listAdapterObserver: RecyclerView.AdapterDataObserver? = null
     private var _toolbar: MaterialToolbar? = null
+    private var _bottomSheet: BottomSheetFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +60,24 @@ class ConversationActivity : AppCompatActivity() {
         })
         viewModel.toBottomPressed.observe(this, EventObserver {
             _viewDataBinding?.recyclerView?.scrollToPosition(0)
+        })
+        viewModel.onMessagePressed.observe(this, EventObserver {
+            showBottomSheet(viewModel)
+        })
+        viewModel.messageToReply.observe(this, EventObserver {
+            functionalityNotAvailable(this)
+        })
+        viewModel.messagesToForward.observe(this, EventObserver {
+            functionalityNotAvailable(this)
+        })
+        viewModel.textToCopy.observe(this, EventObserver {
+            copyTextToClipboard(it)
+        })
+        viewModel.messageToDelete.observe(this, EventObserver {
+            functionalityNotAvailable(this)
+        })
+        viewModel.messageToEdit.observe(this, EventObserver {
+            functionalityNotAvailable(this)
         })
     }
 
@@ -100,6 +125,21 @@ class ConversationActivity : AppCompatActivity() {
         else {
             throw Exception("The viewmodel is not initialized")
         }
+    }
+
+    private fun showBottomSheet(viewModel: ConversationViewModel) {
+        _bottomSheet = BottomSheetFragment(viewModel)
+        _bottomSheet!!.show(supportFragmentManager, "Message bottom sheet")
+    }
+
+    private fun copyTextToClipboard(text: String) {
+        _bottomSheet!!.dismiss()
+        _bottomSheet = null
+        val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText("Message text", text)
+        clipboardManager.setPrimaryClip(clipData)
+
+        Toast.makeText(applicationContext, R.string.copied_toast, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {

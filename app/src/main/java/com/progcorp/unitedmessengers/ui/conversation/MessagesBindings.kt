@@ -2,11 +2,10 @@
 
 package com.progcorp.unitedmessengers.ui.conversation
 
-import android.graphics.BitmapFactory
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.text.isDigitsOnly
@@ -149,6 +148,50 @@ fun TextView.bindNameInChatText(message: Message, conversation: Conversation) {
             is Chat -> {
                 this.text = message.sender.title
             }
+        }
+    }
+}
+
+@BindingAdapter("bind_reply_name")
+fun TextView.bindReplyName(message: Message?) {
+    if (message != null) {
+        this.text = message.sender?.getName() ?: "Отправитель"
+    }
+}
+
+@BindingAdapter("bind_replied_message")
+fun View.bindRepliedMessage(message: Message) {
+    this.visibility = if (message.replyToMessage != null) View.VISIBLE else View.GONE
+}
+
+@BindingAdapter("bind_reply_text")
+fun TextView.bindReplyText(message: Message?) {
+    if (message != null) {
+        val messageContent = message.content
+        if (messageContent.text == "") {
+            val color = TypedValue()
+            context.theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, color, true)
+            this.setTextColor(color.data)
+
+            when (messageContent) {
+                is MessageSticker -> this.text = "Стикер"
+                is MessagePoll -> this.text = "Голосование"
+                is MessagePhoto -> this.text = "Фото"
+                is MessageVideoNote -> this.text = "Видео-сообщение"
+                is MessageVoiceNote -> this.text = "Голосовое сообщение"
+                is MessageVideo -> this.text = "Видео"
+                is MessageAnimation -> this.text = "GIF"
+                is MessageAnimatedEmoji -> this.text = messageContent.emoji
+                is MessageCollage -> this.text = "Коллаж"
+                is MessageDocument -> this.text = "Документ"
+                is MessageLocation -> this.text = "Местоположение"
+                else -> {
+                    this.text = "Необработанное сообщение"
+                }
+            }
+        }
+        else {
+            this.text = messageContent.text
         }
     }
 }
@@ -443,5 +486,28 @@ fun View.bindShouldMessageShowTimeText(message: Message, viewModel: Conversation
     }
     else {
         this.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("bind_message_copy_viewmodel")
+fun Button.bindMessageCopyViewModel(viewModel: ConversationViewModel) {
+    val message = viewModel.selectedMessage.value
+    if (message != null) {
+        this.visibility = if (message.content.text == "") View.GONE else View.VISIBLE
+    }
+}
+
+@BindingAdapter("bind_message_edit_viewmodel")
+fun Button.bindMessageEditViewModel(viewModel: ConversationViewModel) {
+    val message = viewModel.selectedMessage.value
+    if (message != null) {
+        if (!message.isOutgoing) {
+            this.visibility = View.GONE
+        }
+        else {
+            val messageTimestamp = message.timeStamp
+            val currentTimestamp = System.currentTimeMillis()
+            this.visibility = if (currentTimestamp - messageTimestamp > 86400000) View.GONE else View.VISIBLE
+        }
     }
 }

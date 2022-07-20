@@ -57,4 +57,8 @@ data class Chat(
             return Chat(id, title, photo, membersCount, Constants.Messenger.TG)
         }
     }
+
+    override fun getName(): String {
+        return title
+    }
 }

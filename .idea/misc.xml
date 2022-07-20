@@ -113,6 +113,7 @@
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/arrow-right.xml" value="0.3735" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/arrow_right.xml" value="0.3735" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/background_input.xml" value="0.3735" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/custom_popup_background.xml" value="0.1255" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/east-48px.xml" value="0.3735" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/ic_arrow_back.xml" value="0.3015" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/ic_arrow_down.xml" value="0.3015" />
@@ -127,9 +128,15 @@
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/ic_baseline_image_24.xml" value="0.3735" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/ic_baseline_login_24.xml" value="0.314" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/ic_baseline_send_24.xml" value="0.314" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/ic_copy.xml" value="0.2575" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/ic_delete.xml" value="0.3015" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/ic_developer_mode.xml" value="0.3015" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/ic_edi.xml" value="0.3015" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/ic_edit.xml" value="0.1255" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/ic_forward.xml" value="0.3015" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/ic_icon_telegram.xml" value="0.314" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/ic_launcher_background.xml" value="0.384" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/ic_reply.xml" value="0.3015" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/inset_attach_file.xml" value="0.314" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/inset_return.xml" value="0.384" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/inset_send.xml" value="0.314" />
@@ -138,7 +145,9 @@
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/online_dot.xml" value="0.314" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/online_stroke.xml" value="0.314" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/regular_button_background.xml" value="0.314" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/rounded_bottom_sheet.xml" value="0.3015" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/rounded_edittext.xml" value="0.314" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/splashscreen.xml" value="0.3015" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/transparent_gradient.xml" value="0.3015" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/transparent_gradient_bt.xml" value="0.3015" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/unread_messages.xml" value="0.314" />
@@ -147,6 +156,7 @@
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/activity_main.xml" value="0.2975630611372381" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/activity_telegram_auth.xml" value="0.5" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/activity_vk_auth.xml" value="0.1748610517315092" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/bottom_sheet_message.xml" value="0.41164658634538154" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/fragment_telegram.xml" value="0.4514749893116717" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/fragment_vk.xml" value="0.33" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/list_item_conversation.xml" value="0.67" />
@@ -157,8 +167,11 @@
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/list_item_message_photo_out.xml" value="0.67" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/list_item_message_sticker.xml" value="0.5" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/list_item_message_sticker_out.xml" value="0.5" />
-        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/list_item_message_text.xml" value="0.5" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/list_item_message_text.xml" value="0.394990366088632" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/list_item_message_text_out.xml" value="0.5" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/list_item_replied_message.xml" value="0.2860196665241556" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/list_item_replyed_message.xml" value="0.4506199230440359" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/menu/pupup_menu_message.xml" value="0.4506199230440359" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.5205" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.314" />
       </map>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:orientation="vertical"
+        android:padding="16dp">
+        <Button
+            android:id="@+id/button_reply"
+            android:text="@string/reply"
+            app:icon="@drawable/ic_reply"
+            style="@style/Widget.UM.Button.BottomSheet"
+            android:onClick="@{() -> viewmodel.replyMessage()}"/>
+        <Button
+            android:id="@+id/button_forward"
+            android:text="@string/forward"
+            app:icon="@drawable/ic_forward"
+            style="@style/Widget.UM.Button.BottomSheet"
+            android:onClick="@{() -> viewmodel.forwardMessage()}"/>
+        <Button
+            android:id="@+id/button_copy"
+            android:text="@string/copy"
+            app:icon="@drawable/ic_copy"
+            style="@style/Widget.UM.Button.BottomSheet"
+            app:bind_message_copy_viewmodel="@{viewmodel}"
+            android:onClick="@{() -> viewmodel.copyTextToClipboard()}"/>
+        <Button
+            android:id="@+id/button_edit"
+            android:text="@string/edit"
+            app:icon="@drawable/ic_edit"
+            style="@style/Widget.UM.Button.BottomSheet"
+            app:bind_message_edit_viewmodel="@{viewmodel}"
+            android:onClick="@{() -> viewmodel.editMessage()}"/>
+        <Button
+            android:id="@+id/button_delete"
+            android:text="@string/delete"
+            app:icon="@drawable/ic_delete"
+            style="@style/Widget.UM.Button.BottomSheet.Red"
+            android:onClick="@{() -> viewmodel.deleteMessage()}"/>
+    </LinearLayout>
+</layout>

@@ -39,4 +39,10 @@
     <string name="in_develop">Данная функция находится в разработке</string>
     <string name="ok">Ок</string>
     <string name="to_bottom">В конец диалога</string>
+    <string name="delete">Удалить</string>
+    <string name="reply">Ответить</string>
+    <string name="forward">Переслать</string>
+    <string name="copy">Скопировать</string>
+    <string name="edit">Редактировать</string>
+    <string name="copied_toast">Скопировано</string>
 </resources>

@@ -1,12 +1,7 @@
 package com.progcorp.unitedmessengers.data.model.companions
 
-import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.util.Constants
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONObject
 
@@ -37,5 +32,9 @@ data class Bot(
             }
             return Bot(id, title, photo, Constants.Messenger.TG)
         }
+    }
+
+    override fun getName(): String {
+        return title
     }
 }

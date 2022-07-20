@@ -1,13 +1,7 @@
 package com.progcorp.unitedmessengers.data.model.companions
 
-import android.util.Log
-import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.util.Constants
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 import org.json.JSONObject
 
@@ -85,5 +79,9 @@ data class User(
                 Constants.Messenger.TG
             )
         }
+    }
+
+    override fun getName(): String {
+        return "$firstName $lastName"
     }
 }

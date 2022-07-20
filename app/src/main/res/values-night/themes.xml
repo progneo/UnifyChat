@@ -29,11 +29,14 @@
         <item name="colorOutline">@color/outlineDark</item>
         <item name="colorSurfaceVariant">@color/surfaceVariantDark</item>
         <item name="colorOnSurfaceVariant">@color/onSurfaceVariantDark</item>
+        <item name="android:colorBackground">@color/backgroundDark</item>
         <!-- Status bar. -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
         <!-- Navigation bar. -->
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightNavigationBar">false</item>
+        <!-- Bottom sheet. -->
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.UM.BottomSheetDialog</item>
     </style>
 </resources>

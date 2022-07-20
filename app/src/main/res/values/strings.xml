@@ -44,4 +44,10 @@
     <string name="in_develop">This feature is under development</string>
     <string name="ok">OK</string>
     <string name="to_bottom">Scroll to bottom</string>
+    <string name="delete">Delete</string>
+    <string name="reply">Reply</string>
+    <string name="forward">Forward</string>
+    <string name="copy">Copy</string>
+    <string name="edit">Edit</string>
+    <string name="copied_toast">Copied</string>
 </resources>

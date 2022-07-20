@@ -32,7 +32,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            style="@style/Widget.UM.Layout.Message">
+            style="@style/Widget.UM.Layout.Message"
+            android:onClick="@{() -> viewmodel.onMessagePressed(message)}">
 
             <TextView
                 android:id="@+id/text_time_right"

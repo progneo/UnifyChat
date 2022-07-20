@@ -31,7 +31,8 @@
             android:id="@+id/layout_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.UM.Layout.Message">
+            style="@style/Widget.UM.Layout.Message"
+            android:onClick="@{() -> viewmodel.onMessagePressed(message)}">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo_sender"
@@ -54,6 +55,8 @@
                     app:bind_conversation="@{viewmodel.chat}"
                     style="@style/Widget.UM.TextView.Message.Author"
                     tools:text="Имя Фамилия"/>
+
+                <include layout="@layout/list_item_replied_message" app:message="@{message}"/>
 
                 <TextView
                     android:id="@+id/text_message_left"

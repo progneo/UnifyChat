@@ -7,4 +7,5 @@ interface ICompanion : Serializable {
     val id: Long
     var photo: String
     var messenger: Int
+    fun getName(): String
 }
