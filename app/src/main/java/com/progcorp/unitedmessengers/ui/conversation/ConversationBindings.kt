@@ -15,17 +15,3 @@ fun View.bindReplyMessageLayout(message: Message?) {
     }
 }
 
-@BindingAdapter("bind_reply_name")
-fun TextView.bindReplyMessageName(message: Message?) {
-    if (message != null) {
-        this.text = message.content.text
-    }
-}
-
-@BindingAdapter("bind_reply_text")
-fun TextView.bindReplyMessageText(message: Message?) {
-    if (message != null) {
-        this.text = message.content.text
-    }
-}
-

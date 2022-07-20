@@ -3,10 +3,12 @@ package com.progcorp.unitedmessengers.ui.conversation
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Canvas
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.snackbar.Snackbar
@@ -15,6 +17,8 @@ import com.progcorp.unitedmessengers.data.EventObserver
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.ActivityConversationBinding
 import com.progcorp.unitedmessengers.ui.conversation.bottomsheet.BottomSheetFragment
+import com.progcorp.unitedmessengers.ui.conversation.swipecontroller.MessageSwipeController
+import com.progcorp.unitedmessengers.ui.conversation.swipecontroller.SwipeControllerActions
 import com.progcorp.unitedmessengers.util.functionalityNotAvailable
 import kotlinx.android.synthetic.main.activity_conversation.*
 import kotlinx.android.synthetic.main.fragment_telegram.view.*
@@ -122,6 +126,17 @@ class ConversationActivity : AppCompatActivity() {
                     }
                 }
             })
+
+            if (viewModel.chat.value!!.canWrite) {
+                val messagesSwipeController = MessageSwipeController(this, object : SwipeControllerActions {
+                    override fun replyToMessage(position: Int) {
+                        viewModel.replyMessage.value = viewModel.messagesList.value!![position]
+                    }
+                })
+
+                val itemTouchHelper = ItemTouchHelper(messagesSwipeController)
+                itemTouchHelper.attachToRecyclerView(_viewDataBinding?.recyclerView)
+            }
         }
         else {
             throw Exception("The viewmodel is not initialized")
