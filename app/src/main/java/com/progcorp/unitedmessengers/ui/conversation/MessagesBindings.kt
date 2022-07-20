@@ -497,6 +497,14 @@ fun Button.bindMessageCopyViewModel(viewModel: ConversationViewModel) {
     }
 }
 
+@BindingAdapter("bind_message_reply_viewmodel")
+fun Button.bindMessageReplyViewModel(viewModel: ConversationViewModel) {
+    val chat = viewModel.chat.value
+    if (chat != null) {
+        this.visibility = if (chat.canWrite) View.VISIBLE else View.GONE
+    }
+}
+
 @BindingAdapter("bind_message_edit_viewmodel")
 fun Button.bindMessageEditViewModel(viewModel: ConversationViewModel) {
     val message = viewModel.selectedMessage.value

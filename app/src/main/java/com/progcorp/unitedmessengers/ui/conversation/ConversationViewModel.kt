@@ -43,6 +43,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
     private val _messageToEdit = MutableLiveData<Event<Message>>()
     private val _messageToDelete = MutableLiveData<Event<Message>>()
 
+    val replyMessage = MutableLiveData<Message?>()
     val selectedMessage = MutableLiveData<Message?>()
 
     val newMessageText = MutableLiveData<String?>()
@@ -102,17 +103,6 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
             }
         }
         loadNewMessages()
-    }
-
-    fun stopListeners() {
-        when (conversation.messenger) {
-            Constants.Messenger.VK -> {
-                _handler.removeCallbacks(_messagesGetter)
-            }
-            Constants.Messenger.TG -> {
-                _tgClient.conversationViewModel = null
-            }
-        }
     }
 
     private fun loadSelectedMessages(offset: Int) {
@@ -177,6 +167,17 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
         }
     }
 
+    fun stopListeners() {
+        when (conversation.messenger) {
+            Constants.Messenger.VK -> {
+                _handler.removeCallbacks(_messagesGetter)
+            }
+            Constants.Messenger.TG -> {
+                _tgClient.conversationViewModel = null
+            }
+        }
+    }
+
     fun sendMessagePressed() {
         viewModelScope.launch {
             if (!newMessageText.value.isNullOrBlank()) {
@@ -184,10 +185,11 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                     timeStamp = Date().time,
                     sender = chat.value!!.companion,
                     isOutgoing = true,
-                    replyToMessage = null,
+                    replyToMessage = replyMessage.value,
                     content = MessageText(newMessageText.value!!)
                 )
                 newMessageText.value = null
+                replyMessage.value = null
 
                 when (conversation.messenger) {
                     Constants.Messenger.VK -> {
@@ -243,8 +245,11 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
         _messagesToForward.value = Event(listOf(selectedMessage.value!!))
     }
 
-    fun replyMessage() {
-        _messageToReply.value = Event(selectedMessage.value!!)
+    fun replyOnMessage() {
+        selectedMessage.value?.let {
+            replyMessage.value = it
+            _messageToReply.value = Event(it)
+        }
     }
 
     fun copyTextToClipboard() {
@@ -257,6 +262,10 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
 
     fun deleteMessage() {
         _messageToDelete.value = Event(selectedMessage.value!!)
+    }
+
+    fun cancelReply() {
+        replyMessage.value = null
     }
 
     companion object {

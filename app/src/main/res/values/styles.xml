@@ -19,6 +19,22 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <!-- TextViews. -->
+    <style name="Widget.UM.TextView" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:autoLink">web</item>
+        <item name="android:linksClickable">false</item>
+        <item name="android:textColorLink">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Widget.UM.TextView.Reply">
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:layout_marginHorizontal">6dp</item>
+    </style>
+
     <!-- Message layouts. -->
     <style name="Widget.UM.Layout.Message" parent="">
         <item name="android:titleMarginStart">6dp</item>
@@ -42,20 +58,20 @@
         <item name="android:orientation">vertical</item>
     </style>
 
+    <style name="Widget.UM.Layout.Message.Reply" parent="">
+        <item name="android:layout_marginHorizontal">12dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
     <style name="Widget.UM.Layout.Message.Block.Out" parent="Widget.UM.Layout.Message.Block">
         <item name="android:backgroundTint">?attr/colorPrimaryContainer</item>
     </style>
 
     <!-- Message TextViews. -->
-    <style name="Widget.UM.TextView.Message.Text" parent="Widget.MaterialComponents.TextView">
-        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
-        <item name="android:textAppearance">?attr/textAppearanceBodyMedium</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:maxWidth">@dimen/_180sdp</item>
+    <style name="Widget.UM.TextView.Message.Text" parent="Widget.UM.TextView">
         <item name="android:layout_marginHorizontal">12dp</item>
-        <item name="android:autoLink">web</item>
-        <item name="android:linksClickable">false</item>
-        <item name="android:textColorLink">?attr/colorPrimary</item>
+        <item name="android:maxWidth">@dimen/_180sdp</item>
     </style>
 
     <style name="Widget.UM.TextView.Message.Author" parent="Widget.UM.TextView.Message.Text">

@@ -74,7 +74,7 @@
                 app:itemAnimator="@{null}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:reverseLayout="true"
-                tools:listitem="@layout/list_item_message_sticker" />
+                tools:listitem="@layout/list_item_message_photo" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/float_button"
@@ -94,6 +94,53 @@
                 app:fabSize="mini"
                 tools:visibility="visible" />
         </RelativeLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.UM.Layout.Message.Reply"
+            android:visibility="gone"
+            app:bind_reply_message="@{viewmodel.replyMessage}"
+            tools:visibility="visible">
+
+            <View
+                android:layout_width="3dp"
+                android:layout_height="match_parent"
+                android:background="?attr/colorTertiary"/>
+            <LinearLayout
+                android:id="@+id/layout_message"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/text_sender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    app:bind_reply_name="@{viewmodel.replyMessage}"
+                    style="@style/Widget.UM.TextView.Message.Author.Reply"
+                    tools:text="Имя Фамилия"/>
+
+                <TextView
+                    android:id="@+id/text_message_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:bind_reply_text="@{viewmodel.replyMessage}"
+                    style="@style/Widget.UM.TextView.Reply"
+                    tools:text="Ответ на сообщение"/>
+            </LinearLayout>
+
+            <Button
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="end"
+                android:background="@drawable/inset_cancel"
+                android:onClick="@{() -> viewmodel.cancelReply()}"
+                app:backgroundTint="?attr/colorTertiary" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/user_input"
@@ -131,7 +178,7 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@drawable/inset_send"

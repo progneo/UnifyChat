@@ -65,7 +65,8 @@ class ConversationActivity : AppCompatActivity() {
             showBottomSheet(viewModel)
         })
         viewModel.messageToReply.observe(this, EventObserver {
-            functionalityNotAvailable(this)
+            _bottomSheet!!.dismiss()
+            _bottomSheet = null
         })
         viewModel.messagesToForward.observe(this, EventObserver {
             functionalityNotAvailable(this)

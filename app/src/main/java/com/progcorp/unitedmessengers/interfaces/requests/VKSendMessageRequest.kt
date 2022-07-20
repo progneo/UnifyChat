@@ -12,6 +12,7 @@ interface VKSendMessageRequest {
         @Query("peer_id") peer_id: Long,
         @Query("message") message: String,
         @Query("random_id") random_id: Int,
+        @Query("reply_to") reply_to: Long,
         @Query("lang") lang: Int
     ): Response<String>
 }

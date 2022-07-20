@@ -20,7 +20,8 @@
             android:text="@string/reply"
             app:icon="@drawable/ic_reply"
             style="@style/Widget.UM.Button.BottomSheet"
-            android:onClick="@{() -> viewmodel.replyMessage()}"/>
+            app:bind_message_reply_viewmodel="@{viewmodel}"
+            android:onClick="@{() -> viewmodel.replyOnMessage()}"/>
         <Button
             android:id="@+id/button_forward"
             android:text="@string/forward"

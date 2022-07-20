@@ -88,6 +88,7 @@ class VKDataSource (private val client: VKClient) {
                     chatId,
                     (message.content as MessageText).text,
                     0,
+                    message.replyToMessage?.id ?: 0,
                     0
                 )
             }

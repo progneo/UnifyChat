@@ -160,7 +160,7 @@ class TelegramDataSource (private val client: TelegramClient) {
             client.client.send(TdApi.SendMessage(
                 chatId,
                 0,
-                0,
+                message.replyToMessage?.id ?: 0,
                 null,
                 null,
                 input)) {
