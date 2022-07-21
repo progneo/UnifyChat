@@ -43,9 +43,10 @@ class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
     val toTopPressed: LiveData<Event<Unit>> = _toTopPressed
 
     var selectedConversation: LiveData<Event<Conversation>> = _selectedConversation
-    val conversationsList = MediatorLiveData<MutableList<Conversation>>()
     val loginState: LiveData<Boolean> = _loginState
     val user: LiveData<User?> = _user
+
+    override val conversationsList = MediatorLiveData<MutableList<Conversation>>()
 
     init {
         conversationsList.addSource(_updatedConversation) { newConversation ->

@@ -236,7 +236,7 @@ fun ImageView.bindPhoto(message: Message) {
                                         .load(file)
                                         .placeholder(null)
                                         .into(this@bindPhoto)
-                                } catch (exception: java.lang.Exception) {}
+                                } catch (exception: Exception) {}
                             }
                         }
                     }
@@ -286,7 +286,7 @@ fun ImageView.bindPhoto(message: Message) {
                                             .override(it.width, it.height)
                                             .centerCrop()
                                             .into(this@bindPhoto)
-                                    } catch (exception: java.lang.Exception) {}
+                                    } catch (exception: Exception) {}
                                 }
                             }
                         }

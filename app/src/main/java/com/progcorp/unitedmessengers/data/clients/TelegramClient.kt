@@ -1,12 +1,17 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package com.progcorp.unitedmessengers.data.clients
 
 import android.util.Log
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.progcorp.unitedmessengers.data.db.TelegramDataSource
+import com.progcorp.unitedmessengers.data.model.Conversation
+import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
 import com.progcorp.unitedmessengers.ui.conversations.telegram.TelegramConversationsViewModel
+import com.progcorp.unitedmessengers.util.addFrontItem
+import com.progcorp.unitedmessengers.util.addNewItem
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
@@ -14,12 +19,14 @@ import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 
 class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Client.ResultHandler {
-    lateinit var client: Client
-
     private val _authState = MutableStateFlow(TelegramAuthStatus.UNKNOWN)
     val authState: StateFlow<TelegramAuthStatus> get() = _authState
 
+    var client: Client? = null
+
     val repository: TelegramDataSource = TelegramDataSource(this)
+
+    val conversationsList = MediatorLiveData<MutableList<Conversation>>()
 
     var conversationsViewModel: TelegramConversationsViewModel? = null
     var conversationViewModel: ConversationViewModel? = null
@@ -30,13 +37,11 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
 
     private fun setupClient() {
         client = Client.create(this, null, null)!!
-        client.send(TdApi.SetLogVerbosityLevel(1), this)
-        client.send(TdApi.SetTdlibParameters(tdLibParameters), this)
-        client.send(TdApi.GetAuthorizationState(), this)
-    }
-
-    fun close() {
-        client.close()
+        client?.let {
+            it.send(TdApi.SetLogVerbosityLevel(1), this)
+            it.send(TdApi.SetTdlibParameters(tdLibParameters), this)
+            it.send(TdApi.GetAuthorizationState(), this)
+        }
     }
 
     private val requestScope = CoroutineScope(Dispatchers.IO)
@@ -53,25 +58,92 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
             }
 
             TdApi.UpdateUserStatus.CONSTRUCTOR -> {
-                conversationsViewModel?.updateOnline(data as TdApi.UpdateUserStatus)
-                conversationViewModel?.updateOnline(data as TdApi.UpdateUserStatus)
+                val update = (data as TdApi.UpdateUserStatus)
+                MainScope().launch {
+                    val item = conversationsList.value?.find {
+                        it.companion is User && it.companion.id == update.userId
+                    }
+                    item?.tgParseOnlineStatus(update)
+                    conversationsList.value?.indexOf(item)?.let {
+                        conversationsViewModel?.updateOnline(it)
+                    }
+
+                }
+                conversationViewModel?.updateOnline(update)
             }
 
             TdApi.UpdateChatLastMessage.CONSTRUCTOR -> {
-                conversationsViewModel?.updateLastMessage(data as TdApi.UpdateChatLastMessage)
+                val update = (data as TdApi.UpdateChatLastMessage)
+                MainScope().launch {
+                    val item = conversationsList.value?.find {
+                        it.id == update.chatId
+                    }
+                    if (item != null) {
+                        conversationsList.value?.indexOf(item)?.let { prev ->
+                            item.tgParseLastMessage(update)
+                            conversationsList.value?.sortByDescending {
+                                it.lastMessage?.timeStamp
+                            }
+                            conversationsList.value?.indexOf(item)?.let { new ->
+                                conversationsViewModel?.updateLastMessage(prev, new)
+                            }
+                        }
+                    }
+                }
             }
 
             TdApi.UpdateChatReadInbox.CONSTRUCTOR -> {
-                conversationsViewModel?.updateReadInbox(data as TdApi.UpdateChatReadInbox)
+                val update = (data as TdApi.UpdateChatReadInbox)
+                MainScope().launch {
+                    val item = conversationsList.value?.find {
+                        it.id == update.chatId
+                    }
+                    item?.unreadCount = update.unreadCount
+                    conversationsList.value?.indexOf(item)?.let {
+                        conversationsViewModel?.updateReadInbox(it)
+                    }
+                }
             }
 
             TdApi.UpdateNewChat.CONSTRUCTOR -> {
-                conversationsViewModel?.addNewChat(data as TdApi.UpdateNewChat)
+                val update = (data as TdApi.UpdateNewChat)
+                MainScope().launch {
+                    val conversation = conversationsList.value?.find {
+                        it.id == update.chat.id
+                    }
+                    if (conversation == null) {
+                        Conversation.tgParse(update.chat)?.let { chat ->
+                            conversationsList.addFrontItem(chat)
+                            conversationsList.value?.let {
+                                it.sortByDescending { conversation ->
+                                    conversation.lastMessage?.timeStamp
+                                }
+                                conversationsViewModel?.addNewChat(it.indexOf(chat))
+                            }
+                        }
+                    }
+                }
             }
 
             TdApi.UpdateNewMessage.CONSTRUCTOR -> {
-                conversationsViewModel?.updateNewMessage(data as TdApi.UpdateNewMessage)
-                conversationViewModel?.newMessage(data as TdApi.UpdateNewMessage)
+                val update = (data as TdApi.UpdateNewMessage)
+                MainScope().launch {
+                    val item = conversationsList.value?.find {
+                        it.id == update.message.chatId
+                    }
+                    if (item != null) {
+                        conversationsList.value?.indexOf(item)?.let { prev ->
+                            item.tgParseNewMessage(update)
+                            conversationsList.value?.sortByDescending {
+                                it.lastMessage?.timeStamp
+                            }
+                            conversationsList.value?.indexOf(item)?.let { new ->
+                                conversationsViewModel?.updateNewMessage(prev, new)
+                            }
+                        }
+                    }
+                }
+                conversationViewModel?.newMessage(data)
             }
             //TODO:
             TdApi.UpdateSupergroupFullInfo.CONSTRUCTOR -> {
@@ -94,7 +166,7 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
     }
 
     fun logout() {
-        client.send(TdApi.LogOut(), this)
+        client?.send(TdApi.LogOut(), this)
         setupClient()
     }
 
@@ -102,39 +174,8 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
         requestScope.launch { job() }
     }
 
-    fun startAuthentication() {
-        Log.d(TAG, "startAuthentication called")
-        when (_authState.value) {
-            TelegramAuthStatus.AUTHENTICATED -> {
-                Log.w(TAG, "Start authentication called but client already authenticated. State: ${_authState.value}.")
-                return
-            }
-            TelegramAuthStatus.WAIT_FOR_CODE -> {
-                Log.w(TAG, "Restart authentication. State: ${_authState.value}.")
-                logout()
-            }
-            TelegramAuthStatus.WAIT_FOR_PASSWORD -> {
-                Log.w(TAG, "Restart authentication. State: ${_authState.value}.")
-                logout()
-            }
-            else -> {
-                Log.w(TAG, "Start authentication. State: ${_authState.value}.")
-            }
-        }
-
-        doAsync {
-            client.send(TdApi.SetTdlibParameters(tdLibParameters)) {
-                Log.d(TAG, "SetTdlibParameters result: $it")
-                when (it.constructor) {
-                    TdApi.Ok.CONSTRUCTOR -> {
-                        //result.postValue(true)
-                    }
-                    TdApi.Error.CONSTRUCTOR -> {
-                        //result.postValue(false)
-                    }
-                }
-            }
-        }
+    private fun doAsyncSuspend(job: suspend () -> Unit) {
+        requestScope.launch { job() }
     }
 
     fun insertPhoneNumber(phoneNumber: String) {
@@ -146,7 +187,7 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
             false,
             arrayOf(String())
         )
-        client.send(TdApi.SetAuthenticationPhoneNumber(phoneNumber, settings)) {
+        client?.send(TdApi.SetAuthenticationPhoneNumber(phoneNumber, settings)) {
             Log.d("TelegramClient", "phoneNumber. result: $it")
             when (it.constructor) {
                 TdApi.Ok.CONSTRUCTOR -> {
@@ -162,14 +203,10 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
     fun insertCode(code: String) {
         Log.d("TelegramClient", "code: $code")
         doAsync {
-            client.send(TdApi.CheckAuthenticationCode(code)) {
+            client?.send(TdApi.CheckAuthenticationCode(code)) {
                 when (it.constructor) {
-                    TdApi.Ok.CONSTRUCTOR -> {
-
-                    }
-                    TdApi.Error.CONSTRUCTOR -> {
-
-                    }
+                    TdApi.Ok.CONSTRUCTOR -> {}
+                    TdApi.Error.CONSTRUCTOR -> {}
                 }
             }
         }
@@ -178,14 +215,10 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
     fun insertPassword(password: String) {
         Log.d("TelegramClient", "inserting password")
         doAsync {
-            client.send(TdApi.CheckAuthenticationPassword(password)) {
+            client?.send(TdApi.CheckAuthenticationPassword(password)) {
                 when (it.constructor) {
-                    TdApi.Ok.CONSTRUCTOR -> {
-
-                    }
-                    TdApi.Error.CONSTRUCTOR -> {
-
-                    }
+                    TdApi.Ok.CONSTRUCTOR -> {}
+                    TdApi.Error.CONSTRUCTOR -> {}
                 }
             }
         }
@@ -194,15 +227,13 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
     private fun onAuthorizationStateUpdated(authorizationState: TdApi.AuthorizationState) {
         when (authorizationState.constructor) {
             TdApi.AuthorizationStateWaitTdlibParameters.CONSTRUCTOR -> {
-                Log.d(
-                    TAG,
-                    "onResult: AuthorizationStateWaitTdlibParameters -> state = UNAUTHENTICATED"
+                Log.d(TAG, "onResult: AuthorizationStateWaitTdlibParameters -> state = UNAUTHENTICATED"
                 )
                 setAuth(TelegramAuthStatus.UNAUTHENTICATED)
             }
             TdApi.AuthorizationStateWaitEncryptionKey.CONSTRUCTOR -> {
                 Log.d(TAG, "onResult: AuthorizationStateWaitEncryptionKey")
-                client.send(TdApi.CheckDatabaseEncryptionKey()) {
+                client?.send(TdApi.CheckDatabaseEncryptionKey()) {
                     when (it.constructor) {
                         TdApi.Ok.CONSTRUCTOR -> {
                             Log.d(TAG, "CheckDatabaseEncryptionKey: OK")
@@ -252,16 +283,9 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
         }
         return file.local?.path
     }
-    
-    fun downloadableFile(file: TdApi.File): Flow<String?> =
-        file.takeIf {
-            it.local?.isDownloadingCompleted == false
-        }?.id?.let { fileId ->
-            downloadFile(fileId).map { file.local?.path }
-        } ?: flowOf(file.local?.path)
 
     private fun downloadFile(fileId: Int): Flow<TdApi.File> = callbackFlow {
-        client.send(TdApi.DownloadFile(fileId, 1, 0, 0, true)) {
+        client?.send(TdApi.DownloadFile(fileId, 1, 0, 0, true)) {
             when (it.constructor) {
                 TdApi.File.CONSTRUCTOR -> {
                     trySend((it as TdApi.File)).isSuccess
@@ -279,7 +303,7 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
     }
 
     fun sendAsFlow(query: TdApi.Function): Flow<TdApi.Object> = callbackFlow {
-        client.send(query) {
+        client?.send(query) {
             when (it.constructor) {
                 TdApi.Error.CONSTRUCTOR -> {
                     error("")
@@ -290,6 +314,17 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
             }
         }
         awaitClose { }
+    }
+
+    fun fetchChats() {
+        MainScope().launch {
+            val data = repository.getConversations(100).first()
+            for (conversation in data) {
+                Conversation.tgParse(conversation)?.let {
+                    conversationsList.addNewItem(it)
+                }
+            }
+        }
     }
 
     inline fun <reified T : TdApi.Object> send(query: TdApi.Function): Flow<T> =

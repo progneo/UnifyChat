@@ -5,13 +5,10 @@ import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.companions.User
-import com.progcorp.unitedmessengers.enums.Status
 import com.progcorp.unitedmessengers.enums.TelegramAuthStatus
 import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
-import com.progcorp.unitedmessengers.util.addFrontItem
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import org.drinkless.td.libcore.telegram.TdApi
 
 class TelegramConversationsViewModelFactory :
     ViewModelProvider.Factory {
@@ -32,11 +29,9 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     private val _notifyItemChangedEvent = MutableLiveData<Event<Int>>()
     private val _notifyItemMovedEvent = MutableLiveData<Event<Pair<Int, Int>>>()
 
-    private var _observableConversation = MutableLiveData<Conversation>()
     private val _selectedConversation = MutableLiveData<Event<Conversation>>()
 
     private val _loginState = MutableLiveData<Boolean>()
-    private val _loadingState = MutableLiveData<Status>()
 
     private val _user = MutableLiveData<User?>()
 
@@ -48,44 +43,22 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     val notifyItemMovedEvent: LiveData<Event<Pair<Int, Int>>> = _notifyItemMovedEvent
 
     var selectedConversation: LiveData<Event<Conversation>> = _selectedConversation
-    val conversationsList = MediatorLiveData<MutableList<Conversation>>()
+    override val conversationsList = _client.conversationsList
 
     val loginState: LiveData<Boolean> = _loginState
     val user: LiveData<User?> = _user
 
     init {
-        conversationsList.addSource(_observableConversation) { newConversation ->
-            val conversation = conversationsList.value?.find {
-                it.id == newConversation.id
-            }
-            if (conversation == null) {
-                conversationsList.addFrontItem(newConversation)
-                conversationsList.value?.sortByDescending {
-                    it.lastMessage?.timeStamp
-                }
-            }
-        }
         _loginState.value = when (_client.authState.value) {
             TelegramAuthStatus.AUTHENTICATED -> true
             else -> false
         }
         if (_loginState.value == true) {
             _user.value = User()
-            fetchChats()
+            _client.fetchChats()
             getMe()
         }
         _client.conversationsViewModel = this
-    }
-
-    private fun fetchChats() {
-        conversationsList.value?.clear()
-        MainScope().launch {
-            val data = _repository.getConversations(100).first()
-            for (conversation in data) {
-                val chat = Conversation.tgParse(conversation)
-                chat?.let { _observableConversation.value = it }
-            }
-        }
     }
 
     private fun getMe() {
@@ -114,78 +87,24 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
         }
     }
 
-    fun addNewChat(update: TdApi.UpdateNewChat) {
-        viewModelScope.launch {
-            val conversation = conversationsList.value?.find {
-                it.id == update.chat.id
-            }
-            if (conversation == null) {
-                val chat = Conversation.tgParse(update.chat)
-                chat?.let { _observableConversation.value = it }
-                conversationsList.value?.sortByDescending {
-                    it.lastMessage?.timeStamp
-                }
-                conversationsList.value?.indexOf(chat)?.let { notifyItemInserted(it) }
-            }
-        }
+    fun addNewChat(index: Int) {
+        notifyItemInserted(index)
     }
 
-    fun updateOnline(update: TdApi.UpdateUserStatus) {
-        viewModelScope.launch {
-            val item = conversationsList.value?.find {
-                it.companion is User && it.companion.id == update.userId
-            }
-            item?.tgParseOnlineStatus(update)
-            conversationsList.value?.indexOf(item)?.let { notifyItemChanged(it) }
-        }
+    fun updateOnline(index: Int) {
+        notifyItemChanged(index)
     }
 
-    fun updateLastMessage(update: TdApi.UpdateChatLastMessage) {
-        viewModelScope.launch {
-            val item = conversationsList.value?.find {
-                it.id == update.chatId
-            }
-            if (item != null) {
-                val previousIndex = conversationsList.value?.indexOf(item)
-                item.tgParseLastMessage(update)
-                conversationsList.value?.sortByDescending {
-                    it.lastMessage?.timeStamp
-                }
-                conversationsList.value?.indexOf(item)?.let {
-                    notifyItemMoved(Pair(previousIndex!!, it))
-                }
-            }
-        }
+    fun updateLastMessage(previousIndex: Int, newIndex: Int) {
+        notifyItemMoved(Pair(previousIndex, newIndex))
     }
 
-    fun updateNewMessage(update: TdApi.UpdateNewMessage) {
-        viewModelScope.launch {
-            val item = conversationsList.value?.find {
-                it.id == update.message.chatId
-            }
-            if (item != null) {
-                val previousIndex = conversationsList.value?.indexOf(item)
-                item.tgParseNewMessage(update)
-                conversationsList.value?.sortByDescending {
-                    it.lastMessage?.timeStamp
-                }
-                conversationsList.value?.indexOf(item)?.let {
-                    notifyItemMoved(Pair(previousIndex!!, it))
-                }
-            }
-        }
+    fun updateNewMessage(previousIndex: Int, newIndex: Int) {
+        notifyItemMoved(Pair(previousIndex, newIndex))
     }
 
-    fun updateReadInbox(update: TdApi.UpdateChatReadInbox) {
-        viewModelScope.launch {
-            val item = conversationsList.value?.find {
-                it.id == update.chatId
-            }
-            item?.unreadCount = update.unreadCount
-            conversationsList.value?.indexOf(item)?.let {
-                notifyItemChanged(it)
-            }
-        }
+    fun updateReadInbox(index: Int) {
+        notifyItemChanged(index)
     }
 
     fun goToTopPressed() {

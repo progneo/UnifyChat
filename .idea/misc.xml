@@ -156,6 +156,7 @@
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/splashscreen.xml" value="0.3015" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/transparent_gradient.xml" value="0.3015" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/transparent_gradient_bt.xml" value="0.3015" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/transparent_gradinet.xml" value="0.3015" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/unread_messages.xml" value="0.314" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/drawable/white_stroke.xml" value="0.314" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/layout/activity_conversation.xml" value="0.5" />
@@ -181,6 +182,7 @@
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/menu/bottom_nav_menu.xml" value="0.4506199230440359" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/menu/pupup_menu_message.xml" value="0.4506199230440359" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/menu/top_app_bar_conversation.xml" value="0.44976485677640016" />
+        <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/menu/top_app_bar_conversations.xml" value="0.4506199230440359" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.5205" />
         <entry key="..\:/Users/yaroslav/StudioProjects/United_Messengers/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.314" />
       </map>

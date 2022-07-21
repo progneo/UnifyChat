@@ -1,15 +1,18 @@
 package com.progcorp.unitedmessengers.ui.conversations.telegram
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.EventObserver
 import com.progcorp.unitedmessengers.data.model.companions.Bot
@@ -19,14 +22,15 @@ import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.databinding.FragmentTelegramBinding
 import com.progcorp.unitedmessengers.ui.conversation.ConversationActivity
 import com.progcorp.unitedmessengers.ui.conversations.ConversationsListAdapter
+import com.progcorp.unitedmessengers.util.functionalityNotAvailable
 import java.lang.Exception
 
-class TelegramFragment : Fragment() {
+class TelegramFragment : Fragment(R.layout.fragment_telegram) {
     private var _viewDataBinding: FragmentTelegramBinding? = null
     private var _listAdapter: ConversationsListAdapter? = null
     private var _listAdapterObserver: RecyclerView.AdapterDataObserver? = null
 
-    private val viewModel: TelegramConversationsViewModel by viewModels { TelegramConversationsViewModelFactory() }
+    private val _viewModel: TelegramConversationsViewModel by viewModels { TelegramConversationsViewModelFactory() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,7 +38,7 @@ class TelegramFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _viewDataBinding = FragmentTelegramBinding
-            .inflate(inflater, container, false).apply { viewmodel = viewModel }
+            .inflate(inflater, container, false).apply { viewmodel = _viewModel }
         _viewDataBinding!!.lifecycleOwner = this.viewLifecycleOwner
         return _viewDataBinding!!.root
     }
@@ -43,6 +47,26 @@ class TelegramFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupListAdapter()
         setupObservers()
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.top_app_bar_conversations, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.search -> {
+                        context?.let {
+                            functionalityNotAvailable(it)
+                        }
+                        true
+                    }
+                    else -> {
+                        false
+                    }
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun setupListAdapter() {
@@ -53,7 +77,6 @@ class TelegramFragment : Fragment() {
             _listAdapter = ConversationsListAdapter(viewModel)
             _listAdapter!!.registerAdapterDataObserver(_listAdapterObserver!!)
             _viewDataBinding!!.recyclerView.adapter = _listAdapter
-
             _viewDataBinding!!.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
@@ -82,18 +105,23 @@ class TelegramFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewModel.selectedConversation.observe(viewLifecycleOwner, EventObserver { navigateToChat(it) } )
-        viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver { navigateToLogin() })
-        viewModel.toTopPressed.observe(viewLifecycleOwner, EventObserver { goToTop() })
-        viewModel.notifyItemInsertedEvent.observe(viewLifecycleOwner, EventObserver {
+        _viewModel.selectedConversation.observe(viewLifecycleOwner, EventObserver { navigateToChat(it) } )
+        _viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver { navigateToLogin() })
+        _viewModel.toTopPressed.observe(viewLifecycleOwner, EventObserver { goToTop() })
+        _viewModel.notifyItemInsertedEvent.observe(viewLifecycleOwner, EventObserver {
             _listAdapter?.notifyItemInserted(it)
         })
-        viewModel.notifyItemChangedEvent.observe(viewLifecycleOwner, EventObserver {
+        _viewModel.notifyItemChangedEvent.observe(viewLifecycleOwner, EventObserver {
             _listAdapter?.notifyItemChanged(it)
         })
-        viewModel.notifyItemMovedEvent.observe(viewLifecycleOwner, EventObserver {
+        _viewModel.notifyItemMovedEvent.observe(viewLifecycleOwner, EventObserver {
             _listAdapter?.notifyItemRangeChanged(it.first, it.second)
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        _listAdapter?.notifyDataSetChanged()
     }
 
     private fun navigateToChat(conversation: Conversation) {

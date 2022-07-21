@@ -23,7 +23,7 @@ import java.lang.Exception
 
 class VKFragment : Fragment() {
 
-    private val viewModel: VKConversationsViewModel by viewModels { VKConversationsViewModelFactory() }
+    private val _viewModel: VKConversationsViewModel by viewModels { VKConversationsViewModelFactory() }
 
     private var _viewDataBinding: FragmentVkBinding? = null
     private var _listAdapter: ConversationsListAdapter? = null
@@ -34,7 +34,7 @@ class VKFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _viewDataBinding =
-            FragmentVkBinding.inflate(inflater, container, false).apply { viewmodel = viewModel }
+            FragmentVkBinding.inflate(inflater, container, false).apply { viewmodel = _viewModel }
         _viewDataBinding!!.lifecycleOwner = this.viewLifecycleOwner
         return _viewDataBinding!!.root
     }
@@ -83,9 +83,9 @@ class VKFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        viewModel.selectedConversation.observe(viewLifecycleOwner, EventObserver { navigateToChat(it) } )
-        viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver { navigateToLogin() })
-        viewModel.toTopPressed.observe(viewLifecycleOwner, EventObserver { goToTop() })
+        _viewModel.selectedConversation.observe(viewLifecycleOwner, EventObserver { navigateToChat(it) } )
+        _viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver { navigateToLogin() })
+        _viewModel.toTopPressed.observe(viewLifecycleOwner, EventObserver { goToTop() })
     }
 
     private fun navigateToChat(conversation: Conversation) {

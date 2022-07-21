@@ -40,7 +40,7 @@ class App : Application() {
             databaseDirectory = applicationContext.filesDir.absolutePath
             deviceModel = Build.MODEL
             systemVersion = Build.VERSION.RELEASE
-            applicationVersion = "1.0.0"
+            applicationVersion = "1.3.0"
             enableStorageOptimizer = true
         })
 

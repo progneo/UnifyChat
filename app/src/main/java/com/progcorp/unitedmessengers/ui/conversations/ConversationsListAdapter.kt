@@ -30,7 +30,7 @@ class ConversationsListAdapter internal constructor(private val viewModel: IConv
     }
 
     override fun getItemViewType(position: Int): Int {
-        return position;
+        return position
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

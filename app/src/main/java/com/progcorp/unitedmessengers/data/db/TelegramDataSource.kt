@@ -14,7 +14,7 @@ class TelegramDataSource (private val client: TelegramClient) {
 
     private fun getConversationIds(limit: Int): Flow<LongArray> =
         callbackFlow {
-            client.client.send(TdApi.GetChats(TdApi.ChatListMain(), limit)) {
+            client.client?.send(TdApi.GetChats(TdApi.ChatListMain(), limit)) {
                 when (it.constructor) {
                     TdApi.Chats.CONSTRUCTOR -> {
                         trySend((it as TdApi.Chats).chatIds).isSuccess
@@ -40,7 +40,7 @@ class TelegramDataSource (private val client: TelegramClient) {
             }
 
     fun getConversation(chatId: Long): Flow<TdApi.Chat> = callbackFlow {
-        client.client.send(TdApi.GetChat(chatId)) {
+        client.client?.send(TdApi.GetChat(chatId)) {
             when (it.constructor) {
                 TdApi.Chat.CONSTRUCTOR -> {
                     trySend(it as TdApi.Chat).isSuccess
@@ -58,7 +58,7 @@ class TelegramDataSource (private val client: TelegramClient) {
 
     fun getSupergroup(chatId: Long): Flow<TdApi.Supergroup> =
         callbackFlow {
-            client.client.send(TdApi.GetSupergroup(chatId)) {
+            client.client?.send(TdApi.GetSupergroup(chatId)) {
                 when (it.constructor) {
                     TdApi.Supergroup.CONSTRUCTOR -> {
                         trySend(it as TdApi.Supergroup).isSuccess
@@ -82,7 +82,7 @@ class TelegramDataSource (private val client: TelegramClient) {
 
     fun getBasicGroup(chatId: Long): Flow<TdApi.BasicGroup> =
         callbackFlow {
-            client.client.send(TdApi.GetBasicGroup(chatId)) {
+            client.client?.send(TdApi.GetBasicGroup(chatId)) {
                 when (it.constructor) {
                     TdApi.BasicGroup.CONSTRUCTOR -> {
                         trySend(it as TdApi.BasicGroup).isSuccess
@@ -107,7 +107,7 @@ class TelegramDataSource (private val client: TelegramClient) {
 
     fun getMessages(chatId: Long, fromMessageId: Long, limit: Int): Flow<List<TdApi.Message>> =
         callbackFlow {
-            client.client.send(TdApi.GetChatHistory(chatId, fromMessageId, 0, limit, false)) {
+            client.client?.send(TdApi.GetChatHistory(chatId, fromMessageId, 0, limit, false)) {
                 when (it.constructor) {
                     TdApi.Messages.CONSTRUCTOR -> {
                         trySend((it as TdApi.Messages).messages.toList()).isSuccess
@@ -131,7 +131,7 @@ class TelegramDataSource (private val client: TelegramClient) {
 
     fun getMessage(chatId: Long, messageId: Long): Flow<TdApi.Message?> =
         callbackFlow {
-            client.client.send(TdApi.GetMessage(chatId, messageId)) {
+            client.client?.send(TdApi.GetMessage(chatId, messageId)) {
                 when (it.constructor) {
                     TdApi.Message.CONSTRUCTOR -> {
                         trySend(it as TdApi.Message).isSuccess
@@ -158,7 +158,7 @@ class TelegramDataSource (private val client: TelegramClient) {
         callbackFlow {
             val text = TdApi.FormattedText((message.content as MessageText).text, arrayOf(TdApi.TextEntity()))
             val input = TdApi.InputMessageText(text, true, false)
-            client.client.send(TdApi.SendMessage(
+            client.client?.send(TdApi.SendMessage(
                 chatId,
                 0,
                 message.replyToMessage?.id ?: 0,
@@ -188,7 +188,7 @@ class TelegramDataSource (private val client: TelegramClient) {
 
     fun markAsRead(chatId: Long, message: Message): Flow<Unit> =
         callbackFlow {
-            client.client.send(TdApi.ViewMessages(
+            client.client?.send(TdApi.ViewMessages(
                 chatId,
                 0,
                 longArrayOf(message.id),
@@ -216,7 +216,7 @@ class TelegramDataSource (private val client: TelegramClient) {
 
     fun getUser(userId: Long): Flow<TdApi.User> =
         callbackFlow {
-            client.client.send(TdApi.GetUser(userId)) {
+            client.client?.send(TdApi.GetUser(userId)) {
                 when (it.constructor) {
                     TdApi.User.CONSTRUCTOR -> {
                         trySend((it as TdApi.User)).isSuccess
@@ -239,7 +239,7 @@ class TelegramDataSource (private val client: TelegramClient) {
         }
 
     fun getMe(): Flow<TdApi.User> = callbackFlow {
-        client.client.send(TdApi.GetMe()) {
+        client.client?.send(TdApi.GetMe()) {
             when (it.constructor) {
                 TdApi.User.CONSTRUCTOR -> {
                     trySend(it as TdApi.User).isSuccess
@@ -256,7 +256,7 @@ class TelegramDataSource (private val client: TelegramClient) {
     }
 
     fun getFile(fileId: Int): Flow<TdApi.File> = callbackFlow {
-        client.client.send(TdApi.GetFile(fileId)) {
+        client.client?.send(TdApi.GetFile(fileId)) {
             when (it.constructor) {
                 TdApi.File.CONSTRUCTOR -> {
                     trySend(it as TdApi.File).isSuccess
