@@ -129,7 +129,7 @@ class TelegramDataSource (private val client: TelegramClient) {
             awaitClose { }
         }
 
-    fun getMessage(chatId: Long, messageId: Long): Flow<TdApi.Message> =
+    fun getMessage(chatId: Long, messageId: Long): Flow<TdApi.Message?> =
         callbackFlow {
             client.client.send(TdApi.GetMessage(chatId, messageId)) {
                 when (it.constructor) {
@@ -137,6 +137,7 @@ class TelegramDataSource (private val client: TelegramClient) {
                         trySend(it as TdApi.Message).isSuccess
                     }
                     TdApi.Error.CONSTRUCTOR -> {
+                        trySend(null).isSuccess
                         Log.e(
                             "${javaClass.simpleName}.getMessage",
                             "${(it as TdApi.Error).message}. ID: $messageId"

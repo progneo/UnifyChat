@@ -238,14 +238,11 @@ data class Message(
             val isOutgoing = tgMessage.isOutgoing
 
             val replyToMessage: Message? = if (tgMessage.replyToMessageId != 0.toLong()) {
-                tgParse(repository.getMessage(tgMessage.chatId, tgMessage.replyToMessageId).first())
+                repository.getMessage(tgMessage.chatId, tgMessage.replyToMessageId).first()
+                    ?.let { tgParse(it) }
             } else {
                 null
             }
-
-            //    senderId?.let {
-            //    repository.getMessage(tgMessage.replyToMessageId, it).first()
-            //}?.let { tgParse(it) }
 
 
             var messageContent: IMessageContent = MessageText()

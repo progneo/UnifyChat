@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/search"
+        android:icon="@drawable/ic_search"
+        android:iconTint="?attr/colorPrimary"
+        android:title="@string/search"
+        android:contentDescription="@string/messages_search"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/options"
+        android:icon="@drawable/ic_more_vert"
+        android:iconTint="?attr/colorPrimary"
+        android:title="@string/more"
+        android:contentDescription="@string/description_more"
+        app:showAsAction="ifRoom" />
+</menu>

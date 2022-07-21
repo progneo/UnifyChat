@@ -50,4 +50,8 @@
     <string name="copy">Copy</string>
     <string name="edit">Edit</string>
     <string name="copied_toast">Copied</string>
+    <string name="messages_search">Search in messages</string>
+    <string name="search">Search</string>
+    <string name="more">More</string>
+    <string name="description_more">Additionally</string>
 </resources>

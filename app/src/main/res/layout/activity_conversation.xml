@@ -24,6 +24,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                app:menu="@menu/top_app_bar_conversation"
                 app:navigationIcon="@drawable/ic_arrow_back"
                 app:navigationIconTint="?attr/colorPrimary">
 
@@ -33,25 +34,27 @@
                     android:padding="12dp"
                     android:src="@drawable/ic_account_circle"
                     app:bind_conversation="@{viewmodel.chat}"
-                    app:shapeAppearanceOverlay="@style/CircleImageView"/>
+                    app:shapeAppearanceOverlay="@style/CircleImageView" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/dialog_name"
-                        android:layout_height="wrap_content"
-                        android:layout_width="match_parent"
                         style="@style/Widget.UM.TextView.Conversation.Name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         app:bind_name="@{viewmodel.chat.companion}"
                         tools:text="Беседа" />
 
                     <TextView
                         android:id="@+id/extra_info"
-                        android:layout_height="wrap_content"
-                        android:layout_width="match_parent"
                         style="@style/Widget.UM.TextView.Conversation.Extra"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         app:bind_extra_info="@{viewmodel.chat.companion}"
                         tools:text="10 участников" />
                 </LinearLayout>

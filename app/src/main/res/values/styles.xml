@@ -146,7 +146,7 @@
     </style>
 
     <style name="Widget.UM.TextView.Conversation.Extra" parent="Widget.UM.TextView.Conversation">
-        <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
+        <item name="android:textAppearance">?attr/textAppearanceBodySmall</item>
         <item name="android:textColor">?attr/colorSecondary</item>
     </style>
 

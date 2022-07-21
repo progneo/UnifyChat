@@ -45,4 +45,8 @@
     <string name="copy">Скопировать</string>
     <string name="edit">Редактировать</string>
     <string name="copied_toast">Скопировано</string>
+    <string name="messages_search">Поиск по сообщениям</string>
+    <string name="search">Поиск</string>
+    <string name="more">Больше</string>
+    <string name="description_more">Дополнительно</string>
 </resources>

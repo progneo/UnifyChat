@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -54,9 +55,27 @@ class ConversationActivity : AppCompatActivity() {
         setupObservers()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.top_app_bar_conversation, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
     private fun setupObservers() {
         _toolbar?.setNavigationOnClickListener {
             onBackPressed()
+        }
+        _toolbar?.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.search -> {
+                    functionalityNotAvailable(this)
+                    true
+                }
+                R.id.options -> {
+                    functionalityNotAvailable(this)
+                    true
+                }
+                else -> false
+            }
         }
         viewModel.addAttachmentPressed.observe(this, EventObserver {
             functionalityNotAvailable(this)
