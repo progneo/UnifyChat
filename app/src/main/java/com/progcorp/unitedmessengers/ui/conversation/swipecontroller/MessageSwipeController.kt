@@ -99,7 +99,7 @@ class MessageSwipeController(private val context: Context, private val swipeCont
         val newTime = System.currentTimeMillis()
         val dt = min(17, newTime - _lastReplyButtonAnimationTime)
         _lastReplyButtonAnimationTime = newTime
-        val showing = translationX <= pxToDip(-30f, context)
+        val showing = translationX <= pxToDip(-50f, context)
         if (showing) {
             if (_replyButtonProgress < 1.0f) {
                 _replyButtonProgress += dt / 180.0f
