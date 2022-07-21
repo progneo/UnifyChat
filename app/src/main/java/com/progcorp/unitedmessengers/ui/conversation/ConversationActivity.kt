@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -89,6 +90,10 @@ class ConversationActivity : AppCompatActivity() {
         viewModel.messageToReply.observe(this, EventObserver {
             _bottomSheet!!.dismiss()
             _bottomSheet = null
+            val editText = _viewDataBinding?.messageInput
+            editText?.requestFocus()
+            val imm: InputMethodManager? = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+            imm?.showSoftInput(editText, 0)
         })
         viewModel.messagesToForward.observe(this, EventObserver {
             functionalityNotAvailable(this)
@@ -151,7 +156,7 @@ class ConversationActivity : AppCompatActivity() {
                     override fun replyToMessage(position: Int) {
                         viewModel.replyMessage.value = viewModel.messagesList.value!![position]
                     }
-                })
+                }, _viewDataBinding!!.messageInput)
 
                 val itemTouchHelper = ItemTouchHelper(messagesSwipeController)
                 itemTouchHelper.attachToRecyclerView(_viewDataBinding?.recyclerView)

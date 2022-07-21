@@ -7,6 +7,8 @@ import android.graphics.drawable.Drawable
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
@@ -14,11 +16,10 @@ import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.interfaces.IMessageSwipeControllerActions
 import com.progcorp.unitedmessengers.util.dipToPx
 import kotlin.math.abs
-import kotlin.math.ceil
 import kotlin.math.min
 
 
-class MessageSwipeController(private val context: Context, private val swipeControllerActions: IMessageSwipeControllerActions) :
+class MessageSwipeController(private val context: Context, private val swipeControllerActions: IMessageSwipeControllerActions, private val editText: EditText) :
     ItemTouchHelper.Callback() {
 
     private var _imageDrawable: Drawable? = null
@@ -71,7 +72,7 @@ class MessageSwipeController(private val context: Context, private val swipeCont
             setTouchListener(recyclerView, viewHolder)
         }
 
-        if (_view?.translationX!! > -70.dipToPx || dX > this._dX) {
+        if (_view?.translationX!! > (-70).dipToPx || dX > this._dX) {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             this._dX = dX
             _startTracking = true
@@ -87,6 +88,10 @@ class MessageSwipeController(private val context: Context, private val swipeCont
             if (_swipeBack) {
                 if (abs(_view!!.translationX) >= 50.dipToPx) {
                     swipeControllerActions.replyToMessage(viewHolder.adapterPosition)
+                    editText.requestFocus()
+                    val imm: InputMethodManager? =
+                        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+                    imm?.showSoftInput(editText, 0)
                 }
             }
             false
@@ -101,7 +106,7 @@ class MessageSwipeController(private val context: Context, private val swipeCont
         val newTime = System.currentTimeMillis()
         val dt = min(17, newTime - _lastReplyButtonAnimationTime)
         _lastReplyButtonAnimationTime = newTime
-        val showing = translationX <= -50.dipToPx
+        val showing = translationX <= (-50).dipToPx
         if (showing) {
             if (_replyButtonProgress < 1.0f) {
                 _replyButtonProgress += dt / 180.0f
@@ -141,7 +146,7 @@ class MessageSwipeController(private val context: Context, private val swipeCont
 
         _imageDrawable?.alpha = alpha
         if (_startTracking) {
-            if (!_isVibrate && _view?.translationX!! <= -50.dipToPx) {
+            if (!_isVibrate && _view?.translationX!! <= (-50).dipToPx) {
                 _view!!.performHapticFeedback(
                     HapticFeedbackConstants.GESTURE_START,
                     HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
