@@ -3,15 +3,17 @@ package com.progcorp.unitedmessengers.ui.conversation
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.graphics.Canvas
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.snackbar.Snackbar
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.EventObserver
 import com.progcorp.unitedmessengers.data.model.Conversation
@@ -149,13 +151,18 @@ class ConversationActivity : AppCompatActivity() {
     }
 
     private fun copyTextToClipboard(text: String) {
-        _bottomSheet!!.dismiss()
-        _bottomSheet = null
-        val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clipData = ClipData.newPlainText("Message text", text)
-        clipboardManager.setPrimaryClip(clipData)
+        try {
+            _bottomSheet!!.dismiss()
+            _bottomSheet = null
+            val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipData = ClipData.newPlainText("Message text", text)
+            clipboardManager.setPrimaryClip(clipData)
 
-        Toast.makeText(applicationContext, R.string.copied_toast, Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, R.string.copied_toast, Toast.LENGTH_SHORT).show()
+        }
+        catch (exception: NullPointerException) {
+            Log.e("${this.javaClass.simpleName}.copyTextToClipBoard", "Wrong text: $text")
+        }
     }
 
     override fun onDestroy() {
