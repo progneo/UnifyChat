@@ -44,7 +44,7 @@ data class Message(
             if (sender == null && groups != null) {
                 for (i in 0 until groups.length()) {
                     val group = groups.getJSONObject(i)
-                    if (group.getLong("id") == json.getLong("from_id")) {
+                    if (group.getLong("id") == -json.getLong("from_id")) {
                         sender = Bot.vkParse(group)
                         break
                     }
@@ -105,9 +105,16 @@ data class Message(
                             val photoArray = at.getJSONObject("photo").getJSONArray("sizes")
                             for (i in 0 until photoArray.length()) {
                                 val photo = photoArray.getJSONObject(i)
-                                if (photo.getString("type") == "y") {
-                                    messageContent = MessagePhoto(text, photo.getString("url"))
-                                    break;
+                                if (photo.getString("type") == "y" || photo.getString("type") == "x") {
+                                    val photoObj = Photo(
+                                        id = at.getJSONObject("photo").getLong("id"),
+                                        width = photo.getInt("width"),
+                                        height = photo.getInt("height"),
+                                        path = photo.getString("url")
+                                    )
+                                    photoObj.adaptToChatSize()
+                                    messageContent = MessagePhoto(text, photoObj)
+                                    break
                                 }
                             }
                         }
@@ -262,22 +269,23 @@ data class Message(
                 }
                 TdApi.MessagePhoto.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessagePhoto
-                    val photo = if (content.photo.sizes.size > 1) {
-                        if (content.photo.sizes[1].photo.local.isDownloadingCompleted){
-                            content.photo.sizes[1].photo.local.path
-                        }
-                        else {
-                            content.photo.sizes[1].photo.id
-                        }
-                    } else {
-                        if (content.photo.sizes[0].photo.local.isDownloadingCompleted){
-                            content.photo.sizes[0].photo.local.path
-                        }
-                        else {
-                            content.photo.sizes[0].photo.id
+                    val path: String
+                    val photoId: Int
+                    val photoWidth: Int
+                    val photoHeight: Int
+                    content.photo.sizes[content.photo.sizes.size - 1].let {
+                        photoId = it.photo.id
+                        photoHeight = it.height
+                        photoWidth = it.width
+                        path = if (it.photo.local.isDownloadingCompleted){
+                            it.photo.local.path
+                        } else {
+                            it.photo.id.toString()
                         }
                     }
-                    messageContent = MessagePhoto(content.caption.text, path = photo.toString())
+                    val photoObj = Photo(photoId.toLong(), photoWidth, photoHeight, path)
+                    photoObj.adaptToChatSize()
+                    messageContent = MessagePhoto(content.caption.text, photoObj)
                 }
                 TdApi.MessageExpiredPhoto.CONSTRUCTOR -> {
                     messageContent = MessageExpiredPhoto()
@@ -298,10 +306,25 @@ data class Message(
                 TdApi.MessageVideo.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageVideo
                     content.video.thumbnail?.let {
+                        val photoObj = Photo(
+                            it.file.id.toLong(),
+                            it.width,
+                            it.height
+                        )
+                        photoObj.adaptToChatSize()
                         messageContent = if (it.file.local.isDownloadingCompleted) {
-                            MessagePhoto(text = content.caption.text, path = it.file.local.path)
-                        } else {
-                            MessagePhoto(text = content.caption.text, path = it.file.id.toString())
+                            photoObj.path = it.file.local.path
+                            MessagePhoto(
+                                text = content.caption.text,
+                                photo = photoObj
+                            )
+                        }
+                        else {
+                            photoObj.path = it.file.id.toString()
+                            MessagePhoto(
+                                text = content.caption.text,
+                                photo = photoObj
+                            )
                         }
                     }
                 }
@@ -311,10 +334,23 @@ data class Message(
                 TdApi.MessageVideoNote.CONSTRUCTOR -> {
                     val content = tgMessage.content as TdApi.MessageVideoNote
                     content.videoNote.thumbnail?.let {
+                        val photoObj = Photo(
+                            it.file.id.toLong(),
+                            it.width,
+                            it.height
+                        )
+                        photoObj.adaptToChatSize()
                         messageContent = if (it.file.local.isDownloadingCompleted) {
-                            MessagePhoto(path = it.file.local.path)
-                        } else {
-                            MessagePhoto(path = it.file.id.toString())
+                            photoObj.path = it.file.local.path
+                            MessagePhoto(
+                                photo = photoObj
+                            )
+                        }
+                        else {
+                            photoObj.path = it.file.id.toString()
+                            MessagePhoto(
+                                photo = photoObj
+                            )
                         }
                     }
                 }

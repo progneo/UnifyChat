@@ -5,9 +5,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -20,7 +17,7 @@ import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.databinding.ActivityConversationBinding
 import com.progcorp.unitedmessengers.ui.conversation.bottomsheet.BottomSheetFragment
 import com.progcorp.unitedmessengers.ui.conversation.swipecontroller.MessageSwipeController
-import com.progcorp.unitedmessengers.ui.conversation.swipecontroller.SwipeControllerActions
+import com.progcorp.unitedmessengers.interfaces.IMessageSwipeControllerActions
 import com.progcorp.unitedmessengers.util.functionalityNotAvailable
 import kotlinx.android.synthetic.main.activity_conversation.*
 import kotlinx.android.synthetic.main.fragment_telegram.view.*
@@ -130,7 +127,8 @@ class ConversationActivity : AppCompatActivity() {
             })
 
             if (viewModel.chat.value!!.canWrite) {
-                val messagesSwipeController = MessageSwipeController(this, object : SwipeControllerActions {
+                val messagesSwipeController = MessageSwipeController(this, object :
+                    IMessageSwipeControllerActions {
                     override fun replyToMessage(position: Int) {
                         viewModel.replyMessage.value = viewModel.messagesList.value!![position]
                     }

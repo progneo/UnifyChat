@@ -341,7 +341,7 @@ class MessageDiffCallback : DiffUtil.ItemCallback<Message>() {
                 (oldItem.content as MessageSticker).path == (newItem.content as MessageSticker).path
             }
             is MessagePhoto -> {
-                (oldItem.content as MessagePhoto).path == (newItem.content as MessagePhoto).path
+                (oldItem.content as MessagePhoto).photo.path == (newItem.content as MessagePhoto).photo.path
             }
             is MessageAnimation -> {
                 (oldItem.content as MessageAnimation).path == (newItem.content as MessageAnimation).path

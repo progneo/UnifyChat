@@ -92,7 +92,7 @@ class TelegramFragment : Fragment() {
             _listAdapter?.notifyItemChanged(it)
         })
         viewModel.notifyItemMovedEvent.observe(viewLifecycleOwner, EventObserver {
-            _listAdapter?.notifyItemMoved(it.first, it.second)
+            _listAdapter?.notifyItemRangeChanged(it.first, it.second)
         })
     }
 

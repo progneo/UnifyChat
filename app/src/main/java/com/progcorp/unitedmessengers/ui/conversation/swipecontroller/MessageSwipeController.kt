@@ -11,12 +11,14 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.*
 import androidx.recyclerview.widget.RecyclerView
 import com.progcorp.unitedmessengers.R
+import com.progcorp.unitedmessengers.interfaces.IMessageSwipeControllerActions
+import com.progcorp.unitedmessengers.util.dipToPx
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.min
 
 
-class MessageSwipeController(private val context: Context, private val swipeControllerActions: SwipeControllerActions) :
+class MessageSwipeController(private val context: Context, private val swipeControllerActions: IMessageSwipeControllerActions) :
     ItemTouchHelper.Callback() {
 
     private var _imageDrawable: Drawable? = null
@@ -69,7 +71,7 @@ class MessageSwipeController(private val context: Context, private val swipeCont
             setTouchListener(recyclerView, viewHolder)
         }
 
-        if (_view?.translationX!! > pxToDip(-70f, context) || dX > this._dX) {
+        if (_view?.translationX!! > -70.dipToPx || dX > this._dX) {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
             this._dX = dX
             _startTracking = true
@@ -83,7 +85,7 @@ class MessageSwipeController(private val context: Context, private val swipeCont
         recyclerView.setOnTouchListener { _, event ->
             _swipeBack = event.action == MotionEvent.ACTION_CANCEL || event.action == MotionEvent.ACTION_UP
             if (_swipeBack) {
-                if (abs(_view!!.translationX) >= this@MessageSwipeController.pxToDip(50f, context)) {
+                if (abs(_view!!.translationX) >= 50.dipToPx) {
                     swipeControllerActions.replyToMessage(viewHolder.adapterPosition)
                 }
             }
@@ -99,7 +101,7 @@ class MessageSwipeController(private val context: Context, private val swipeCont
         val newTime = System.currentTimeMillis()
         val dt = min(17, newTime - _lastReplyButtonAnimationTime)
         _lastReplyButtonAnimationTime = newTime
-        val showing = translationX <= pxToDip(-50f, context)
+        val showing = translationX <= -50.dipToPx
         if (showing) {
             if (_replyButtonProgress < 1.0f) {
                 _replyButtonProgress += dt / 180.0f
@@ -139,7 +141,7 @@ class MessageSwipeController(private val context: Context, private val swipeCont
 
         _imageDrawable?.alpha = alpha
         if (_startTracking) {
-            if (!_isVibrate && _view?.translationX!! <= pxToDip(-50f, context)) {
+            if (!_isVibrate && _view?.translationX!! <= -50.dipToPx) {
                 _view!!.performHapticFeedback(
                     HapticFeedbackConstants.GESTURE_START,
                     HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
@@ -148,20 +150,16 @@ class MessageSwipeController(private val context: Context, private val swipeCont
             }
         }
 
-        val x: Int = _view?.measuredWidth!! - pxToDip(30f, context)
+        val x: Int = _view?.measuredWidth!! - 30.dipToPx
 
         val y = (_view?.top!! + _view?.measuredHeight!! / 2).toFloat()
         _imageDrawable?.setBounds(
-            (x - pxToDip(12f, context) * scale).toInt(),
-            (y - pxToDip(11f, context) * scale).toInt(),
-            (x + pxToDip(12f, context) * scale).toInt(),
-            (y + pxToDip(10f, context) * scale).toInt()
+            (x - 12.dipToPx * scale).toInt(),
+            (y - 11.dipToPx * scale).toInt(),
+            (x + 12.dipToPx * scale).toInt(),
+            (y + 10.dipToPx * scale).toInt()
         )
         _imageDrawable?.draw(canvas)
         _imageDrawable?.alpha = 255
-    }
-
-    private fun pxToDip(px: Float, context: Context): Int {
-        return ceil((context.resources.displayMetrics.density * px).toDouble()).toInt()
     }
 }

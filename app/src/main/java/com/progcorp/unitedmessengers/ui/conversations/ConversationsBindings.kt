@@ -2,7 +2,6 @@
 
 package com.progcorp.unitedmessengers.ui.conversations
 
-import android.graphics.BitmapFactory
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -10,6 +9,7 @@ import android.widget.TextView
 import androidx.core.text.isDigitsOnly
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.model.Conversation
@@ -17,8 +17,11 @@ import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.interfaces.ICompanion
 import com.progcorp.unitedmessengers.util.Constants
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.*
+import java.io.File
+import java.lang.Exception
+import java.lang.IllegalArgumentException
+import java.lang.NumberFormatException
 
 @BindingAdapter("bind_conversations_list")
 fun bindConversationsList(listView: RecyclerView, items: List<Conversation>?) {
@@ -95,25 +98,34 @@ fun ImageView.bindAppbarImage(user: User?) {
         }
         else -> {
             when (user.messenger) {
+                Constants.Messenger.VK -> {
+                    Glide.with(this.context)
+                        .load(user.photo)
+                        .into(this)
+                }
                 Constants.Messenger.TG -> {
                     if (!user.photo.isDigitsOnly()) {
-                        val bitmap = BitmapFactory.decodeFile(user.photo)
-                        this.setImageBitmap(bitmap)
+                        val file = File(user.photo)
+                        Glide.with(this.context)
+                            .load(file)
+                            .into(this)
                     }
                     else {
                         val client = App.application.tgClient
-                        val view = this
 
                         MainScope().launch {
-                            val photo = client.download(user.photo.toInt())
-                            user.photo = photo!!
-                            val bitmap = BitmapFactory.decodeFile(photo)
-                            view.setImageBitmap(bitmap)
+                            try {
+                                user.photo = client.download(user.photo.toInt())!!
+                            } catch (exception: NumberFormatException) {}
+
+                            try {
+                                val file = File(user.photo)
+                                Glide.with(this@bindAppbarImage.context)
+                                    .load(file)
+                                    .into(this@bindAppbarImage)
+                            } catch (exception: Exception) {}
                         }
                     }
-                }
-                Constants.Messenger.VK -> {
-                    Picasso.get().load(user.photo).error(R.drawable.ic_account_circle).into(this)
                 }
             }
         }
@@ -130,3 +142,46 @@ fun TextView.bindIsOutgoing(message: Message) {
     }
 }
 
+
+@BindingAdapter("bind_conversation")
+fun ImageView.bindConversationImage(conversation: Conversation) {
+    when (conversation.getPhoto()) {
+        null -> Unit
+        "" -> Glide.with(this.context)
+            .load(R.drawable.user)
+            .into(this)
+        else -> {
+            when (conversation.messenger) {
+                Constants.Messenger.TG -> {
+                    if (!conversation.getPhoto()!!.isDigitsOnly()) {
+                        val file = File(conversation.getPhoto()!!)
+                        Glide.with(this.context)
+                            .load(file)
+                            .into(this)
+                    }
+                    else {
+                        val client = App.application.tgClient
+
+                        MainScope().launch {
+                            try {
+                                conversation.companion?.photo = client.download(conversation.getPhoto()!!.toInt())!!
+                            } catch (exception: NumberFormatException) {}
+
+                            val file = File(conversation.getPhoto()!!)
+                            try {
+                                Glide.with(this@bindConversationImage.context)
+                                    .load(file)
+                                    .into(this@bindConversationImage)
+                            } catch (exception: Exception) {}
+                        }
+                    }
+                }
+                Constants.Messenger.VK -> {
+                    Glide.with(this.context)
+                        .load(conversation.getPhoto())
+                        .into(this)
+                }
+            }
+        }
+    }
+}

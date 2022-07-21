@@ -57,7 +57,7 @@ data class MessageLocation(
 
 data class MessagePhoto(
     override val text: String = "",
-    var path: String = ""
+    var photo: Photo = Photo()
 ) : IMessageContent
 
 data class MessagePoll(
