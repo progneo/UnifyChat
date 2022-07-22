@@ -88,6 +88,12 @@ class VKFragment : Fragment() {
         _viewModel.toTopPressed.observe(viewLifecycleOwner, EventObserver { goToTop() })
     }
 
+    private fun notifyWithoutScroll(notification: () -> Unit) {
+        val recyclerViewState = _viewDataBinding?.recyclerView?.layoutManager?.onSaveInstanceState()
+        notification()
+        _viewDataBinding?.recyclerView?.layoutManager?.onRestoreInstanceState(recyclerViewState)
+    }
+
     private fun navigateToChat(conversation: Conversation) {
         when (conversation.companion) {
             is User, is Bot, is Chat -> {

@@ -2,6 +2,7 @@ package com.progcorp.unitedmessengers.data.clients
 
 import android.util.Log
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import com.progcorp.unitedmessengers.data.db.TelegramDataSource
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.companions.User
@@ -17,13 +18,13 @@ import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 
 class TelegramClient (private val _tdLibParameters: TdApi.TdlibParameters) : Client.ResultHandler {
+    val repository: TelegramDataSource = TelegramDataSource(this)
+    var client: Client? = null
+
     private val _authState = MutableStateFlow(TelegramAuthStatus.UNKNOWN)
     val authState: StateFlow<TelegramAuthStatus> get() = _authState
 
-    var client: Client? = null
-
-    val repository: TelegramDataSource = TelegramDataSource(this)
-
+    var user = MutableLiveData<User?>()
     val conversationsList = MediatorLiveData<MutableList<Conversation>>()
 
     var conversationsViewModel: TelegramConversationsViewModel? = null
@@ -46,6 +47,13 @@ class TelegramClient (private val _tdLibParameters: TdApi.TdlibParameters) : Cli
 
     private fun setAuth(auth: TelegramAuthStatus) {
         _authState.value = auth
+        if (_authState.value == TelegramAuthStatus.AUTHENTICATED) {
+            MainScope().launch {
+                conversationsList.value?.clear()
+                getUser()
+                fetchChats()
+            }
+        }
     }
 
     override fun onResult(data: TdApi.Object) {
@@ -222,6 +230,20 @@ class TelegramClient (private val _tdLibParameters: TdApi.TdlibParameters) : Cli
         }
     }
 
+    fun sendAsFlow(query: TdApi.Function): Flow<TdApi.Object> = callbackFlow {
+        client?.send(query) {
+            when (it.constructor) {
+                TdApi.Error.CONSTRUCTOR -> {
+                    error("")
+                }
+                else -> {
+                    trySend(it).isSuccess
+                }
+            }
+        }
+        awaitClose { }
+    }
+
     private fun onAuthorizationStateUpdated(authorizationState: TdApi.AuthorizationState) {
         when (authorizationState.constructor) {
             TdApi.AuthorizationStateWaitTdlibParameters.CONSTRUCTOR -> {
@@ -300,28 +322,21 @@ class TelegramClient (private val _tdLibParameters: TdApi.TdlibParameters) : Cli
         awaitClose()
     }
 
-    fun sendAsFlow(query: TdApi.Function): Flow<TdApi.Object> = callbackFlow {
-        client?.send(query) {
-            when (it.constructor) {
-                TdApi.Error.CONSTRUCTOR -> {
-                    error("")
-                }
-                else -> {
-                    trySend(it).isSuccess
-                }
-            }
-        }
-        awaitClose { }
+    private suspend fun getUser() {
+        val data = repository.getMe().first()
+        val user = User.tgParse(data)
+        this.user.postValue(user)
     }
 
-    fun fetchChats() {
-        MainScope().launch {
-            val data = repository.getConversations(100).first()
-            for (conversation in data) {
-                Conversation.tgParse(conversation)?.let {
-                    conversationsList.addNewItem(it)
-                }
+    private suspend fun fetchChats() {
+        val data = repository.getConversations(100).first()
+        for (conversation in data) {
+            Conversation.tgParse(conversation)?.let {
+                conversationsList.addNewItem(it)
             }
+        }
+        conversationsList.value?.sortByDescending {
+            it.lastMessage?.timeStamp
         }
     }
 

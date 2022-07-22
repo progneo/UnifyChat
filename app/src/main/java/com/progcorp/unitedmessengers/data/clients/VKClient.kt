@@ -37,12 +37,12 @@ class VKClient (private val _sharedPreference: SharedPreferences) {
     var lpServer: VKLongPollServer? = null
     var lpRetrofit: Retrofit? = null
 
+    var user = MutableLiveData<User?>()
     val conversationsList = MediatorLiveData<MutableList<Conversation>>()
 
     var conversationsViewModel: VKConversationsViewModel? = null
     var conversationViewModel: ConversationViewModel? = null
 
-    var user = MutableLiveData<User?>()
 
     init {
         _authStatus.value = if (token != null) VKAuthStatus.SUCCESS else VKAuthStatus.AUTH

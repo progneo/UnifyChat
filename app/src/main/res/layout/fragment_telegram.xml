@@ -56,7 +56,8 @@
                 android:layout_gravity="top"
                 android:orientation="vertical"
                 android:clipToPadding="false"
-                android:visibility="@{viewmodel.loginState ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewmodel.user != null ? View.VISIBLE : View.GONE}"
+                app:itemAnimator="@{null}"
                 app:bind_conversations_list="@{viewmodel.conversationsList}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -66,7 +67,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="@{viewmodel.loginState ? View.GONE : View.VISIBLE}"
+                android:visibility="@{viewmodel.user != null ? View.GONE : View.VISIBLE}"
                 android:text="@string/login_to_account"
                 android:layout_gravity="center"
                 tools:visibility="invisible" />

@@ -23,14 +23,20 @@ class ConversationsListAdapter internal constructor(private val viewModel: IConv
         }
     }
 
+    init {
+        setHasStableIds(true)
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(viewModel, getItem(position))
-
-        holder.itemView.animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.fade_in_animation)
     }
 
     override fun getItemViewType(position: Int): Int {
         return position
+    }
+
+    override fun getItemId(position: Int): Long {
+        return viewModel.conversationsList.value?.get(position)?.id ?: RecyclerView.NO_ID
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -46,9 +52,10 @@ class ConversationDiffCallback : DiffUtil.ItemCallback<Conversation>() {
     }
 
     override fun areContentsTheSame(oldItem: Conversation, newItem: Conversation): Boolean {
-        return oldItem.lastMessage?.timeStamp == newItem.lastMessage?.timeStamp &&
-                oldItem.unreadCount == newItem.unreadCount &&
+        return oldItem.lastMessage?.content?.text == newItem.lastMessage?.content?.text &&
+                oldItem.lastMessage?.timeStamp == newItem.lastMessage?.timeStamp &&
                 oldItem.getLastOnline() == newItem.getLastOnline() &&
+                oldItem.unreadCount == newItem.unreadCount &&
                 oldItem.getPhoto() == newItem.getPhoto() &&
                 oldItem == newItem
     }

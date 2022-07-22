@@ -109,14 +109,23 @@ class TelegramFragment : Fragment(R.layout.fragment_telegram) {
         _viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver { navigateToLogin() })
         _viewModel.toTopPressed.observe(viewLifecycleOwner, EventObserver { goToTop() })
         _viewModel.notifyItemInsertedEvent.observe(viewLifecycleOwner, EventObserver {
-            _listAdapter?.notifyItemInserted(it)
+            notifyWithoutScroll { _listAdapter?.notifyItemInserted(it) }
         })
         _viewModel.notifyItemChangedEvent.observe(viewLifecycleOwner, EventObserver {
             _listAdapter?.notifyItemChanged(it)
         })
         _viewModel.notifyItemMovedEvent.observe(viewLifecycleOwner, EventObserver {
-            _listAdapter?.notifyItemRangeChanged(it.first, it.second)
+            notifyWithoutScroll { _listAdapter?.notifyItemMoved(it.first, it.second) }
         })
+        _viewModel.notifyItemRangeChangedEvent.observe(viewLifecycleOwner, EventObserver {
+            notifyWithoutScroll { _listAdapter?.notifyItemRangeChanged(it.first, it.second) }
+        })
+    }
+
+    private fun notifyWithoutScroll(notification: () -> Unit) {
+        val recyclerViewState = _viewDataBinding?.recyclerView?.layoutManager?.onSaveInstanceState()
+        notification()
+        _viewDataBinding?.recyclerView?.layoutManager?.onRestoreInstanceState(recyclerViewState)
     }
 
     override fun onResume() {

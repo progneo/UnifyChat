@@ -23,25 +23,29 @@ class TelegramAuthViewModel : ViewModel() {
     }
 
     private val _client = App.application.tgClient
+
     private val _restartEvent = MutableLiveData<Event<Unit>>()
+    val restartEvent: LiveData<Event<Unit>> = _restartEvent
 
-    val layoutState = MutableLiveData<LayoutState>()
+    private val _authEvent = MutableLiveData<Event<Unit>>()
+    val authEvent: LiveData<Event<Unit>> = _authEvent
 
+    private val _showPhoneEvent = MutableLiveData<Event<Unit>>()
+    val showPhoneEvent: LiveData<Event<Unit>> = _showPhoneEvent
+
+    private val _showPasswordEvent = MutableLiveData<Event<Unit>>()
+    val showPasswordEvent: LiveData<Event<Unit>> = _showPasswordEvent
+
+    private val _showCodeEvent = MutableLiveData<Event<Unit>>()
+    val showCodeEvent: LiveData<Event<Unit>> = _showCodeEvent
+
+    private val _hideAllEvent = MutableLiveData<Event<Unit>>()
+    val hideAllEvent: LiveData<Event<Unit>> = _hideAllEvent
+
+    private val layoutState = MutableLiveData<LayoutState>()
     val phoneNumberText = MutableLiveData<String?>()
     val codeText = MutableLiveData<String?>()
     val passwordText = MutableLiveData<String?>()
-
-    private val _showPhoneEvent = MutableLiveData<Event<Unit>>()
-    private val _showPasswordEvent = MutableLiveData<Event<Unit>>()
-    private val _showCodeEvent = MutableLiveData<Event<Unit>>()
-    private val _hideAllEvent = MutableLiveData<Event<Unit>>()
-
-    val showPhoneEvent: LiveData<Event<Unit>> = _showPhoneEvent
-    val showPasswordEvent: LiveData<Event<Unit>> = _showPasswordEvent
-    val showCodeEvent: LiveData<Event<Unit>> = _showCodeEvent
-    val hideAllEvent: LiveData<Event<Unit>> = _hideAllEvent
-
-    val restartEvent: LiveData<Event<Unit>> = _restartEvent
 
     init {
         observeAuthStatus()
@@ -68,7 +72,7 @@ class TelegramAuthViewModel : ViewModel() {
                 }
                 TelegramAuthStatus.AUTHENTICATED -> {
                     layoutState.value = LayoutState.AUTHENTICATED
-                    _restartEvent.value = Event(Unit)
+                    _authEvent.value = Event(Unit)
                 }
             }
         }.launchIn(viewModelScope)

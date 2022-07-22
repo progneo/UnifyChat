@@ -13,12 +13,12 @@ class TelegramAuthActivity : AppCompatActivity() {
 
     private val viewModel: TelegramAuthViewModel by viewModels { TelegramAuthViewModelFactory() }
 
-    private lateinit var viewDataBinding: ActivityTelegramAuthBinding
+    private var _viewDataBinding: ActivityTelegramAuthBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewDataBinding = ActivityTelegramAuthBinding.inflate(layoutInflater).apply { viewmodel = viewModel }
-        val view = viewDataBinding.root
+        _viewDataBinding = ActivityTelegramAuthBinding.inflate(layoutInflater).apply { viewmodel = viewModel }
+        val view = _viewDataBinding?.root
         setContentView(view)
         setupObservers()
     }
@@ -26,29 +26,39 @@ class TelegramAuthActivity : AppCompatActivity() {
     private fun setupObservers() {
         viewModel.restartEvent.observe(this, EventObserver { triggerRebirth(this.baseContext) })
 
+        viewModel.authEvent.observe(this, EventObserver { onBackPressed() })
+
         viewModel.showCodeEvent.observe(this, EventObserver {
-            viewDataBinding.securityCode.visibility = View.VISIBLE
-            viewDataBinding.password.visibility = View.INVISIBLE
-            viewDataBinding.phone.visibility = View.INVISIBLE
-            viewDataBinding.logout.visibility = View.VISIBLE
+            _viewDataBinding?.let {
+                it.securityCode.visibility = View.VISIBLE
+                it.password.visibility = View.INVISIBLE
+                it.phone.visibility = View.INVISIBLE
+                it.logout.visibility = View.VISIBLE
+            }
         })
         viewModel.showPhoneEvent.observe(this, EventObserver {
-            viewDataBinding.phone.visibility = View.VISIBLE
-            viewDataBinding.securityCode.visibility = View.INVISIBLE
-            viewDataBinding.password.visibility = View.INVISIBLE
-            viewDataBinding.logout.visibility = View.INVISIBLE
+            _viewDataBinding?.let {
+                it.phone.visibility = View.VISIBLE
+                it.securityCode.visibility = View.INVISIBLE
+                it.password.visibility = View.INVISIBLE
+                it.logout.visibility = View.INVISIBLE
+            }
         })
         viewModel.showPasswordEvent.observe(this, EventObserver {
-            viewDataBinding.password.visibility = View.VISIBLE
-            viewDataBinding.securityCode.visibility = View.INVISIBLE
-            viewDataBinding.phone.visibility = View.INVISIBLE
-            viewDataBinding.logout.visibility = View.VISIBLE
+            _viewDataBinding?.let {
+                it.password.visibility = View.VISIBLE
+                it.securityCode.visibility = View.INVISIBLE
+                it.phone.visibility = View.INVISIBLE
+                it.logout.visibility = View.VISIBLE
+            }
         })
         viewModel.hideAllEvent.observe(this, EventObserver {
-            viewDataBinding.securityCode.visibility = View.INVISIBLE
-            viewDataBinding.password.visibility = View.INVISIBLE
-            viewDataBinding.phone.visibility = View.INVISIBLE
-            viewDataBinding.logout.visibility = View.INVISIBLE
+            _viewDataBinding?.let {
+                it.securityCode.visibility = View.INVISIBLE
+                it.password.visibility = View.INVISIBLE
+                it.phone.visibility = View.INVISIBLE
+                it.logout.visibility = View.INVISIBLE
+            }
         })
     }
 
