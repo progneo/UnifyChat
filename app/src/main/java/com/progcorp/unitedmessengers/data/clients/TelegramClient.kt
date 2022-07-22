@@ -2,8 +2,6 @@ package com.progcorp.unitedmessengers.data.clients
 
 import android.util.Log
 import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.progcorp.unitedmessengers.data.db.TelegramDataSource
 import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.companions.User
@@ -18,7 +16,7 @@ import kotlinx.coroutines.flow.*
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 
-class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Client.ResultHandler {
+class TelegramClient (private val _tdLibParameters: TdApi.TdlibParameters) : Client.ResultHandler {
     private val _authState = MutableStateFlow(TelegramAuthStatus.UNKNOWN)
     val authState: StateFlow<TelegramAuthStatus> get() = _authState
 
@@ -39,7 +37,7 @@ class TelegramClient (private val tdLibParameters: TdApi.TdlibParameters) : Clie
         client = Client.create(this, null, null)!!
         client?.let {
             it.send(TdApi.SetLogVerbosityLevel(1), this)
-            it.send(TdApi.SetTdlibParameters(tdLibParameters), this)
+            it.send(TdApi.SetTdlibParameters(_tdLibParameters), this)
             it.send(TdApi.GetAuthorizationState(), this)
         }
     }

@@ -5,16 +5,7 @@ import android.os.Build
 import com.google.android.material.color.DynamicColors
 import com.progcorp.unitedmessengers.data.clients.TelegramClient
 import com.progcorp.unitedmessengers.data.clients.VKClient
-import com.progcorp.unitedmessengers.data.db.TelegramDataSource
-import com.progcorp.unitedmessengers.data.db.VKDataSource
-import com.progcorp.unitedmessengers.data.db.VKRepository
-import com.progcorp.unitedmessengers.interfaces.IAccountService
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.*
 
 class App : Application() {

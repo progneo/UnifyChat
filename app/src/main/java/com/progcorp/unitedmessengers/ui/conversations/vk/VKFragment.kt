@@ -97,9 +97,7 @@ class VKFragment : Fragment() {
                 findNavController().navigate(R.id.action_navigation_chats_to_conversation_activity, bundle)
             }
             else -> {
-                Toast.makeText(
-                    context, "This conversation are not supported", Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, "This conversation are not supported", Toast.LENGTH_SHORT).show()
             }
         }
     }

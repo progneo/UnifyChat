@@ -17,8 +17,8 @@ import java.util.regex.Pattern
 
 
 class VKAuthActivity : AppCompatActivity() {
-    private lateinit var viewDataBinding: ActivityVkAuthBinding
-    private lateinit var webView: WebView
+    private var _viewDataBinding: ActivityVkAuthBinding? = null
+    private var _webView: WebView? = null
 
     private val _client = App.application.vkClient
     private val _authParams = StringBuilder("https://oauth.vk.com/authorize?").apply {
@@ -34,12 +34,12 @@ class VKAuthActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewDataBinding = ActivityVkAuthBinding.inflate(layoutInflater)
-        val view = viewDataBinding.root
+        _viewDataBinding = ActivityVkAuthBinding.inflate(layoutInflater)
+        val view = _viewDataBinding!!.root
         setContentView(view)
-        webView = view.webView
+        _webView = view.webView
         if (_client.token == null) {
-            webView.webViewClient = AuthWebViewClient(baseContext) { status ->
+            _webView!!.webViewClient = AuthWebViewClient(baseContext) { status ->
                 when(status) {
                     VKAuthStatus.AUTH -> {
 
@@ -55,34 +55,24 @@ class VKAuthActivity : AppCompatActivity() {
                         Toast.makeText(baseContext, "Аккаунт заблокирован", Toast.LENGTH_LONG).show()
                     }
                     VKAuthStatus.SUCCESS -> {
-                        val url = webView.url!!
+                        val url = _webView!!.url!!
                         val tokenMather = Pattern.compile("access_token=[^&]*").matcher(url)
                         val userIdMather = Pattern.compile("user_id=\\w+").matcher(url)
                         if (tokenMather.find() && userIdMather.find()) {
                             val token = tokenMather.group().replace("access_token=".toRegex(), "")
                             val userId = userIdMather.group().replace("user_id=".toRegex(), "")
                             if (token.isNotEmpty() && userId.isNotEmpty()) {
-                                App.application.vkClient.token = token
-                                App.application.vkClient.userId = userId
+                                _client.token = token
+                                _client.userId = userId
                             }
                         }
-                        Thread.sleep(4000)
-                        triggerRebirth(baseContext)
+                        onBackPressed()
                     }
                 }
             }
         } else {
             onBackPressed()
         }
-    }
-
-    private fun triggerRebirth(context: Context) {
-        val packageManager = context.packageManager
-        val intent = packageManager.getLaunchIntentForPackage(context.packageName)
-        val componentName = intent!!.component
-        val mainIntent = Intent.makeRestartActivityTask(componentName)
-        context.startActivity(mainIntent)
-        Runtime.getRuntime().exit(0)
     }
 
     override fun onStart() {
@@ -94,6 +84,6 @@ class VKAuthActivity : AppCompatActivity() {
 
     private fun showAuthWindow() {
         CookieManager.getInstance().removeAllCookies(null)
-        webView.loadUrl(_authParams)
+        _webView?.loadUrl(_authParams)
     }
 }
