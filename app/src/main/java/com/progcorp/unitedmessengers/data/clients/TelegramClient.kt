@@ -26,6 +26,7 @@ class TelegramClient (private val _tdLibParameters: TdApi.TdlibParameters) : Cli
 
     var user = MutableLiveData<User?>()
     val conversationsList = MediatorLiveData<MutableList<Conversation>>()
+    val isLoaded = MutableLiveData(false)
 
     var conversationsViewModel: TelegramConversationsViewModel? = null
     var conversationViewModel: ConversationViewModel? = null
@@ -338,6 +339,7 @@ class TelegramClient (private val _tdLibParameters: TdApi.TdlibParameters) : Cli
         conversationsList.value?.sortByDescending {
             it.lastMessage?.timeStamp
         }
+        isLoaded.value = true
     }
 
     inline fun <reified T : TdApi.Object> send(query: TdApi.Function): Flow<T> =

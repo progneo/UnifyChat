@@ -38,5 +38,10 @@
         <item name="android:windowLightNavigationBar">false</item>
         <!-- Bottom sheet. -->
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.UM.BottomSheetDialog</item>
+        <!-- Splash screen. -->
+        <item name="android:windowSplashScreenBackground" tools:targetApi="s">?attr/colorBackgroundFloating</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@drawable/avd</item>
+        <item name="android:windowSplashScreenAnimationDuration" tools:targetApi="s">2000</item>
+        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="s">?attr/colorBackgroundFloating</item>
     </style>
 </resources>
