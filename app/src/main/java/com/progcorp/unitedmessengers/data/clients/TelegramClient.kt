@@ -338,7 +338,13 @@ class TelegramClient (private val _tdLibParameters: TdApi.TdlibParameters) : Cli
     }
 
     private suspend fun fetchChats() {
-        repository.getConversations(100).first()
+        val response = repository.loadConversations(100).first()
+        if (response.constructor == TdApi.Ok.CONSTRUCTOR) {
+            Log.d(TAG, "Conversations successfully updated.")
+        }
+        else {
+            Log.d(TAG, "Can't update conversations list.")
+        }
         val data = repository.getConversations(100).first()
         for (conversation in data) {
             Conversation.tgParse(conversation)?.let {

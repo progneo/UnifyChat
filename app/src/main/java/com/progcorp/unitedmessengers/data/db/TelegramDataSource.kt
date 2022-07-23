@@ -14,7 +14,7 @@ class TelegramDataSource (private val client: TelegramClient) {
 
     private fun getConversationIds(limit: Int): Flow<LongArray> =
         callbackFlow {
-            client.client?.send(TdApi.GetChats(TdApi.ChatListMain(), limit)) {
+            client.client?.send(TdApi.GetChats(null, limit)) {
                 when (it.constructor) {
                     TdApi.Chats.CONSTRUCTOR -> {
                         trySend((it as TdApi.Chats).chatIds).isSuccess
@@ -29,6 +29,25 @@ class TelegramDataSource (private val client: TelegramClient) {
             }
             awaitClose { }
         }
+
+    fun loadConversations(limit: Int): Flow<TdApi.Ok> =
+        callbackFlow {
+            client.client?.send(TdApi.LoadChats(null, limit)) {
+                when (it.constructor) {
+                    TdApi.Ok.CONSTRUCTOR -> {
+                        trySend(it as TdApi.Ok).isSuccess
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+                        Log.e("${javaClass.simpleName}.loadConversations", (it as TdApi.Error).message)
+                    }
+                    else -> {
+                        Log.e("${javaClass.simpleName}.loadConversations", "Unknown error")
+                    }
+                }
+            }
+            awaitClose { }
+        }
+
 
     fun getConversations(limit: Int): Flow<List<TdApi.Chat>> =
         getConversationIds(limit)

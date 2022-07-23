@@ -69,16 +69,30 @@ class MainActivity : AppCompatActivity() {
     private fun setupObservers() {
         _viewModel.vkUnreadCount.observe(this) {
             it?.let {
-                _vkBadge?.isVisible = true
-                _vkBadge?.number = _viewModel.vkUnreadCount.value ?: 0
+                _viewModel.vkUnreadCount.value?.let { count ->
+                    if (count == 0) {
+                        _vkBadge?.isVisible = false
+                    }
+                    else {
+                        _vkBadge?.isVisible = true
+                        _vkBadge?.number = count
+                    }
+                }
             } ?: run {
                 _vkBadge?.isVisible = false
             }
         }
         _viewModel.tgUnreadCount.observe(this) {
             it?.let {
-                _tgBadge?.isVisible = true
-                _tgBadge?.number = _viewModel.tgUnreadCount.value ?: 0
+                _viewModel.tgUnreadCount.value?.let { count ->
+                    if (count == 0) {
+                        _tgBadge?.isVisible = false
+                    }
+                    else {
+                        _tgBadge?.isVisible = true
+                        _tgBadge?.number = count
+                    }
+                }
             } ?: run {
                 _tgBadge?.isVisible = false
             }
