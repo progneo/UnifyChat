@@ -39,6 +39,7 @@ class VKClient (private val _sharedPreference: SharedPreferences) {
 
     var user = MutableLiveData<User?>()
     val conversationsList = MediatorLiveData<MutableList<Conversation>>()
+    val unreadCount = MutableLiveData<Int?>()
 
     var conversationsViewModel: VKConversationsViewModel? = null
     var conversationViewModel: ConversationViewModel? = null
@@ -126,6 +127,10 @@ class VKClient (private val _sharedPreference: SharedPreferences) {
                 }
             }
         }
+        MainScope().launch {
+            val data = repository.getUnreadCount().first()
+            unreadCount.value = data
+        }
         conversationsList.value?.sortByDescending { it.lastMessage?.timeStamp }
     }
 
@@ -133,8 +138,6 @@ class VKClient (private val _sharedPreference: SharedPreferences) {
         _conversationsGetter = Runnable {
             loadConversations(0, true)
             _handler.postDelayed(_conversationsGetter, 5000)
-            Log.d("VKClient", "User: ${user.value}")
-            Log.d("VKClient", "ConversationsList: ${conversationsList.value}")
         }
         _handler.postDelayed(_conversationsGetter, 0)
     }

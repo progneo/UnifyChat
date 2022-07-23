@@ -41,6 +41,25 @@ class VKRepository (private val dataSource: VKDataSource) {
         }.flowOn(Dispatchers.IO)
     }
 
+    suspend fun getUnreadCount(): Flow<Int> {
+        return flow {
+            val response = dataSource.getUnreadCount()
+            var result: Int = 0
+            if (response.status == Status.SUCCESS) {
+                val json = response.data?.let { JSONObject(it) }
+                if (json != null) {
+                    try {
+                        result = json.getJSONObject("response").getInt("unread_count")
+                    }
+                    catch (ex: JSONException) {
+                        Log.e("${javaClass.simpleName}.getUnreadCount", ex.stackTraceToString())
+                    }
+                }
+                emit(result)
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
     suspend fun getConversation(id: Int): Flow<Conversation?>  {
         return flow {
             val response = dataSource.getConversationById(id)

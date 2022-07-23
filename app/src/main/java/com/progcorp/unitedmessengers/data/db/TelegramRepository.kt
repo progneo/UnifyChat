@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package com.progcorp.unitedmessengers.data.db
 
 import com.progcorp.unitedmessengers.data.Resource

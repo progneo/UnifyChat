@@ -26,6 +26,7 @@ class TelegramClient (private val _tdLibParameters: TdApi.TdlibParameters) : Cli
 
     var user = MutableLiveData<User?>()
     val conversationsList = MediatorLiveData<MutableList<Conversation>>()
+    val unreadCount = MutableLiveData<Int?>()
     val isLoaded = MutableLiveData(false)
 
     var conversationsViewModel: TelegramConversationsViewModel? = null
@@ -152,6 +153,16 @@ class TelegramClient (private val _tdLibParameters: TdApi.TdlibParameters) : Cli
                 }
                 conversationViewModel?.newMessage(data)
             }
+
+            TdApi.UpdateUnreadChatCount.CONSTRUCTOR -> {
+                val update = (data as TdApi.UpdateUnreadChatCount)
+                MainScope().launch {
+                    if (update.chatList.constructor == TdApi.ChatListMain.CONSTRUCTOR) {
+                        unreadCount.value = update.unreadCount
+                    }
+                }
+            }
+
             //TODO:
             TdApi.UpdateSupergroupFullInfo.CONSTRUCTOR -> {
 
@@ -163,9 +174,6 @@ class TelegramClient (private val _tdLibParameters: TdApi.TdlibParameters) : Cli
 
             //TdApi.UpdateOption.CONSTRUCTOR -> {
 
-            //}
-            //TdApi.UpdateUnreadMessageCount.CONSTRUCTOR -> {
-            //
             //}
 
             else -> Log.d(TAG, "Unhandled onResult call with data: $data.")
@@ -330,6 +338,7 @@ class TelegramClient (private val _tdLibParameters: TdApi.TdlibParameters) : Cli
     }
 
     private suspend fun fetchChats() {
+        repository.getConversations(100).first()
         val data = repository.getConversations(100).first()
         for (conversation in data) {
             Conversation.tgParse(conversation)?.let {

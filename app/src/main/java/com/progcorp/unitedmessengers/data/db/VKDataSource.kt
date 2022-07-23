@@ -32,6 +32,22 @@ class VKDataSource (private val client: VKClient) {
         )
     }
 
+    suspend fun getUnreadCount(): Resource<String> {
+        val service = _retrofit.create(VKConversationsRequest::class.java)
+        return getResponse(
+            request = {
+                service.conversationsGet(
+                    client.token!!,
+                    "5.131",
+                    0,
+                    0,
+                    false,
+                    0
+                )
+            }
+        )
+    }
+
     suspend fun getConversationById(id: Int): Resource<String> {
         val service = _retrofit.create(VKConversationByIdRequest::class.java)
         return getResponse(
