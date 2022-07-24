@@ -170,10 +170,9 @@ fun View.bindRepliedMessage(message: Message) {
 fun TextView.bindReplyText(message: Message?) {
     if (message != null) {
         val messageContent = message.content
+        val color = TypedValue()
         if (messageContent.text == "") {
-            val color = TypedValue()
             context.theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, color, true)
-            this.setTextColor(color.data)
 
             when (messageContent) {
                 is MessageSticker -> this.text = "Стикер"
@@ -193,8 +192,10 @@ fun TextView.bindReplyText(message: Message?) {
             }
         }
         else {
+            context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnBackground, color, true)
             this.text = messageContent.text
         }
+        this.setTextColor(color.data)
     }
 }
 
@@ -451,5 +452,13 @@ fun Button.bindMessageEditViewModel(viewModel: ConversationViewModel) {
             val currentTimestamp = System.currentTimeMillis()
             this.visibility = if (currentTimestamp - messageTimestamp > 86400000) View.GONE else View.VISIBLE
         }
+    }
+}
+
+@BindingAdapter("bind_message_delete_viewmodel")
+fun Button.bindMessageDeleteViewModel(viewModel: ConversationViewModel) {
+    val message = viewModel.selectedMessage.value
+    if (message != null) {
+        this.visibility = if (message.canBeDeletedOnlyForSelf || message.canBeDeletedForAllUsers) View.VISIBLE else View.GONE
     }
 }

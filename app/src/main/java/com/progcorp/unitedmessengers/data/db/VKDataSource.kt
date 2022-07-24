@@ -126,6 +126,53 @@ class VKDataSource (private val client: VKClient) {
         )
     }
 
+    suspend fun deleteMessages(messageIds: String, deleteForAll: Boolean): Resource<String> {
+        val service = _retrofit.create(VKDeleteMessages::class.java)
+        val response: Resource<String>
+        if (deleteForAll) {
+            response = getResponse(
+                request = {
+                    service.deleteMessagesForAll(
+                        client.token!!,
+                        "5.131",
+                        messageIds,
+                        deleteForAll
+                    )
+                }
+            )
+        }
+        else {
+            response = getResponse(
+                request = {
+                    service.deleteMessages(
+                        client.token!!,
+                        "5.131",
+                        messageIds
+                    )
+                }
+            )
+        }
+        return response
+    }
+
+    suspend fun editMessage(conversation: Conversation, message: Message): Resource<String> {
+        val service = _retrofit.create(VKEditMessage::class.java)
+        return getResponse(
+            request = {
+                service.editMessage(
+                    client.token!!,
+                    "5.131",
+                    conversation.id,
+                    message.content.text,
+                    keep_forward_messages = true,
+                    keep_snippets = true,
+                    disable_mentions = true,
+                    message_id = message.id.toString()
+                )
+            }
+        )
+    }
+
     suspend fun getLongPollServer(): Resource<String> {
         val service = _retrofit.create(VKGetLongPollServer::class.java)
         return getResponse(

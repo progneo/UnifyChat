@@ -9,6 +9,7 @@ import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.data.model.MessageText
 import com.progcorp.unitedmessengers.util.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
@@ -24,7 +25,7 @@ class ConversationViewModelFactory(private val conversation: Conversation) :
 class ConversationViewModel(private val conversation: Conversation) : ViewModel()  {
 
     private val _tgClient = App.application.tgClient
-    private val _vkRepository = App.application.vkClient.repository
+    private val _vkClient = App.application.vkClient
 
     private var _handler = Handler()
     private var _messagesGetter: Runnable = Runnable {  }
@@ -109,7 +110,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
         viewModelScope.launch(Dispatchers.Main) {
             when (conversation.messenger) {
                 Constants.Messenger.VK -> {
-                    val data = _vkRepository.getMessages(conversation, offset, 20).first()
+                    val data = _vkClient.repository.getMessages(conversation, offset, 20).first()
                     for (message in data) {
                         _addedMessage.value = message
                     }
@@ -135,7 +136,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
         viewModelScope.launch {
             when (conversation.messenger) {
                 Constants.Messenger.VK -> {
-                    val data = _vkRepository.getMessages(conversation, 0, 20).first()
+                    val data = _vkClient.repository.getMessages(conversation, 0, 20).first()
                     for (message in data) {
                         _newMessage.value = message
                     }
@@ -158,7 +159,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
         viewModelScope.launch {
             when (conversation.messenger) {
                 Constants.Messenger.VK -> {
-                    _vkRepository.markAsRead(chat.value!!.id, message).first()
+                    _vkClient.repository.markAsRead(chat.value!!.id, message).first()
                 }
                 Constants.Messenger.TG -> {
                     _tgClient.repository.markAsRead(chat.value!!.id, message).first()
@@ -194,13 +195,26 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                 when (conversation.messenger) {
                     Constants.Messenger.VK -> {
                         _newMessage.value = message
-                        val data = _vkRepository.sendMessage(chat.value!!.id, message).first()
+                        val data = _vkClient.repository.sendMessage(chat.value!!.id, message).first()
                         _newMessage.value?.id = data
                     }
                     Constants.Messenger.TG -> {
                         val data = _tgClient.repository.sendMessage(chat.value!!.id, message).first()
                         _newMessage.value = Message.tgParse(data)
                     }
+                }
+            }
+        }
+    }
+
+    fun delete(forAll: Boolean) {
+        MainScope().launch {
+            when (conversation.messenger) {
+                Constants.Messenger.VK -> {
+                    _vkClient.repository.deleteMessages(listOf(selectedMessage.value!!), forAll).first()
+                }
+                Constants.Messenger.TG -> {
+                    _tgClient.repository.deleteMessages(chat.value!!.id, listOf(selectedMessage.value!!), forAll).first()
                 }
             }
         }

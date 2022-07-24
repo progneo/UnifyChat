@@ -47,6 +47,7 @@
             android:text="@string/delete"
             app:icon="@drawable/ic_delete"
             style="@style/Widget.UM.Button.BottomSheet.Red"
+            app:bind_message_delete_viewmodel="@{viewmodel}"
             android:onClick="@{() -> viewmodel.deleteMessage()}"/>
     </LinearLayout>
 </layout>

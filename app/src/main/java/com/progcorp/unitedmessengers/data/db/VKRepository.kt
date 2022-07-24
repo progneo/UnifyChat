@@ -49,7 +49,7 @@ class VKRepository (private val dataSource: VKDataSource) {
                 val json = response.data?.let { JSONObject(it) }
                 if (json != null) {
                     try {
-                        result = json.getJSONObject("response").getInt("unread_count")
+                        result = json.getJSONObject("response").optInt("unread_count")
                     }
                     catch (ex: JSONException) {
                         Log.e("${javaClass.simpleName}.getUnreadCount", ex.stackTraceToString())
@@ -160,6 +160,31 @@ class VKRepository (private val dataSource: VKDataSource) {
                     }
                 }
                 emit(result)
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun deleteMessages(messages: List<Message>, deleteForAll: Boolean): Flow<Boolean> {
+        return flow {
+            val messageIds = LongArray(messages.size) { messages[it].id }
+            val response = dataSource.deleteMessages(messageIds.joinToString(separator = ","), deleteForAll)
+            if (response.status == Status.SUCCESS) {
+                emit(true)
+            }
+            else {
+                emit(false)
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun editMessage(conversation: Conversation, message: Message): Flow<Boolean> {
+        return flow {
+            val response = dataSource.editMessage(conversation, message)
+            if (response.status == Status.SUCCESS) {
+                emit(true)
+            }
+            else {
+                emit(false)
             }
         }.flowOn(Dispatchers.IO)
     }

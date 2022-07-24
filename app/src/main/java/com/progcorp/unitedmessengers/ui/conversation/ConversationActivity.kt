@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.EventObserver
 import com.progcorp.unitedmessengers.data.model.Conversation
@@ -30,7 +31,7 @@ class ConversationActivity : AppCompatActivity() {
         const val TAG = "ConversationFragment"
     }
 
-    private val viewModel: ConversationViewModel by viewModels {
+    private val _viewModel: ConversationViewModel by viewModels {
         ConversationViewModelFactory(
             intent.getSerializableExtra(ARGS_CONVERSATION) as Conversation
         )
@@ -46,7 +47,7 @@ class ConversationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         _viewDataBinding = ActivityConversationBinding.inflate(layoutInflater)
-            .apply { viewmodel = viewModel }
+            .apply { viewmodel = _viewModel }
         _viewDataBinding?.lifecycleOwner = this
         val view = _viewDataBinding?.root
         _toolbar = view?.toolbar
@@ -78,16 +79,16 @@ class ConversationActivity : AppCompatActivity() {
                 else -> false
             }
         }
-        viewModel.addAttachmentPressed.observe(this, EventObserver {
+        _viewModel.addAttachmentPressed.observe(this, EventObserver {
             functionalityNotAvailable(this)
         })
-        viewModel.toBottomPressed.observe(this, EventObserver {
+        _viewModel.toBottomPressed.observe(this, EventObserver {
             _viewDataBinding?.recyclerView?.scrollToPosition(0)
         })
-        viewModel.onMessagePressed.observe(this, EventObserver {
-            showBottomSheet(viewModel)
+        _viewModel.onMessagePressed.observe(this, EventObserver {
+            showBottomSheet(_viewModel)
         })
-        viewModel.messageToReply.observe(this, EventObserver {
+        _viewModel.messageToReply.observe(this, EventObserver {
             _bottomSheet!!.dismiss()
             _bottomSheet = null
             val editText = _viewDataBinding?.messageInput
@@ -95,16 +96,26 @@ class ConversationActivity : AppCompatActivity() {
             val imm: InputMethodManager? = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
             imm?.showSoftInput(editText, 0)
         })
-        viewModel.messagesToForward.observe(this, EventObserver {
+        _viewModel.messagesToForward.observe(this, EventObserver {
             functionalityNotAvailable(this)
         })
-        viewModel.textToCopy.observe(this, EventObserver {
+        _viewModel.textToCopy.observe(this, EventObserver {
             copyTextToClipboard(it)
         })
-        viewModel.messageToDelete.observe(this, EventObserver {
-            functionalityNotAvailable(this)
+        _viewModel.messageToDelete.observe(this, EventObserver {
+            _bottomSheet!!.dismiss()
+            _bottomSheet = null
+            if (it.canBeDeletedForAllUsers && it.canBeDeletedOnlyForSelf) {
+                showDeleteWithSelectDialog()
+            }
+            else if (it.canBeDeletedOnlyForSelf) {
+                showDeleteForSelfDialog()
+            }
+            else {
+                showDeleteForAllDialog()
+            }
         })
-        viewModel.messageToEdit.observe(this, EventObserver {
+        _viewModel.messageToEdit.observe(this, EventObserver {
             functionalityNotAvailable(this)
         })
     }
@@ -187,9 +198,60 @@ class ConversationActivity : AppCompatActivity() {
         }
     }
 
+    private fun showDeleteWithSelectDialog() {
+        val items = arrayOf(applicationContext.getString(R.string.delete_for_all))
+        val checked = booleanArrayOf(true)
+        var deleteForAll = true
+        MaterialAlertDialogBuilder(this, com.google.android.material.R.style.ThemeOverlay_Material3_Dialog_Alert)
+            .setIcon(R.drawable.ic_delete)
+            .setTitle(R.string.delete_message)
+            .setMultiChoiceItems(items, checked) { _, _, _->
+                deleteForAll = !deleteForAll
+            }
+            .setNegativeButton(R.string.no) { dialog, _ ->
+                dialog.cancel()
+            }
+            .setPositiveButton(R.string.yes) { dialog, _ ->
+                Log.e(this.javaClass.simpleName, deleteForAll.toString())
+                _viewModel.delete(deleteForAll)
+                dialog.cancel()
+            }
+            .show()
+    }
+
+    private fun showDeleteForSelfDialog() {
+        MaterialAlertDialogBuilder(this, com.google.android.material.R.style.ThemeOverlay_Material3_Dialog_Alert)
+            .setIcon(R.drawable.ic_delete)
+            .setTitle(R.string.delete_message)
+            .setMessage(R.string.delete_one_message_confirm)
+            .setNegativeButton(R.string.no) { dialog, _ ->
+                dialog.cancel()
+            }
+            .setPositiveButton(R.string.yes) { dialog, _ ->
+                _viewModel.delete(false)
+                dialog.cancel()
+            }
+            .show()
+    }
+
+    private fun showDeleteForAllDialog() {
+        MaterialAlertDialogBuilder(this, com.google.android.material.R.style.ThemeOverlay_Material3_Dialog_Alert)
+            .setIcon(R.drawable.ic_delete)
+            .setTitle(R.string.delete_message)
+            .setMessage(R.string.delete_one_message_for_all_confirmation)
+            .setNegativeButton(R.string.no) { dialog, _ ->
+                dialog.cancel()
+            }
+            .setPositiveButton(R.string.yes) { dialog, _ ->
+                _viewModel.delete(true)
+                dialog.cancel()
+            }
+            .show()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.stopListeners()
+        _viewModel.stopListeners()
         _listAdapter?.unregisterAdapterDataObserver(_listAdapterObserver!!)
         _viewDataBinding = null
         _listAdapter = null

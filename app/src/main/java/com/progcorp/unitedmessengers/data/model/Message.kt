@@ -23,6 +23,9 @@ data class Message(
     val replyToMessage: Message? = null,
     val forwardedMessages: List<Message>? = null,
     var content: IMessageContent = MessageText(),
+    val canBeEdited: Boolean = false,
+    val canBeDeletedOnlyForSelf: Boolean = false,
+    val canBeDeletedForAllUsers: Boolean = false,
     var messenger: Int = 0
 ) : Serializable {
 
@@ -197,6 +200,9 @@ data class Message(
                 messageContent = MessageUnknown("Необработанное сообщение")
             }
 
+            val currentTimestamp = System.currentTimeMillis()
+            val canBeEdited = currentTimestamp - timeStamp < 86400000 && isOutgoing
+
             return Message(
                 id = id,
                 timeStamp = timeStamp,
@@ -205,6 +211,9 @@ data class Message(
                 replyToMessage = replyToMessage,
                 forwardedMessages = null,
                 content = messageContent,
+                canBeEdited = canBeEdited,
+                canBeDeletedForAllUsers = canBeEdited,
+                canBeDeletedOnlyForSelf = true,
                 messenger = Constants.Messenger.VK
             )
         }
@@ -463,6 +472,9 @@ data class Message(
                 replyToMessage = replyToMessage,
                 forwardedMessages = null,
                 content = messageContent,
+                canBeEdited = tgMessage.canBeEdited,
+                canBeDeletedOnlyForSelf = tgMessage.canBeDeletedOnlyForSelf,
+                canBeDeletedForAllUsers = tgMessage.canBeDeletedForAllUsers,
                 messenger = Constants.Messenger.TG
             )
         }

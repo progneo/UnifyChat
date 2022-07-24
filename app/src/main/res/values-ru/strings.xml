@@ -49,4 +49,10 @@
     <string name="search">Поиск</string>
     <string name="more">Больше</string>
     <string name="description_more">Дополнительно</string>
+    <string name="delete_message">Удалить сообщение</string>
+    <string name="delete_one_message_for_all_confirmation">Вы действительно хотите удалить это сообщение для всех?</string>
+    <string name="delete_one_message_confirm">Вы действительно хотите удалить это сообщение?</string>
+    <string name="delete_for_all">Удалить для всех</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 </resources>

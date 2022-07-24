@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.android.material.R.style.ThemeOverlay_Material3_Dialog_Alert
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.progcorp.unitedmessengers.R
+import com.progcorp.unitedmessengers.data.model.Message
 
 fun functionalityNotAvailable(context: Context) {
     MaterialAlertDialogBuilder(context, ThemeOverlay_Material3_Dialog_Alert)

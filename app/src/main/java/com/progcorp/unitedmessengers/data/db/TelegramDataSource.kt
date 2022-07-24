@@ -48,7 +48,6 @@ class TelegramDataSource (private val client: TelegramClient) {
             awaitClose { }
         }
 
-
     fun getConversations(limit: Int): Flow<List<TdApi.Chat>> =
         getConversationIds(limit)
             .map { ids -> ids.map { getConversation(it) } }
@@ -58,22 +57,23 @@ class TelegramDataSource (private val client: TelegramClient) {
                 }
             }
 
-    fun getConversation(chatId: Long): Flow<TdApi.Chat> = callbackFlow {
-        client.client?.send(TdApi.GetChat(chatId)) {
-            when (it.constructor) {
-                TdApi.Chat.CONSTRUCTOR -> {
-                    trySend(it as TdApi.Chat).isSuccess
-                }
-                TdApi.Error.CONSTRUCTOR -> {
-                    Log.e("${javaClass.simpleName}.getChat", "${(it as TdApi.Error).message}. ID: $chatId")
-                }
-                else -> {
-                    Log.e("${javaClass.simpleName}.getChat", "Unknown error")
+    fun getConversation(chatId: Long): Flow<TdApi.Chat> =
+        callbackFlow {
+            client.client?.send(TdApi.GetChat(chatId)) {
+                when (it.constructor) {
+                    TdApi.Chat.CONSTRUCTOR -> {
+                        trySend(it as TdApi.Chat).isSuccess
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+                        Log.e("${javaClass.simpleName}.getChat", "${(it as TdApi.Error).message}. ID: $chatId")
+                    }
+                    else -> {
+                        Log.e("${javaClass.simpleName}.getChat", "Unknown error")
+                    }
                 }
             }
+            awaitClose { }
         }
-        awaitClose { }
-    }
 
     fun getSupergroup(chatId: Long): Flow<TdApi.Supergroup> =
         callbackFlow {
@@ -122,7 +122,6 @@ class TelegramDataSource (private val client: TelegramClient) {
             }
             awaitClose { }
         }
-
 
     fun getMessages(chatId: Long, fromMessageId: Long, limit: Int): Flow<List<TdApi.Message>> =
         callbackFlow {
@@ -233,6 +232,34 @@ class TelegramDataSource (private val client: TelegramClient) {
             awaitClose { }
         }
 
+    fun deleteMessages(chatId: Long, messages: List<Message>, deleteForAll: Boolean): Flow<Unit> =
+        callbackFlow {
+            val array = LongArray(messages.size) { messages[it].id }
+            client.client?.send(TdApi.DeleteMessages(
+                chatId,
+                array,
+                deleteForAll)){
+                when (it.constructor) {
+                    TdApi.Ok.CONSTRUCTOR -> {
+                        trySend(Unit).isSuccess
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+                        Log.e(
+                            "${javaClass.simpleName}.deleteMessages",
+                            "${(it as TdApi.Error).message}. Chat ID: $chatId."
+                        )
+                    }
+                    else -> {
+                        Log.e(
+                            "${javaClass.simpleName}.deleteMessages",
+                            "Unknown error"
+                        )
+                    }
+                }
+            }
+            awaitClose { }
+        }
+
     fun getUser(userId: Long): Flow<TdApi.User> =
         callbackFlow {
             client.client?.send(TdApi.GetUser(userId)) {
@@ -257,37 +284,39 @@ class TelegramDataSource (private val client: TelegramClient) {
             awaitClose { }
         }
 
-    fun getMe(): Flow<TdApi.User> = callbackFlow {
-        client.client?.send(TdApi.GetMe()) {
-            when (it.constructor) {
-                TdApi.User.CONSTRUCTOR -> {
-                    trySend(it as TdApi.User).isSuccess
-                }
-                TdApi.Error.CONSTRUCTOR -> {
-                    Log.e("${javaClass.simpleName}.getMe", (it as TdApi.Error).message)
-                }
-                else -> {
-                    Log.e("${javaClass.simpleName}.getMe", "Unknown error")
+    fun getMe(): Flow<TdApi.User> =
+        callbackFlow {
+            client.client?.send(TdApi.GetMe()) {
+                when (it.constructor) {
+                    TdApi.User.CONSTRUCTOR -> {
+                        trySend(it as TdApi.User).isSuccess
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+                        Log.e("${javaClass.simpleName}.getMe", (it as TdApi.Error).message)
+                    }
+                    else -> {
+                        Log.e("${javaClass.simpleName}.getMe", "Unknown error")
+                    }
                 }
             }
+            awaitClose { }
         }
-        awaitClose { }
-    }
 
-    fun getFile(fileId: Int): Flow<TdApi.File> = callbackFlow {
-        client.client?.send(TdApi.GetFile(fileId)) {
-            when (it.constructor) {
-                TdApi.File.CONSTRUCTOR -> {
-                    trySend(it as TdApi.File).isSuccess
-                }
-                TdApi.Error.CONSTRUCTOR -> {
-                    Log.e("${javaClass.simpleName}.getFile", (it as TdApi.Error).message)
-                }
-                else -> {
-                    Log.e("${javaClass.simpleName}.getFile", "Unknown error")
+    fun getFile(fileId: Int): Flow<TdApi.File> =
+        callbackFlow {
+            client.client?.send(TdApi.GetFile(fileId)) {
+                when (it.constructor) {
+                    TdApi.File.CONSTRUCTOR -> {
+                        trySend(it as TdApi.File).isSuccess
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+                        Log.e("${javaClass.simpleName}.getFile", (it as TdApi.Error).message)
+                    }
+                    else -> {
+                        Log.e("${javaClass.simpleName}.getFile", "Unknown error")
+                    }
                 }
             }
+            awaitClose { }
         }
-        awaitClose { }
-    }
 }
