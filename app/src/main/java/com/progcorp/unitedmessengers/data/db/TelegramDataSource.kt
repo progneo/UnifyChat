@@ -260,6 +260,65 @@ class TelegramDataSource (private val client: TelegramClient) {
             awaitClose { }
         }
 
+    fun editMessageCaption(chatId: Long, message: Message): Flow<Unit> =
+        callbackFlow {
+            val text = TdApi.FormattedText(message.content.text, arrayOf(TdApi.TextEntity()))
+            client.client?.send(TdApi.EditMessageCaption(
+                chatId,
+                message.id,
+                null,
+                text)){
+                when (it.constructor) {
+                    TdApi.Message.CONSTRUCTOR -> {
+                        trySend(Unit).isSuccess
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+                        Log.e(
+                            "${javaClass.simpleName}.editMessageCaption",
+                            "${(it as TdApi.Error).message}. Chat ID: $chatId. Message ID: ${message.id}"
+                        )
+                    }
+                    else -> {
+                        Log.e(
+                            "${javaClass.simpleName}.editMessageCaption",
+                            "Unknown error"
+                        )
+                    }
+                }
+            }
+            awaitClose { }
+        }
+
+    fun editMessageText(chatId: Long, message: Message): Flow<Unit> =
+        callbackFlow {
+            val text = TdApi.FormattedText(message.content.text, arrayOf(TdApi.TextEntity()))
+            val input = TdApi.InputMessageText(text, true, false)
+            client.client?.send(TdApi.EditMessageText(
+                chatId,
+                message.id,
+                null,
+                input)){
+                when (it.constructor) {
+                    TdApi.Message.CONSTRUCTOR -> {
+                        trySend(Unit).isSuccess
+                    }
+                    TdApi.Error.CONSTRUCTOR -> {
+                        Log.e(
+                            "${javaClass.simpleName}.editMessageText",
+                            "${(it as TdApi.Error).message}. Chat ID: $chatId. Message ID: ${message.id}"
+                        )
+                    }
+                    else -> {
+                        Log.e(
+                            "${javaClass.simpleName}.editMessageText",
+                            "Unknown error"
+                        )
+                    }
+                }
+            }
+            awaitClose { }
+        }
+
     fun getUser(userId: Long): Flow<TdApi.User> =
         callbackFlow {
             client.client?.send(TdApi.GetUser(userId)) {

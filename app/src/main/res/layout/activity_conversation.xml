@@ -34,7 +34,7 @@
                     android:layout_height="?attr/actionBarSize"
                     android:padding="12dp"
                     android:src="@drawable/ic_account_circle"
-                    app:bind_conversation="@{viewmodel.chat}"
+                    app:bind_conversation="@{viewmodel.conversation}"
                     app:shapeAppearanceOverlay="@style/CircleImageView" />
 
                 <LinearLayout
@@ -48,7 +48,7 @@
                         style="@style/Widget.UM.TextView.Conversation.Name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:bind_name="@{viewmodel.chat.companion}"
+                        app:bind_name="@{viewmodel.conversation.companion}"
                         tools:text="Беседа" />
 
                     <TextView
@@ -56,7 +56,7 @@
                         style="@style/Widget.UM.TextView.Conversation.Extra"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:bind_extra_info="@{viewmodel.chat.companion}"
+                        app:bind_extra_info="@{viewmodel.conversation.companion}"
                         tools:text="10 участников" />
                 </LinearLayout>
 
@@ -113,7 +113,6 @@
                 android:layout_height="match_parent"
                 android:background="?attr/colorTertiary"/>
             <LinearLayout
-                android:id="@+id/layout_message"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -147,6 +146,51 @@
         </LinearLayout>
 
         <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.UM.Layout.Message.Reply"
+            android:visibility="gone"
+            app:bind_edit_message="@{viewmodel.editMessage}"
+            tools:visibility="visible">
+
+            <View
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:background="@drawable/ic_edit"
+                android:backgroundTint="?attr/colorTertiary"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/edit_message"
+                    style="@style/Widget.UM.TextView.Message.Author.Reply"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:bind_edit_text="@{viewmodel.editMessage}"
+                    style="@style/Widget.UM.TextView.Reply"
+                    tools:text="Изменение сообщения"/>
+            </LinearLayout>
+
+            <Button
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="end"
+                android:background="@drawable/inset_cancel"
+                android:onClick="@{() -> viewmodel.cancelEdit()}"
+                app:backgroundTint="?attr/colorTertiary" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/user_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -154,7 +198,7 @@
             android:orientation="horizontal"
             android:gravity="center"
             android:background="?attr/colorSurface"
-            android:visibility="@{viewmodel.chat.canWrite ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewmodel.conversation.canWrite ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent">
             <Button
                 android:layout_width="40dp"
@@ -180,7 +224,7 @@
                     android:paddingHorizontal="14dp"
                     android:paddingVertical="10dp"
                     android:textColor="?attr/colorOnSecondaryContainer"
-                    android:text="@={viewmodel.newMessageText}"/>
+                    android:text="@={viewmodel.messageText}"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -188,8 +232,17 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@drawable/inset_send"
-                android:onClick="@{() -> viewmodel.sendMessagePressed()}"
-                app:backgroundTint="?attr/colorPrimary" />
+                android:onClick="@{() -> viewmodel.sendMessage()}"
+                app:backgroundTint="?attr/colorPrimary"
+                android:visibility="@{viewmodel.editMessage != null ? View.GONE : View.VISIBLE}"/>
+
+            <Button
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/inset_send"
+                android:onClick="@{() -> viewmodel.editMessage()}"
+                app:backgroundTint="?attr/colorPrimary"
+                android:visibility="@{viewmodel.editMessage != null ? View.VISIBLE : View.GONE}"/>
         </LinearLayout>
     </LinearLayout>
 </layout>

@@ -4,9 +4,7 @@ import android.os.Handler
 import androidx.lifecycle.*
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
-import com.progcorp.unitedmessengers.data.model.Conversation
-import com.progcorp.unitedmessengers.data.model.Message
-import com.progcorp.unitedmessengers.data.model.MessageText
+import com.progcorp.unitedmessengers.data.model.*
 import com.progcorp.unitedmessengers.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -22,44 +20,58 @@ class ConversationViewModelFactory(private val conversation: Conversation) :
     }
 }
 
-class ConversationViewModel(private val conversation: Conversation) : ViewModel()  {
+class ConversationViewModel(private val _chat: Conversation) : ViewModel()  {
 
+    //Clients
     private val _tgClient = App.application.tgClient
     private val _vkClient = App.application.vkClient
 
+    //Handler for vk (will be removed, when long polling will be finished
     private var _handler = Handler()
     private var _messagesGetter: Runnable = Runnable {  }
 
+    //Current data
     private val _conversation: MutableLiveData<Conversation> = MutableLiveData()
+    val conversation: LiveData<Conversation> = _conversation
+    val messagesList = MediatorLiveData<MutableList<Message>>()
+
+    //Observable messages variables
     private val _addedMessage = MutableLiveData<Message>()
     private val _newMessage = MutableLiveData<Message>()
 
-    private val _addAttachmentsPressed = MutableLiveData<Event<Unit>>()
-    private val _toBottomPressed = MutableLiveData<Event<Unit>>()
-    private val _onMessagePressed = MutableLiveData<Event<Message>>()
-
-    private val _messageToReply = MutableLiveData<Event<Message>>()
-    private val _messagesToForward = MutableLiveData<Event<List<Message>>>()
-    private val _textToCopy = MutableLiveData<Event<String>>()
-    private val _messageToEdit = MutableLiveData<Event<Message>>()
-    private val _messageToDelete = MutableLiveData<Event<Message>>()
-
     val replyMessage = MutableLiveData<Message?>()
+    val editMessage = MutableLiveData<Message?>()
     val selectedMessage = MutableLiveData<Message?>()
 
-    val newMessageText = MutableLiveData<String?>()
-    val messagesList = MediatorLiveData<MutableList<Message>>()
-    val chat: LiveData<Conversation> = _conversation
-
-    val toBottomPressed: LiveData<Event<Unit>> = _toBottomPressed
+    //Events on clicks in activity
+    private val _addAttachmentsPressed = MutableLiveData<Event<Unit>>()
     val addAttachmentPressed: LiveData<Event<Unit>> = _addAttachmentsPressed
+
+    private val _toBottomPressed = MutableLiveData<Event<Unit>>()
+    val toBottomPressed: LiveData<Event<Unit>> = _toBottomPressed
+
+    private val _onMessagePressed = MutableLiveData<Event<Message>>()
     val onMessagePressed: LiveData<Event<Message>> = _onMessagePressed
 
+    //Events on clicks in bottom sheet
+    private val _messageToReply = MutableLiveData<Event<Message>>()
     val messageToReply: LiveData<Event<Message>> = _messageToReply
+
+    private val _messagesToForward = MutableLiveData<Event<List<Message>>>()
     val messagesToForward: LiveData<Event<List<Message>>> = _messagesToForward
+
+    private val _textToCopy = MutableLiveData<Event<String>>()
     val textToCopy: LiveData<Event<String>> = _textToCopy
+
+    private val _messageToEdit = MutableLiveData<Event<Message>>()
     val messageToEdit: LiveData<Event<Message>> = _messageToEdit
+
+    private val _messageToDelete = MutableLiveData<Event<Message>>()
     val messageToDelete: LiveData<Event<Message>> = _messageToDelete
+
+    //New message text
+    val messageText = MutableLiveData<String?>()
+
 
     init {
         messagesList.addSource(_addedMessage) { newMessage ->
@@ -86,12 +98,12 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                 it.id
             }
         }
-        _conversation.value = conversation
+        _conversation.value = _chat
         startListeners()
     }
 
     private fun startListeners() {
-        when (conversation.messenger) {
+        when (_conversation.value?.messenger) {
             Constants.Messenger.VK -> {
                 _messagesGetter = Runnable {
                     loadNewMessages()
@@ -108,9 +120,9 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
 
     private fun loadSelectedMessages(offset: Int) {
         viewModelScope.launch(Dispatchers.Main) {
-            when (conversation.messenger) {
+            when (_conversation.value?.messenger) {
                 Constants.Messenger.VK -> {
-                    val data = _vkClient.repository.getMessages(conversation, offset, 20).first()
+                    val data = _vkClient.repository.getMessages(_conversation.value!!, offset, 20).first()
                     for (message in data) {
                         _addedMessage.value = message
                     }
@@ -118,7 +130,7 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
                 Constants.Messenger.TG -> {
                     if (messagesList.value != null) {
                         val data = _tgClient.repository.getMessages(
-                            conversation.id,
+                            _conversation.value!!.id,
                             messagesList.value!![offset].id,
                             20
                         ).first()
@@ -134,15 +146,15 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
 
     private fun loadNewMessages() {
         viewModelScope.launch {
-            when (conversation.messenger) {
+            when (_conversation.value?.messenger) {
                 Constants.Messenger.VK -> {
-                    val data = _vkClient.repository.getMessages(conversation, 0, 20).first()
+                    val data = _vkClient.repository.getMessages(_conversation.value!!, 0, 20).first()
                     for (message in data) {
                         _newMessage.value = message
                     }
                 }
                 Constants.Messenger.TG -> {
-                    val data = _tgClient.repository.getMessages(conversation.id, 0,20).first()
+                    val data = _tgClient.repository.getMessages(_conversation.value!!.id, 0,20).first()
                     for (item in data) {
                         val message = Message.tgParse(item)
                         _newMessage.value = message
@@ -156,20 +168,20 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
     }
 
     private fun markAsRead(message: Message) {
-        viewModelScope.launch {
-            when (conversation.messenger) {
+        MainScope().launch {
+            when (_conversation.value?.messenger) {
                 Constants.Messenger.VK -> {
-                    _vkClient.repository.markAsRead(chat.value!!.id, message).first()
+                    _vkClient.repository.markAsRead(conversation.value!!.id, message).first()
                 }
                 Constants.Messenger.TG -> {
-                    _tgClient.repository.markAsRead(chat.value!!.id, message).first()
+                    _tgClient.repository.markAsRead(conversation.value!!.id, message).first()
                 }
             }
         }
     }
 
     fun stopListeners() {
-        when (conversation.messenger) {
+        when (_conversation.value?.messenger) {
             Constants.Messenger.VK -> {
                 _handler.removeCallbacks(_messagesGetter)
             }
@@ -179,27 +191,29 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
         }
     }
 
-    fun sendMessagePressed() {
-        viewModelScope.launch {
-            if (!newMessageText.value.isNullOrBlank()) {
+    fun sendMessage() {
+        MainScope().launch {
+            if (!messageText.value.isNullOrBlank()) {
                 val message = Message(
+                    id = messagesList.value!!.last().id + 1,
                     timeStamp = Date().time,
-                    sender = chat.value!!.companion,
+                    sender = conversation.value!!.companion,
                     isOutgoing = true,
                     replyToMessage = replyMessage.value,
-                    content = MessageText(newMessageText.value!!)
+                    content = MessageText(messageText.value!!)
                 )
-                newMessageText.value = null
+                messageText.value = null
                 replyMessage.value = null
+                editMessage.value = null
 
-                when (conversation.messenger) {
+                when (_conversation.value?.messenger) {
                     Constants.Messenger.VK -> {
                         _newMessage.value = message
-                        val data = _vkClient.repository.sendMessage(chat.value!!.id, message).first()
+                        val data = _vkClient.repository.sendMessage(conversation.value!!.id, message).first()
                         _newMessage.value?.id = data
                     }
                     Constants.Messenger.TG -> {
-                        val data = _tgClient.repository.sendMessage(chat.value!!.id, message).first()
+                        val data = _tgClient.repository.sendMessage(conversation.value!!.id, message).first()
                         _newMessage.value = Message.tgParse(data)
                     }
                 }
@@ -207,14 +221,63 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
         }
     }
 
-    fun delete(forAll: Boolean) {
+    fun editMessage() {
         MainScope().launch {
-            when (conversation.messenger) {
-                Constants.Messenger.VK -> {
-                    _vkClient.repository.deleteMessages(listOf(selectedMessage.value!!), forAll).first()
+            if (!messageText.value.isNullOrBlank()) {
+                val message = editMessage.value!!
+                message.content.text = messageText.value!!
+                messageText.value = null
+                editMessage.value = null
+
+                when (_conversation.value?.messenger) {
+                    Constants.Messenger.VK -> {
+                        _vkClient.repository.editMessage(_conversation.value!!, message).first()
+                    }
+                    Constants.Messenger.TG -> {
+                        when (message.content) {
+                            is MessageText -> {
+                                _tgClient.repository.editMessageText(_conversation.value!!.id, message).first()
+                            }
+                            is MessagePhoto -> {
+                                _tgClient.repository.editMessageCaption(_conversation.value!!.id, message).first()
+                            }
+                            is MessageAnimation -> {
+                                _tgClient.repository.editMessageCaption(_conversation.value!!.id, message).first()
+                            }
+                            is MessageVideo -> {
+                                _tgClient.repository.editMessageCaption(_conversation.value!!.id, message).first()
+                            }
+                            is MessageVoiceNote -> {
+                                _tgClient.repository.editMessageCaption(_conversation.value!!.id, message).first()
+                            }
+                            is MessageDocument -> {
+                                _tgClient.repository.editMessageCaption(_conversation.value!!.id, message).first()
+                            }
+                            else -> {}
+                        }
+                    }
                 }
-                Constants.Messenger.TG -> {
-                    _tgClient.repository.deleteMessages(chat.value!!.id, listOf(selectedMessage.value!!), forAll).first()
+            }
+        }
+    }
+
+    fun deleteMessage(forAll: Boolean) {
+        MainScope().launch {
+            selectedMessage.value?.let {
+                if (it.id == editMessage.value?.id) {
+                    editMessage.value = null
+                    messageText.value = null
+                }
+                else if (it.id == replyMessage.value?.id) {
+                    replyMessage.value = null
+                }
+                when (_conversation.value?.messenger) {
+                    Constants.Messenger.VK -> {
+                        _vkClient.repository.deleteMessages(listOf(it), forAll).first()
+                    }
+                    Constants.Messenger.TG -> {
+                        _tgClient.repository.deleteMessages(conversation.value!!.id, listOf(it), forAll).first()
+                    }
                 }
             }
         }
@@ -233,16 +296,16 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
     }
 
     fun updateOnline(data: TdApi.UpdateUserStatus) {
-        if (data.userId == chat.value!!.id) {
+        if (data.userId == conversation.value!!.id) {
             viewModelScope.launch(Dispatchers.Main) {
-                _conversation.value!!.tgParseOnlineStatus(data)
-                _conversation.postValue(_conversation.value!!.copy())
+                _conversation.value?.tgParseOnlineStatus(data)
+                _conversation.postValue(_conversation.value?.copy())
             }
         }
     }
 
     fun newMessage(data: TdApi.UpdateNewMessage) {
-        if (data.message.chatId == chat.value!!.id) {
+        if (data.message.chatId == conversation.value!!.id) {
             viewModelScope.launch(Dispatchers.Main) {
                 _newMessage.value = Message.tgParse(data.message)
                 markAsRead(_newMessage.value!!)
@@ -255,31 +318,49 @@ class ConversationViewModel(private val conversation: Conversation) : ViewModel(
         _onMessagePressed.value = Event(message)
     }
 
-    fun forwardMessage() {
+    fun copyTextToClipboard() {
+        selectedMessage.value?.let {
+            _textToCopy.value = Event(it.content.text)
+        }
+    }
+
+    fun onForwardMessage() {
         _messagesToForward.value = Event(listOf(selectedMessage.value!!))
     }
 
-    fun replyOnMessage() {
+    fun onReplyPressed() {
         selectedMessage.value?.let {
             replyMessage.value = it
+            if (editMessage.value != null) {
+                messageText.value = null
+                editMessage.value = null
+            }
             _messageToReply.value = Event(it)
         }
     }
 
-    fun copyTextToClipboard() {
-        _textToCopy.value = Event(selectedMessage.value!!.content.text)
+    fun onEditMessage() {
+        selectedMessage.value?.let {
+            editMessage.value = it
+            replyMessage.value = null
+            messageText.value = it.content.text
+            _messageToEdit.value = Event(it)
+        }
     }
 
-    fun editMessage() {
-        _messageToEdit.value = Event(selectedMessage.value!!)
-    }
-
-    fun deleteMessage() {
-        _messageToDelete.value = Event(selectedMessage.value!!)
+    fun onDeleteMessage() {
+        selectedMessage.value?.let {
+            _messageToDelete.value = Event(it)
+        }
     }
 
     fun cancelReply() {
         replyMessage.value = null
+    }
+
+    fun cancelEdit() {
+        editMessage.value = null
+        messageText.value = null
     }
 
     companion object {

@@ -55,4 +55,5 @@
     <string name="delete_for_all">Удалить для всех</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
+    <string name="edit_message">Редактирование</string>
 </resources>

@@ -36,7 +36,7 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/photo_sender"
-                app:bind_conversation="@{viewmodel.chat}"
+                app:bind_conversation="@{viewmodel.conversation}"
                 app:bind_image_sender="@{message.sender}"
                 style="@style/Widget.UM.ImageView.Message.Author"
                 tools:src="@drawable/avatar"/>
@@ -52,7 +52,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:bind_name="@{message}"
-                    app:bind_conversation="@{viewmodel.chat}"
+                    app:bind_conversation="@{viewmodel.conversation}"
                     style="@style/Widget.UM.TextView.Message.Author"
                     tools:text="Имя Фамилия"/>
 

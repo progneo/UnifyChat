@@ -21,13 +21,13 @@
             app:icon="@drawable/ic_reply"
             style="@style/Widget.UM.Button.BottomSheet"
             app:bind_message_reply_viewmodel="@{viewmodel}"
-            android:onClick="@{() -> viewmodel.replyOnMessage()}"/>
+            android:onClick="@{() -> viewmodel.onReplyPressed()}"/>
         <Button
             android:id="@+id/button_forward"
             android:text="@string/forward"
             app:icon="@drawable/ic_forward"
             style="@style/Widget.UM.Button.BottomSheet"
-            android:onClick="@{() -> viewmodel.forwardMessage()}"/>
+            android:onClick="@{() -> viewmodel.onForwardMessage()}"/>
         <Button
             android:id="@+id/button_copy"
             android:text="@string/copy"
@@ -41,13 +41,13 @@
             app:icon="@drawable/ic_edit"
             style="@style/Widget.UM.Button.BottomSheet"
             app:bind_message_edit_viewmodel="@{viewmodel}"
-            android:onClick="@{() -> viewmodel.editMessage()}"/>
+            android:onClick="@{() -> viewmodel.onEditMessage()}"/>
         <Button
             android:id="@+id/button_delete"
             android:text="@string/delete"
             app:icon="@drawable/ic_delete"
             style="@style/Widget.UM.Button.BottomSheet.Red"
             app:bind_message_delete_viewmodel="@{viewmodel}"
-            android:onClick="@{() -> viewmodel.deleteMessage()}"/>
+            android:onClick="@{() -> viewmodel.onDeleteMessage()}"/>
     </LinearLayout>
 </layout>

@@ -199,6 +199,39 @@ fun TextView.bindReplyText(message: Message?) {
     }
 }
 
+@BindingAdapter("bind_edit_text")
+fun TextView.bindEditText(message: Message?) {
+    if (message != null) {
+        val messageContent = message.content
+        val color = TypedValue()
+        if (messageContent.text == "") {
+            context.theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, color, true)
+
+            when (messageContent) {
+                is MessageSticker -> this.text = "Стикер"
+                is MessagePoll -> this.text = "Голосование"
+                is MessagePhoto -> this.text = "Фото"
+                is MessageVideoNote -> this.text = "Видео-сообщение"
+                is MessageVoiceNote -> this.text = "Голосовое сообщение"
+                is MessageVideo -> this.text = "Видео"
+                is MessageAnimation -> this.text = "GIF"
+                is MessageAnimatedEmoji -> this.text = messageContent.emoji
+                is MessageCollage -> this.text = "Коллаж"
+                is MessageDocument -> this.text = "Документ"
+                is MessageLocation -> this.text = "Местоположение"
+                else -> {
+                    this.text = "Необработанное сообщение"
+                }
+            }
+        }
+        else {
+            context.theme.resolveAttribute(com.google.android.material.R.attr.colorOnBackground, color, true)
+            this.text = messageContent.text
+        }
+        this.setTextColor(color.data)
+    }
+}
+
 @BindingAdapter("bind_photo")
 fun ImageView.bindPhoto(message: Message) {
     val param = this.layoutParams as ViewGroup.MarginLayoutParams
@@ -434,7 +467,7 @@ fun Button.bindMessageCopyViewModel(viewModel: ConversationViewModel) {
 
 @BindingAdapter("bind_message_reply_viewmodel")
 fun Button.bindMessageReplyViewModel(viewModel: ConversationViewModel) {
-    val chat = viewModel.chat.value
+    val chat = viewModel.conversation.value
     if (chat != null) {
         this.visibility = if (chat.canWrite) View.VISIBLE else View.GONE
     }
@@ -450,7 +483,18 @@ fun Button.bindMessageEditViewModel(viewModel: ConversationViewModel) {
         else {
             val messageTimestamp = message.timeStamp
             val currentTimestamp = System.currentTimeMillis()
-            this.visibility = if (currentTimestamp - messageTimestamp > 86400000) View.GONE else View.VISIBLE
+            if (currentTimestamp - messageTimestamp > 86400000) {
+                this.visibility = View.GONE
+            }
+            else when (message.content) {
+                is MessageText -> this.visibility = View.VISIBLE
+                is MessagePhoto -> this.visibility = View.VISIBLE
+                is MessageVideo -> this.visibility = View.VISIBLE
+                is MessageAnimation -> this.visibility = View.VISIBLE
+                is MessageVoiceNote -> this.visibility = View.VISIBLE
+                is MessageDocument -> this.visibility = View.VISIBLE
+                else -> this.visibility = View.GONE
+            }
         }
     }
 }

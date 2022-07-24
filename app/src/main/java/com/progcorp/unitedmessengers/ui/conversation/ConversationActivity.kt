@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -42,6 +43,7 @@ class ConversationActivity : AppCompatActivity() {
     private var _listAdapterObserver: RecyclerView.AdapterDataObserver? = null
     private var _toolbar: MaterialToolbar? = null
     private var _bottomSheet: BottomSheetFragment? = null
+    private var _editText: EditText? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +53,7 @@ class ConversationActivity : AppCompatActivity() {
         _viewDataBinding?.lifecycleOwner = this
         val view = _viewDataBinding?.root
         _toolbar = view?.toolbar
+        _editText = _viewDataBinding?.messageInput
         setSupportActionBar(_toolbar)
         setContentView(view)
         setupListAdapter()
@@ -89,12 +92,9 @@ class ConversationActivity : AppCompatActivity() {
             showBottomSheet(_viewModel)
         })
         _viewModel.messageToReply.observe(this, EventObserver {
-            _bottomSheet!!.dismiss()
+            _bottomSheet?.dismiss()
             _bottomSheet = null
-            val editText = _viewDataBinding?.messageInput
-            editText?.requestFocus()
-            val imm: InputMethodManager? = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-            imm?.showSoftInput(editText, 0)
+            forceShowKeyboard()
         })
         _viewModel.messagesToForward.observe(this, EventObserver {
             functionalityNotAvailable(this)
@@ -103,7 +103,7 @@ class ConversationActivity : AppCompatActivity() {
             copyTextToClipboard(it)
         })
         _viewModel.messageToDelete.observe(this, EventObserver {
-            _bottomSheet!!.dismiss()
+            _bottomSheet?.dismiss()
             _bottomSheet = null
             if (it.canBeDeletedForAllUsers && it.canBeDeletedOnlyForSelf) {
                 showDeleteWithSelectDialog()
@@ -116,8 +116,22 @@ class ConversationActivity : AppCompatActivity() {
             }
         })
         _viewModel.messageToEdit.observe(this, EventObserver {
-            functionalityNotAvailable(this)
+            _bottomSheet?.dismiss()
+            _bottomSheet = null
+            forceShowKeyboard()
         })
+    }
+
+    private fun forceShowKeyboard() {
+        val imm: InputMethodManager? = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm?.showSoftInput(_editText, 0)
+        _editText?.postDelayed(Runnable {
+            run {
+                _editText?.requestFocus()
+                _editText?.setSelection(_editText!!.length())
+                imm?.showSoftInput(_editText, 0)
+            }
+        }, 100)
     }
 
     private fun setupListAdapter() {
@@ -161,20 +175,21 @@ class ConversationActivity : AppCompatActivity() {
                 }
             })
 
-            if (viewModel.chat.value!!.canWrite) {
+            if (viewModel.conversation.value!!.canWrite) {
                 val messagesSwipeController = MessageSwipeController(this, object :
                     IMessageSwipeControllerActions {
                     override fun replyToMessage(position: Int) {
-                        viewModel.replyMessage.value = viewModel.messagesList.value!![position]
+                        viewModel.selectedMessage.value = viewModel.messagesList.value!![position]
+                        viewModel.onReplyPressed()
                     }
-                }, _viewDataBinding!!.messageInput)
+                }, _editText)
 
                 val itemTouchHelper = ItemTouchHelper(messagesSwipeController)
                 itemTouchHelper.attachToRecyclerView(_viewDataBinding?.recyclerView)
             }
         }
         else {
-            throw Exception("The viewmodel is not initialized")
+            throw Exception("The view model is not initialized")
         }
     }
 
@@ -213,7 +228,7 @@ class ConversationActivity : AppCompatActivity() {
             }
             .setPositiveButton(R.string.yes) { dialog, _ ->
                 Log.e(this.javaClass.simpleName, deleteForAll.toString())
-                _viewModel.delete(deleteForAll)
+                _viewModel.deleteMessage(deleteForAll)
                 dialog.cancel()
             }
             .show()
@@ -228,7 +243,7 @@ class ConversationActivity : AppCompatActivity() {
                 dialog.cancel()
             }
             .setPositiveButton(R.string.yes) { dialog, _ ->
-                _viewModel.delete(false)
+                _viewModel.deleteMessage(false)
                 dialog.cancel()
             }
             .show()
@@ -243,7 +258,7 @@ class ConversationActivity : AppCompatActivity() {
                 dialog.cancel()
             }
             .setPositiveButton(R.string.yes) { dialog, _ ->
-                _viewModel.delete(true)
+                _viewModel.deleteMessage(true)
                 dialog.cancel()
             }
             .show()

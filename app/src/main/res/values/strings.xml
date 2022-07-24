@@ -60,4 +60,5 @@
     <string name="delete_for_all">Delete for all</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="edit_message">Edit Message</string>
 </resources>

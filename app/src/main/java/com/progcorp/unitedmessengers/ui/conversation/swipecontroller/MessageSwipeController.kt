@@ -19,7 +19,7 @@ import kotlin.math.abs
 import kotlin.math.min
 
 
-class MessageSwipeController(private val context: Context, private val swipeControllerActions: IMessageSwipeControllerActions, private val editText: EditText) :
+class MessageSwipeController(private val context: Context, private val swipeControllerActions: IMessageSwipeControllerActions, private val editText: EditText?) :
     ItemTouchHelper.Callback() {
 
     private var _imageDrawable: Drawable? = null
@@ -88,7 +88,7 @@ class MessageSwipeController(private val context: Context, private val swipeCont
             if (_swipeBack) {
                 if (abs(_view!!.translationX) >= 50.dipToPx) {
                     swipeControllerActions.replyToMessage(viewHolder.adapterPosition)
-                    editText.requestFocus()
+                    editText?.requestFocus()
                     val imm: InputMethodManager? =
                         context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
                     imm?.showSoftInput(editText, 0)
