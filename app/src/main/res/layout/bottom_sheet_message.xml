@@ -27,7 +27,7 @@
             android:text="@string/forward"
             app:icon="@drawable/ic_forward"
             style="@style/Widget.UM.Button.BottomSheet"
-            android:onClick="@{() -> viewmodel.onForwardMessage()}"/>
+            android:onClick="@{() -> viewmodel.onForwardPressed()}"/>
         <Button
             android:id="@+id/button_copy"
             android:text="@string/copy"
@@ -41,13 +41,13 @@
             app:icon="@drawable/ic_edit"
             style="@style/Widget.UM.Button.BottomSheet"
             app:bind_message_edit_viewmodel="@{viewmodel}"
-            android:onClick="@{() -> viewmodel.onEditMessage()}"/>
+            android:onClick="@{() -> viewmodel.onEditPressed()}"/>
         <Button
             android:id="@+id/button_delete"
             android:text="@string/delete"
             app:icon="@drawable/ic_delete"
             style="@style/Widget.UM.Button.BottomSheet.Red"
             app:bind_message_delete_viewmodel="@{viewmodel}"
-            android:onClick="@{() -> viewmodel.onDeleteMessage()}"/>
+            android:onClick="@{() -> viewmodel.onDeletePressed()}"/>
     </LinearLayout>
 </layout>

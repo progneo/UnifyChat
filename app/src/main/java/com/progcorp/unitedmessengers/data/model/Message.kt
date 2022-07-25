@@ -23,12 +23,221 @@ data class Message(
     val replyToMessage: Message? = null,
     val forwardedMessages: List<Message>? = null,
     var content: IMessageContent = MessageText(),
-    val canBeEdited: Boolean = false,
-    val canBeDeletedOnlyForSelf: Boolean = false,
-    val canBeDeletedForAllUsers: Boolean = false,
+    var canBeEdited: Boolean = false,
+    var canBeDeletedOnlyForSelf: Boolean = false,
+    var canBeDeletedForAllUsers: Boolean = false,
     var messenger: Int = 0
 ) : Serializable {
 
+    fun updateMessageContent(content: TdApi.MessageContent) {
+        when (content.constructor) {
+            TdApi.MessageText.CONSTRUCTOR -> {
+                this.content = MessageText((content as TdApi.MessageText).text.text)
+            }
+            TdApi.MessageAnimation.CONSTRUCTOR -> {
+                content as TdApi.MessageAnimation
+                val photo = content.animation.animation!!
+                this.content = MessageAnimation()
+            }
+            TdApi.MessageAudio.CONSTRUCTOR -> {
+                content as TdApi.MessageAudio
+                this.content = MessageUnknown(content.caption.text, content.audio.fileName)
+            }
+            TdApi.MessageDocument.CONSTRUCTOR -> {
+                content as TdApi.MessageDocument
+                this.content = MessageUnknown(content.caption.text, content.document.fileName)
+            }
+            TdApi.MessagePhoto.CONSTRUCTOR -> {
+                content as TdApi.MessagePhoto
+                val path: String
+                val photoId: Int
+                val photoWidth: Int
+                val photoHeight: Int
+                content.photo.sizes[content.photo.sizes.size - 1].let {
+                    photoId = it.photo.id
+                    photoHeight = it.height
+                    photoWidth = it.width
+                    path = if (it.photo.local.isDownloadingCompleted){
+                        it.photo.local.path
+                    } else {
+                        it.photo.id.toString()
+                    }
+                }
+                val photoObj = Photo(photoId.toLong(), photoWidth, photoHeight, path)
+                photoObj.adaptToChatSize()
+                this.content = MessagePhoto(content.caption.text, photoObj)
+            }
+            TdApi.MessageExpiredPhoto.CONSTRUCTOR -> {
+                this.content = MessageExpiredPhoto()
+            }
+            TdApi.MessageSticker.CONSTRUCTOR -> {
+                content as TdApi.MessageSticker
+                this.content = if (content.sticker.isAnimated) {
+                    MessageText(text = content.sticker.emoji)
+                } else {
+                    if (content.sticker.sticker.local.isDownloadingCompleted) {
+                        MessageSticker(path = content.sticker.sticker.local.path)
+                    }
+                    else {
+                        MessageSticker(path = content.sticker.sticker.id.toString())
+                    }
+                }
+            }
+            TdApi.MessageVideo.CONSTRUCTOR -> {
+                content as TdApi.MessageVideo
+                content.video.thumbnail?.let {
+                    val photoObj = Photo(
+                        it.file.id.toLong(),
+                        it.width,
+                        it.height
+                    )
+                    photoObj.adaptToChatSize()
+                    this.content = if (it.file.local.isDownloadingCompleted) {
+                        photoObj.path = it.file.local.path
+                        MessagePhoto(
+                            text = content.caption.text,
+                            photo = photoObj
+                        )
+                    }
+                    else {
+                        photoObj.path = it.file.id.toString()
+                        MessagePhoto(
+                            text = content.caption.text,
+                            photo = photoObj
+                        )
+                    }
+                }
+            }
+            TdApi.MessageExpiredVideo.CONSTRUCTOR -> {
+                this.content = MessageExpiredVideo()
+            }
+            TdApi.MessageVideoNote.CONSTRUCTOR -> {
+                content as TdApi.MessageVideoNote
+                content.videoNote.thumbnail?.let {
+                    val photoObj = Photo(
+                        it.file.id.toLong(),
+                        it.width,
+                        it.height
+                    )
+                    photoObj.adaptToChatSize()
+                    this.content = if (it.file.local.isDownloadingCompleted) {
+                        photoObj.path = it.file.local.path
+                        MessagePhoto(
+                            photo = photoObj
+                        )
+                    }
+                    else {
+                        photoObj.path = it.file.id.toString()
+                        MessagePhoto(
+                            photo = photoObj
+                        )
+                    }
+                }
+            }
+            TdApi.MessageVoiceNote.CONSTRUCTOR -> {
+                content as TdApi.MessageVoiceNote
+                this.content = MessageVoiceNote(content.caption.text)
+            }
+            TdApi.MessageLocation.CONSTRUCTOR -> {
+                this.content = MessageLocation()
+            }
+            TdApi.MessageVenue.CONSTRUCTOR -> {
+                this.content = MessageLocation()
+            }
+            TdApi.MessageContact.CONSTRUCTOR -> {
+                this.content = MessageUnknown(info = "Контакт")
+            }
+            TdApi.MessageAnimatedEmoji.CONSTRUCTOR -> {
+                content as TdApi.MessageAnimatedEmoji
+                this.content = MessageText(content.emoji)
+            }
+            TdApi.MessageDice.CONSTRUCTOR -> {
+                content as TdApi.MessageDice
+                this.content = MessageUnknown(content.emoji, content.value.toString())
+            }
+            TdApi.MessageGame.CONSTRUCTOR -> {
+                this.content = MessageUnknown(info = "Игра")
+            }
+            TdApi.MessagePoll.CONSTRUCTOR -> {
+                this.content = MessagePoll()
+            }
+            TdApi.MessageInvoice.CONSTRUCTOR -> {
+                this.content = MessageUnknown(info = "Счёт")
+            }
+            TdApi.MessageCall.CONSTRUCTOR -> {
+                this.content = MessageUnknown(info = "Звонок")
+            }
+            TdApi.MessageVideoChatScheduled.CONSTRUCTOR -> {
+                this.content = MessageUnknown(info = "Запланированный видеозвонок")
+            }
+            TdApi.MessageVideoChatStarted.CONSTRUCTOR -> {
+                this.content = MessageUnknown(info = "Видеозвонок начат")
+            }
+            TdApi.MessageVideoChatEnded.CONSTRUCTOR -> {
+                this.content = MessageUnknown(info = "Видеозвонок окончен")
+            }
+            TdApi.MessageInviteVideoChatParticipants.CONSTRUCTOR -> {
+                this.content = MessageUnknown(info = "Приглашение в видеозвонок")
+            }
+            TdApi.MessageChatChangeTitle.CONSTRUCTOR -> {
+                this.content = MessageChat("Чат сменил название")
+            }
+            TdApi.MessageChatChangePhoto.CONSTRUCTOR -> {
+                this.content = MessageChat("Чат сменил фото")
+            }
+            TdApi.MessageChatDeletePhoto.CONSTRUCTOR -> {
+                this.content = MessageChat("Чат удалил фото")
+            }
+            TdApi.MessageChatAddMembers.CONSTRUCTOR -> {
+                this.content = MessageChat("Новый участник")
+            }
+            TdApi.MessageChatJoinByLink.CONSTRUCTOR -> {
+                this.content = MessageChat("Новый участник присоеденился по ссылке")
+            }
+            TdApi.MessageChatJoinByRequest.CONSTRUCTOR -> {
+                this.content = MessageChat("Новый участник")
+            }
+            TdApi.MessageChatDeleteMember.CONSTRUCTOR -> {
+                this.content = MessageChat("Участник покинул чат")
+            }
+            TdApi.MessageChatUpgradeTo.CONSTRUCTOR -> {
+                this.content = MessageChat("Группа стала супергруппой (?)")
+            }
+            TdApi.MessageChatUpgradeFrom.CONSTRUCTOR -> {
+                this.content = MessageChat("Группа стала супергруппой (?)")
+            }
+            TdApi.MessagePinMessage.CONSTRUCTOR -> {
+                this.content = MessageChat("Закреплено сообщение")
+            }
+            TdApi.MessageScreenshotTaken.CONSTRUCTOR -> {
+                this.content = MessageChat("Был сделан скриншот чата")
+            }
+            TdApi.MessageChatSetTheme.CONSTRUCTOR -> {
+                this.content = MessageChat("Изменена тема чата")
+            }
+            TdApi.MessageChatSetTtl.CONSTRUCTOR -> {
+                this.content = MessageChat("Время жизни сообщений изменено")
+            }
+            TdApi.MessageCustomServiceAction.CONSTRUCTOR -> {
+                this.content = MessageChat("Что-то произошло")
+            }
+            TdApi.MessageGameScore.CONSTRUCTOR -> {
+                this.content = MessageChat("В игре побит рекорд")
+            }
+            TdApi.MessagePaymentSuccessful.CONSTRUCTOR -> {
+                this.content = MessageChat("Успешная оплата")
+            }
+            TdApi.MessagePaymentSuccessfulBot.CONSTRUCTOR -> {
+                this.content = MessageChat("Успешная оплата")
+            }
+            TdApi.MessageContactRegistered.CONSTRUCTOR -> {
+                this.content = MessageChat("Присоединился к Telegram")
+            }
+            else -> {
+                this.content = MessageUnknown(info = "Какое-то действие")
+            }
+        }
+    }
     companion object {
         suspend fun vkParse(json: JSONObject, profiles: JSONArray?, groups: JSONArray?): Message {
             val id = json.optLong("id")

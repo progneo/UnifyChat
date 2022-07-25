@@ -5,6 +5,7 @@ import com.progcorp.unitedmessengers.data.clients.TelegramClient
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.data.model.MessageText
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import org.drinkless.td.libcore.telegram.TdApi
@@ -377,5 +378,24 @@ class TelegramDataSource (private val client: TelegramClient) {
                 }
             }
             awaitClose { }
+        }
+
+    fun downloadFile(fileId: Int): Flow<TdApi.File> =
+        callbackFlow {
+            client.client?.send(TdApi.DownloadFile(fileId, 1, 0, 0, true)) {
+                when (it.constructor) {
+                    TdApi.File.CONSTRUCTOR -> {
+                        trySend((it as TdApi.File)).isSuccess
+                    }
+                    else -> {
+                        Log.e(
+                            "${javaClass.simpleName}.downloadFile",
+                            "Unknown error"
+                        )
+                        cancel("", Exception(""))
+                    }
+                }
+            }
+            awaitClose()
         }
 }

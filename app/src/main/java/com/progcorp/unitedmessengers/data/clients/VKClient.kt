@@ -9,9 +9,11 @@ import androidx.lifecycle.MutableLiveData
 import com.progcorp.unitedmessengers.data.db.VKDataSource
 import com.progcorp.unitedmessengers.data.db.VKRepository
 import com.progcorp.unitedmessengers.data.model.Conversation
+import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.data.model.VKLongPollServer
 import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.enums.VKAuthStatus
+import com.progcorp.unitedmessengers.interfaces.IClient
 import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
 import com.progcorp.unitedmessengers.ui.conversations.vk.VKConversationsViewModel
 import com.progcorp.unitedmessengers.util.addFrontItem
@@ -24,7 +26,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
-class VKClient (private val _sharedPreference: SharedPreferences) {
+class VKClient (private val _sharedPreference: SharedPreferences) : IClient {
     private var _dataSource: VKDataSource = VKDataSource(this)
     var repository: VKRepository = VKRepository(_dataSource)
 
@@ -38,12 +40,41 @@ class VKClient (private val _sharedPreference: SharedPreferences) {
     var lpRetrofit: Retrofit? = null
 
     var user = MutableLiveData<User?>()
-    val conversationsList = MediatorLiveData<MutableList<Conversation>>()
+
+    private val _currentConversation = MutableLiveData<Conversation?>()
+    override val currentConversation: LiveData<Conversation?> = _currentConversation
+
+    override val conversationsList = MediatorLiveData<MutableList<Conversation>>()
+    override val messagesList = MediatorLiveData<MutableList<Message>>()
+
     val unreadCount = MutableLiveData<Int?>()
 
     var conversationsViewModel: VKConversationsViewModel? = null
-    var conversationViewModel: ConversationViewModel? = null
+    override var conversationViewModel: ConversationViewModel? = null
 
+    override fun setConversation(conversation: Conversation?) {
+
+    }
+
+    override suspend fun loadLatestMessages() {
+
+    }
+
+    override suspend fun loadMessagesFromId(messageId: Long) {
+
+    }
+
+    override suspend fun sendMessage(message: Message) {
+
+    }
+
+    override suspend fun editMessage(message: Message) {
+
+    }
+
+    override suspend fun deleteMessages(messages: List<Message>, forAll: Boolean) {
+
+    }
 
     init {
         _authStatus.value = if (token != null) VKAuthStatus.SUCCESS else VKAuthStatus.AUTH

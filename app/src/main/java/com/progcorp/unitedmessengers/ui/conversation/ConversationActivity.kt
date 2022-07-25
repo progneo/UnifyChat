@@ -120,6 +120,18 @@ class ConversationActivity : AppCompatActivity() {
             _bottomSheet = null
             forceShowKeyboard()
         })
+        _viewModel.notifyItemInsertedEvent.observe(this, EventObserver {
+            _listAdapter?.notifyItemInserted(it)
+        })
+        _viewModel.notifyItemChangedEvent.observe(this, EventObserver {
+            _listAdapter?.notifyItemChanged(it)
+        })
+        _viewModel.notifyItemMovedEvent.observe(this, EventObserver {
+            _listAdapter?.notifyItemMoved(it.first, it.second)
+        })
+        _viewModel.notifyItemRangeChangedEvent.observe(this, EventObserver {
+            _listAdapter?.notifyItemRangeChanged(it.first, it.second)
+        })
     }
 
     private fun forceShowKeyboard() {
@@ -175,17 +187,19 @@ class ConversationActivity : AppCompatActivity() {
                 }
             })
 
-            if (viewModel.conversation.value!!.canWrite) {
-                val messagesSwipeController = MessageSwipeController(this, object :
-                    IMessageSwipeControllerActions {
-                    override fun replyToMessage(position: Int) {
-                        viewModel.selectedMessage.value = viewModel.messagesList.value!![position]
-                        viewModel.onReplyPressed()
-                    }
-                }, _editText)
+            viewModel.conversation.value?.let {
+                if (it.canWrite) {
+                    val messagesSwipeController = MessageSwipeController(this, object :
+                        IMessageSwipeControllerActions {
+                        override fun replyToMessage(position: Int) {
+                            viewModel.selectedMessage.value = viewModel.messagesList.value!![position]
+                            viewModel.onReplyPressed()
+                        }
+                    }, _editText)
 
-                val itemTouchHelper = ItemTouchHelper(messagesSwipeController)
-                itemTouchHelper.attachToRecyclerView(_viewDataBinding?.recyclerView)
+                    val itemTouchHelper = ItemTouchHelper(messagesSwipeController)
+                    itemTouchHelper.attachToRecyclerView(_viewDataBinding?.recyclerView)
+                }
             }
         }
         else {
@@ -228,7 +242,7 @@ class ConversationActivity : AppCompatActivity() {
             }
             .setPositiveButton(R.string.yes) { dialog, _ ->
                 Log.e(this.javaClass.simpleName, deleteForAll.toString())
-                _viewModel.deleteMessage(deleteForAll)
+                _viewModel.deleteMessages(deleteForAll)
                 dialog.cancel()
             }
             .show()
@@ -243,7 +257,7 @@ class ConversationActivity : AppCompatActivity() {
                 dialog.cancel()
             }
             .setPositiveButton(R.string.yes) { dialog, _ ->
-                _viewModel.deleteMessage(false)
+                _viewModel.deleteMessages(false)
                 dialog.cancel()
             }
             .show()
@@ -258,15 +272,19 @@ class ConversationActivity : AppCompatActivity() {
                 dialog.cancel()
             }
             .setPositiveButton(R.string.yes) { dialog, _ ->
-                _viewModel.deleteMessage(true)
+                _viewModel.deleteMessages(true)
                 dialog.cancel()
             }
             .show()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        _viewModel.stopListeners()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        _viewModel.stopListeners()
         _listAdapter?.unregisterAdapterDataObserver(_listAdapterObserver!!)
         _viewDataBinding = null
         _listAdapter = null
