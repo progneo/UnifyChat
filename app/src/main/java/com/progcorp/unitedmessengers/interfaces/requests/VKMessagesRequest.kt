@@ -10,7 +10,17 @@ interface VKMessagesRequest {
         @Query("access_token") token: String,
         @Query("v") v: String,
         @Query("count") count: Int,
-        @Query("offset") offset: Int,
+        @Query("peer_id") peer_id: Long,
+        @Query("extended") extended: Boolean,
+        @Query("lang") lang: Int
+    ): Response<String>
+
+    @GET("messages.getHistory")
+    suspend fun messagesGetFromId(
+        @Query("access_token") token: String,
+        @Query("v") v: String,
+        @Query("count") count: Int,
+        @Query("start_message_id") start_message_id: Long,
         @Query("peer_id") peer_id: Long,
         @Query("extended") extended: Boolean,
         @Query("lang") lang: Int

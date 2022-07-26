@@ -123,6 +123,9 @@ class ConversationActivity : AppCompatActivity() {
         _viewModel.notifyItemInsertedEvent.observe(this, EventObserver {
             _listAdapter?.notifyItemInserted(it)
         })
+        _viewModel.notifyItemRemovedEvent.observe(this, EventObserver {
+            _listAdapter?.notifyItemRemoved(it)
+        })
         _viewModel.notifyItemChangedEvent.observe(this, EventObserver {
             _listAdapter?.notifyItemChanged(it)
         })
@@ -137,7 +140,7 @@ class ConversationActivity : AppCompatActivity() {
     private fun forceShowKeyboard() {
         val imm: InputMethodManager? = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         imm?.showSoftInput(_editText, 0)
-        _editText?.postDelayed(Runnable {
+        _editText?.postDelayed({
             run {
                 _editText?.requestFocus()
                 _editText?.setSelection(_editText!!.length())
@@ -280,7 +283,6 @@ class ConversationActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        _viewModel.stopListeners()
     }
 
     override fun onDestroy() {

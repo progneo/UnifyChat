@@ -1,10 +1,9 @@
 package com.progcorp.unitedmessengers.ui.conversation
 
 import androidx.lifecycle.*
-import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.data.Event
 import com.progcorp.unitedmessengers.data.model.*
-import com.progcorp.unitedmessengers.interfaces.IClient
+import com.progcorp.unitedmessengers.interfaces.IMessagesList
 import com.progcorp.unitedmessengers.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -14,27 +13,18 @@ import java.util.*
 class ConversationViewModelFactory(private val conversation: Conversation) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        val client: IClient = when (conversation.messenger) {
-            Constants.Messenger.TG -> {
-                App.application.tgClient
-            }
-            else -> {
-                App.application.vkClient
-            }
-        }
-        return ConversationViewModel(conversation, client) as T
+        return ConversationViewModel(conversation) as T
     }
 }
 
-class ConversationViewModel(private val chat: Conversation, private val client: IClient) : ViewModel()  {
-
-    //Clients
-    private val _client: IClient = client
+class ConversationViewModel(chat: Conversation) : ViewModel()  {
 
     //Current data
     private val _conversation: MutableLiveData<Conversation> = MutableLiveData()
     val conversation: LiveData<Conversation> = _conversation
-    val messagesList = _client.messagesList
+
+    private val _messagesList: IMessagesList
+    val messagesList: MediatorLiveData<MutableList<Message>>
 
     //Observable messages variables
     val replyMessage = MutableLiveData<Message?>()
@@ -71,6 +61,9 @@ class ConversationViewModel(private val chat: Conversation, private val client: 
     private val _notifyItemInsertedEvent = MutableLiveData<Event<Int>>()
     val notifyItemInsertedEvent: LiveData<Event<Int>> = _notifyItemInsertedEvent
 
+    private val _notifyItemRemovedEvent = MutableLiveData<Event<Int>>()
+    val notifyItemRemovedEvent: LiveData<Event<Int>> = _notifyItemRemovedEvent
+
     private val _notifyItemChangedEvent = MutableLiveData<Event<Int>>()
     val notifyItemChangedEvent: LiveData<Event<Int>> = _notifyItemChangedEvent
 
@@ -85,21 +78,24 @@ class ConversationViewModel(private val chat: Conversation, private val client: 
 
     init {
         _conversation.value = chat
-        _client.conversationViewModel = this
-        _client.setConversation(_conversation.value)
-        MainScope().launch(Dispatchers.Main) {
-            _client.loadLatestMessages()
+        _messagesList = if (chat.messenger == Constants.Messenger.TG) {
+            TgMessagesList(chat, this)
+        } else {
+            VKMessagesList(chat, this)
         }
-    }
-
-    fun stopListeners() {
-        _client.conversationViewModel = null
-        _client.setConversation(null)
+        messagesList = _messagesList.messagesList
+        MainScope().launch(Dispatchers.Main) {
+            _messagesList.loadLatestMessages()
+        }
     }
 
     //Notify
     private fun notifyItemInserted(position: Int) {
         _notifyItemInsertedEvent.value = Event(position)
+    }
+
+    private fun notifyItemRemoved(position: Int) {
+        _notifyItemRemovedEvent.value = Event(position)
     }
 
     private fun notifyItemChanged(position: Int) {
@@ -112,6 +108,10 @@ class ConversationViewModel(private val chat: Conversation, private val client: 
 
     private fun notifyItemRangeChanged(pair: Pair<Int, Int>) {
         _notifyItemRangeChangedEvent.value = Event(pair)
+    }
+
+    fun updateConversation(conversation: Conversation) {
+        _conversation.postValue(conversation)
     }
 
     //Messages
@@ -133,7 +133,7 @@ class ConversationViewModel(private val chat: Conversation, private val client: 
                 replyMessage.value = null
                 editMessage.value = null
 
-                _client.sendMessage(message)
+                _messagesList.sendMessage(message)
             }
         }
     }
@@ -146,7 +146,7 @@ class ConversationViewModel(private val chat: Conversation, private val client: 
                 messageText.value = null
                 editMessage.value = null
 
-                _client.editMessage(message)
+                _messagesList.editMessage(message)
             }
         }
     }
@@ -162,7 +162,7 @@ class ConversationViewModel(private val chat: Conversation, private val client: 
                     replyMessage.value = null
                 }
 
-                _client.deleteMessages(listOf(it), forAll)
+                _messagesList.deleteMessages(listOf(it), forAll)
             }
         }
     }
@@ -171,7 +171,7 @@ class ConversationViewModel(private val chat: Conversation, private val client: 
         MainScope().launch {
             messagesList.value?.let {
                 if (it.size > 0) {
-                    _client.loadMessagesFromId(it.last().id)
+                    _messagesList.loadMessagesFromId(it.last().id)
                 }
             }
         }
@@ -179,6 +179,11 @@ class ConversationViewModel(private val chat: Conversation, private val client: 
 
     fun messageEdited(index: Int) {
         notifyItemChanged(index)
+    }
+
+
+    fun messageDeleted(index: Int) {
+        notifyItemRemoved(index)
     }
 
     fun copyTextToClipboard() {
@@ -240,6 +245,11 @@ class ConversationViewModel(private val chat: Conversation, private val client: 
     fun cancelEdit() {
         editMessage.value = null
         messageText.value = null
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+         _messagesList.stopHandlers()
     }
 
     companion object {

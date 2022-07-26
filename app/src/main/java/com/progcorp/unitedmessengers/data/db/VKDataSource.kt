@@ -63,7 +63,24 @@ class VKDataSource (private val client: VKClient) {
         )
     }
 
-    suspend fun getMessages(chat: Conversation, offset: Int, count: Int): Resource<String> {
+    suspend fun getMessagesFromId(conversationId: Long, fromId: Long, count: Int): Resource<String> {
+        val service = _retrofit.create(VKMessagesRequest::class.java)
+        return getResponse(
+            request = {
+                service.messagesGetFromId(
+                    client.token!!,
+                    "5.131",
+                    count,
+                    fromId,
+                    conversationId,
+                    true,
+                    0
+                )
+            }
+        )
+    }
+
+    suspend fun getMessages(conversationId: Long, count: Int): Resource<String> {
         val service = _retrofit.create(VKMessagesRequest::class.java)
         return getResponse(
             request = {
@@ -71,8 +88,7 @@ class VKDataSource (private val client: VKClient) {
                     client.token!!,
                     "5.131",
                     count,
-                    offset,
-                    chat.id,
+                    conversationId,
                     true,
                     0
                 )

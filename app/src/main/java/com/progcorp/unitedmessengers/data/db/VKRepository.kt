@@ -44,7 +44,7 @@ class VKRepository (private val dataSource: VKDataSource) {
     suspend fun getUnreadCount(): Flow<Int> {
         return flow {
             val response = dataSource.getUnreadCount()
-            var result: Int = 0
+            var result = 0
             if (response.status == Status.SUCCESS) {
                 val json = response.data?.let { JSONObject(it) }
                 if (json != null) {
@@ -84,9 +84,32 @@ class VKRepository (private val dataSource: VKDataSource) {
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun getMessages(chat: Conversation, offset: Int, count: Int): Flow<List<Message>> {
+    suspend fun getMessages(conversationId: Long, count: Int): Flow<List<Message>> {
         return flow {
-            val response = dataSource.getMessages(chat, offset, count)
+            val response = dataSource.getMessages(conversationId, count)
+            if (response.status == Status.SUCCESS) {
+                val result: ArrayList<Message> = arrayListOf()
+                val json = response.data?.let { JSONObject(it) }
+                if (json != null) {
+                    try {
+                        val messages = json.getJSONObject("response").getJSONArray("items")
+                        val profiles = json.getJSONObject("response").optJSONArray("profiles")
+                        val groups = json.getJSONObject("response").optJSONArray("groups")
+                        for (item in 0 until messages.length()) {
+                            result.add(Message.vkParse(messages.getJSONObject(item), profiles, groups))
+                        }
+                    } catch (ex: JSONException) {
+                        Log.e("${javaClass.simpleName}.getMessages", ex.stackTraceToString())
+                    }
+                }
+                emit(result as List<Message>)
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getMessagesFromId(conversationId: Long, fromId: Long, count: Int): Flow<List<Message>> {
+        return flow {
+            val response = dataSource.getMessagesFromId(conversationId, fromId, count)
             if (response.status == Status.SUCCESS) {
                 val result: ArrayList<Message> = arrayListOf()
                 val json = response.data?.let { JSONObject(it) }
