@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 @Suppress("UNCHECKED_CAST")
-class MailingViewModelFactory() : ViewModelProvider.Factory {
+class MailingViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return MailingViewModel() as T
     }
@@ -48,60 +48,29 @@ class MailingViewModel : ViewModel() {
     private val _notifyItemRemovedEvent = MutableLiveData<Event<Int>>()
     val notifyItemRemovedEvent: LiveData<Event<Int>> = _notifyItemRemovedEvent
 
-    val isListEmpty: Boolean
-        get() {
-            var isEmpty = true
-            conversationsList.value?.let {
-                if (it.size > 0) {
-                    isEmpty = false
-                }
+    private val _isListEmpty = MutableLiveData<Boolean>()
+    val isListEmpty: LiveData<Boolean> = _isListEmpty
+
+    init { updateListEmptyState() }
+
+    private fun updateListEmptyState() {
+        var isEmpty = true
+        conversationsList.value?.let {
+            if (it.size > 0) {
+                isEmpty = false
             }
-            return isEmpty
         }
+        _isListEmpty.value = isEmpty
+    }
 
     fun setState(state: MailingState) {
         _currentState.value = state
     }
 
     fun startMailing() {
-        val vkMessage = Message(
-            id = 0,
-            timeStamp = Date().time,
-            sender = _vkClient.user.value,
-            isOutgoing = true,
-            replyToMessage = null,
-            content = MessageText(messageText.value!!),
-            canBeEdited = true,
-            canBeDeletedForAllUsers = true,
-            canBeDeletedOnlyForSelf = true
-        )
-        val tgMessage = Message(
-            id = 0,
-            timeStamp = Date().time,
-            sender = _tgClient.user.value,
-            isOutgoing = true,
-            replyToMessage = null,
-            content = MessageText(messageText.value!!),
-            canBeEdited = true,
-            canBeDeletedForAllUsers = true,
-            canBeDeletedOnlyForSelf = true
-        )
+        val message = MessageText(messageText.value!!)
         messageText.value = ""
-        MainScope().launch(Dispatchers.IO) {
-            conversationsList.value?.let { list ->
-                for (conversation in list) {
-                    when (conversation.messenger) {
-                        Constants.Messenger.TG -> {
-                            _tgRepository.sendMessage(conversation.id, tgMessage).first()
-                        }
-                        Constants.Messenger.VK -> {
-                            _vkRepository.sendMessage(conversation.id, vkMessage).first()
-                            delay(1000)
-                        }
-                    }
-                }
-            }
-        }
+        App.application.startMailing(message)
     }
 
     fun removeConversationPressed(conversation: Conversation) {
@@ -109,6 +78,7 @@ class MailingViewModel : ViewModel() {
             val index = list.indexOf(conversation)
             list.remove(conversation)
             _notifyItemRemovedEvent.value = Event(index)
+            updateListEmptyState()
         }
     }
 

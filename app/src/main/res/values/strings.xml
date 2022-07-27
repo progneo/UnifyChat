@@ -67,4 +67,5 @@
     <string name="send">Send</string>
     <string name="mailing">Mailing</string>
     <string name="add_to_mailing">Add to mailing</string>
+    <string name="mailing_toast_message">Mailing list started</string>
 </resources>

@@ -7,6 +7,14 @@ import com.google.android.material.color.DynamicColors
 import com.progcorp.unitedmessengers.data.clients.TelegramClient
 import com.progcorp.unitedmessengers.data.clients.VKClient
 import com.progcorp.unitedmessengers.data.model.Conversation
+import com.progcorp.unitedmessengers.data.model.Message
+import com.progcorp.unitedmessengers.data.model.MessageText
+import com.progcorp.unitedmessengers.util.Constants
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.drinkless.td.libcore.telegram.TdApi
 import java.util.*
 
@@ -40,6 +48,47 @@ class App : Application() {
 
         DynamicColors.applyToActivitiesIfAvailable(this)
     }
+
+    fun startMailing(messageText: MessageText) {
+        val vkMessage = Message(
+            id = 0,
+            timeStamp = Date().time,
+            sender = vkClient.user.value,
+            isOutgoing = true,
+            replyToMessage = null,
+            content = messageText,
+            canBeEdited = true,
+            canBeDeletedForAllUsers = true,
+            canBeDeletedOnlyForSelf = true
+        )
+        val tgMessage = Message(
+            id = 0,
+            timeStamp = Date().time,
+            sender = tgClient.user.value,
+            isOutgoing = true,
+            replyToMessage = null,
+            content = messageText,
+            canBeEdited = true,
+            canBeDeletedForAllUsers = true,
+            canBeDeletedOnlyForSelf = true
+        )
+        MainScope().launch(Dispatchers.IO) {
+            mailingList.value?.let { list ->
+                for (conversation in list) {
+                    when (conversation.messenger) {
+                        Constants.Messenger.TG -> {
+                            tgClient.repository.sendMessage(conversation.id, tgMessage).first()
+                        }
+                        Constants.Messenger.VK -> {
+                            vkClient.repository.sendMessage(conversation.id, vkMessage).first()
+                            delay(1000)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     private fun setLocale() {
         val config = resources.configuration

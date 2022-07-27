@@ -62,4 +62,5 @@
     <string name="send">Отправить</string>
     <string name="mailing">Рассылка</string>
     <string name="add_to_mailing">Добавить в рассылку</string>
+    <string name="mailing_toast_message">Рассылка начата</string>
 </resources>

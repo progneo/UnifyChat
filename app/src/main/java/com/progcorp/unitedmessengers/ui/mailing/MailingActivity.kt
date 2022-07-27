@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +14,7 @@ import com.progcorp.unitedmessengers.R
 import com.progcorp.unitedmessengers.data.EventObserver
 import com.progcorp.unitedmessengers.databinding.ActivityMailingBinding
 import com.progcorp.unitedmessengers.enums.MailingState
-import kotlinx.android.synthetic.main.fragment_telegram.view.*
+import kotlinx.android.synthetic.main.activity_mailing.view.*
 
 class MailingActivity : AppCompatActivity() {
     private val _viewModel: MailingViewModel by viewModels {
@@ -32,7 +33,7 @@ class MailingActivity : AppCompatActivity() {
             .apply { viewmodel = _viewModel }
         _viewDataBinding?.lifecycleOwner = this
         val view = _viewDataBinding?.root
-        _toolbar = view?.toolbar
+        _toolbar = view?.topAppBar
         setSupportActionBar(_toolbar)
         setContentView(view)
         setupListAdapter()
@@ -68,6 +69,9 @@ class MailingActivity : AppCompatActivity() {
         })
         _viewModel.sendMessageEvent.observe(this, EventObserver{
             _viewModel.startMailing()
+            Toast.makeText(this, resources.getString(R.string.mailing_toast_message), Toast.LENGTH_LONG).show()
+            _viewModel.setState(MailingState.Success)
+            onBackPressed()
         })
         _viewModel.notifyItemRemovedEvent.observe(this, EventObserver{ index ->
             _listAdapter?.notifyItemRemoved(index)
