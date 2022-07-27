@@ -94,7 +94,7 @@
                         android:layout_marginEnd="16dp"
                         android:layout_marginBottom="16dp"
                         android:contentDescription="@string/action_next"
-                        android:enabled="true"
+                        android:enabled="@{viewmodel.listEmpty == false}"
                         android:onClick="@{() -> viewmodel.confirmConversationsListPressed()}"
                         android:text="@string/action_next"
                         app:icon="@drawable/ic_arrow_follow" />

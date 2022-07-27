@@ -67,7 +67,10 @@ class MailingActivity : AppCompatActivity() {
             }
         })
         _viewModel.sendMessageEvent.observe(this, EventObserver{
-
+            _viewModel.startMailing()
+        })
+        _viewModel.notifyItemRemovedEvent.observe(this, EventObserver{ index ->
+            _listAdapter?.notifyItemRemoved(index)
         })
     }
 

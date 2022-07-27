@@ -41,5 +41,9 @@
         <!-- Splash screen. -->
         <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@drawable/avd</item>
         <item name="android:windowSplashScreenAnimationDuration" tools:targetApi="s">2000</item>
+        <!-- Popup. -->
+        <item name="textAppearanceLargePopupMenu">?attr/textAppearanceBodyLarge</item>
+        <item name="textAppearanceSmallPopupMenu">?attr/textAppearanceBodySmall</item>
+        <item name="popupMenuStyle">@style/Widget.UM.PopupMenu</item>
     </style>
 </resources>

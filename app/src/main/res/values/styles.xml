@@ -215,4 +215,9 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">24dp</item>
     </style>
+
+    <!-- Popup. -->
+    <style name="Widget.UM.PopupMenu" parent="@style/Widget.Material3.PopupMenu.Overflow">
+        <item name="android:popupBackground">@drawable/custom_popup_background</item>
+    </style>
 </resources>

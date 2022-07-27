@@ -16,6 +16,7 @@ import com.progcorp.unitedmessengers.data.model.Conversation
 import com.progcorp.unitedmessengers.data.model.Message
 import com.progcorp.unitedmessengers.data.model.companions.User
 import com.progcorp.unitedmessengers.interfaces.ICompanion
+import com.progcorp.unitedmessengers.interfaces.IConversationsViewModel
 import com.progcorp.unitedmessengers.util.Constants
 import kotlinx.coroutines.*
 import java.io.File
@@ -184,4 +185,12 @@ fun ImageView.bindConversationImage(conversation: Conversation) {
             }
         }
     }
+}
+
+@BindingAdapter("bind_long_click_conversation", "bind_long_click_view_model")
+fun View.bindLongClick(conversation: Conversation, viewModel: IConversationsViewModel) {
+    this.setOnLongClickListener(View.OnLongClickListener {
+        viewModel.longClickOnConversation(this, conversation)
+        return@OnLongClickListener true
+    })
 }

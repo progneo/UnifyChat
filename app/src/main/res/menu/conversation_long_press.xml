@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/add_to_mailing"
+        android:iconTint="?attr/colorPrimary"
+        android:icon="@drawable/ic_mail"
+        android:title="@string/add_to_mailing" />
+    <item android:id="@+id/remove"
+        android:iconTint="?attr/colorError"
+        android:icon="@drawable/ic_delete_24"
+        android:title="@string/delete" />
+</menu>

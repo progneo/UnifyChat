@@ -22,6 +22,8 @@
         android:layout_height="wrap_content"
         android:focusable="true"
         android:clickable="true"
+        app:bind_long_click_conversation="@{conversation}"
+        app:bind_long_click_view_model="@{viewmodel}"
         android:onClick="@{() -> viewmodel.selectConversationPressed(conversation)}"
         android:baselineAligned="false">
         <FrameLayout

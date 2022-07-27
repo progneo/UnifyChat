@@ -76,6 +76,7 @@
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:layout_gravity="center"
-            android:background="@drawable/inset_cancel" />
+            android:background="@drawable/inset_cancel"
+            android:onClick="@{() -> viewmodel.removeConversationPressed(conversation)}"/>
     </LinearLayout>
 </layout>
