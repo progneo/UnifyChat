@@ -28,8 +28,7 @@
                 <com.google.android.material.appbar.MaterialToolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    app:menu="@menu/top_app_bar_conversations">
+                    android:layout_height="?attr/actionBarSize">
                     <com.google.android.material.imageview.ShapeableImageView
                         android:layout_width="?attr/actionBarSize"
                         android:layout_height="?attr/actionBarSize"
@@ -89,5 +88,22 @@
             android:src="@drawable/ic_arrow_top"
             android:visibility="invisible"
             app:fabSize="mini"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/mailing_float_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:foregroundGravity="bottom|right"
+            android:backgroundTint="?attr/colorTertiaryContainer"
+            android:contentDescription="@string/mailing"
+            android:onClick="@{() -> viewmodel.goToMailingPressed()}"
+            android:src="@drawable/ic_mail"
+            android:visibility="visible" />
     </RelativeLayout>
 </layout>

@@ -2,9 +2,11 @@ package com.progcorp.unitedmessengers
 
 import android.app.Application
 import android.os.Build
+import androidx.lifecycle.MediatorLiveData
 import com.google.android.material.color.DynamicColors
 import com.progcorp.unitedmessengers.data.clients.TelegramClient
 import com.progcorp.unitedmessengers.data.clients.VKClient
+import com.progcorp.unitedmessengers.data.model.Conversation
 import org.drinkless.td.libcore.telegram.TdApi
 import java.util.*
 
@@ -15,6 +17,7 @@ class App : Application() {
 
     lateinit var vkClient: VKClient
     lateinit var tgClient: TelegramClient
+    val mailingList = MediatorLiveData<MutableList<Conversation>>()
 
     override fun onCreate() {
         super.onCreate()

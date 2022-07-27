@@ -25,6 +25,9 @@ class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
     private val _toTopPressed = MutableLiveData<Event<Unit>>()
     val toTopPressed: LiveData<Event<Unit>> = _toTopPressed
 
+    private val _toMailingPressed = MutableLiveData<Event<Unit>>()
+    val toMailingPressed: LiveData<Event<Unit>> = _toMailingPressed
+
     private val _selectedConversation = MutableLiveData<Event<Conversation>>()
     var selectedConversation: LiveData<Event<Conversation>> = _selectedConversation
 
@@ -43,6 +46,10 @@ class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
 
     fun goToTopPressed() {
         _toTopPressed.value = Event(Unit)
+    }
+
+    fun goToMailingPressed() {
+        _toMailingPressed.value = Event(Unit)
     }
 
     override fun selectConversationPressed(conversation: Conversation) {

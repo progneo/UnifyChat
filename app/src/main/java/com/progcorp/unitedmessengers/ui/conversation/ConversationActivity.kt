@@ -281,10 +281,6 @@ class ConversationActivity : AppCompatActivity() {
             .show()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         _listAdapter?.unregisterAdapterDataObserver(_listAdapterObserver!!)

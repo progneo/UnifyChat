@@ -61,4 +61,9 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="edit_message">Edit Message</string>
+    <string name="recipient_list">Recipient list</string>
+    <string name="empty_list">The list is empty</string>
+    <string name="text">Text</string>
+    <string name="send">Send</string>
+    <string name="mailing">Mailing</string>
 </resources>

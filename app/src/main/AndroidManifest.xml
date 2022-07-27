@@ -34,6 +34,9 @@
         <activity
             android:name=".ui.conversation.ConversationActivity"
             android:exported="true"/>
+        <activity
+            android:name=".ui.mailing.MailingActivity"
+            android:exported="true"/>
     </application>
 
 </manifest>

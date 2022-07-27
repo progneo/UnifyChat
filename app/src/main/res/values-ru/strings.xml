@@ -56,4 +56,9 @@
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="edit_message">Редактирование</string>
+    <string name="recipient_list">Список получателей</string>
+    <string name="empty_list">Список пуст</string>
+    <string name="text">Текст</string>
+    <string name="send">Отправить</string>
+    <string name="mailing">Рассылка</string>
 </resources>

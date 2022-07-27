@@ -62,11 +62,17 @@ class VKFragment : Fragment() {
                         if (_viewDataBinding!!.floatButton.isShown) {
                             _viewDataBinding!!.floatButton.hide()
                         }
+                        if (!_viewDataBinding!!.mailingFloatButton.isShown) {
+                            _viewDataBinding!!.mailingFloatButton.show()
+                        }
                     }
 
                     if (dy > 0) {
                         if (_viewDataBinding!!.floatButton.isShown) {
                             _viewDataBinding!!.floatButton.hide()
+                        }
+                        if (_viewDataBinding!!.mailingFloatButton.isShown) {
+                            _viewDataBinding!!.mailingFloatButton.hide()
                         }
                     }
                     else if (dy < 0) {
@@ -86,6 +92,7 @@ class VKFragment : Fragment() {
         _viewModel.selectedConversation.observe(viewLifecycleOwner, EventObserver { navigateToChat(it) } )
         _viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver { navigateToLogin() })
         _viewModel.toTopPressed.observe(viewLifecycleOwner, EventObserver { goToTop() })
+        _viewModel.toMailingPressed.observe(viewLifecycleOwner, EventObserver { goToMailing() })
     }
 
     private fun notifyWithoutScroll(notification: () -> Unit) {
@@ -114,6 +121,10 @@ class VKFragment : Fragment() {
 
     private fun goToTop() {
         _viewDataBinding!!.recyclerView.scrollToPosition(0)
+    }
+
+    private fun goToMailing() {
+        findNavController().navigate(R.id.action_navigation_chats_to_mailing_activity)
     }
 
     override fun onDestroyView() {

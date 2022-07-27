@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_navigation_chats_to_conversation_activity"
             app:destination="@id/conversation_activity" />
+        <action
+            android:id="@+id/action_navigation_chats_to_mailing_activity"
+            app:destination="@id/mailing_activity" />
     </fragment>
     <fragment
         android:id="@+id/navigation_vk"
@@ -27,6 +30,9 @@
         <action
             android:id="@+id/action_navigation_chats_to_conversation_activity"
             app:destination="@id/conversation_activity" />
+        <action
+            android:id="@+id/action_navigation_chats_to_mailing_activity"
+            app:destination="@id/mailing_activity" />
     </fragment>
     <activity
         android:id="@+id/conversation_activity"
@@ -40,4 +46,12 @@
         android:id="@+id/tg_auth_activity"
         android:name="com.progcorp.unitedmessengers.ui.login.telegram.TelegramAuthActivity"
         tools:layout="@layout/activity_telegram_auth"/>
+    <activity
+        android:id="@+id/main_activity"
+        android:name="com.progcorp.unitedmessengers.ui.main.MainActivity"
+        tools:layout="@layout/activity_main"/>
+    <activity
+        android:id="@+id/mailing_activity"
+        android:name="com.progcorp.unitedmessengers.ui.mailing.MailingActivity"
+        tools:layout="@layout/activity_mailing"/>
 </navigation>
