@@ -73,6 +73,9 @@ class ConversationViewModel(chat: Conversation) : ViewModel()  {
     private val _notifyItemRangeChangedEvent = MutableLiveData<Event<Pair<Int, Int>>>()
     val notifyItemRangeChangedEvent: LiveData<Event<Pair<Int, Int>>> = _notifyItemRangeChangedEvent
 
+    private val _notifyDatasetChangedEvent = MutableLiveData<Event<Unit>>()
+    val notifyDatasetChangedEvent: LiveData<Event<Pair<Int, Int>>> = _notifyItemRangeChangedEvent
+
     //New message text
     val messageText = MutableLiveData<String?>()
 
@@ -110,6 +113,10 @@ class ConversationViewModel(chat: Conversation) : ViewModel()  {
         _notifyItemRangeChangedEvent.value = Event(pair)
     }
 
+    private fun notifyDatasetChanged() {
+        _notifyDatasetChangedEvent.value = Event(Unit)
+    }
+
     fun updateConversation(conversation: Conversation) {
         _conversation.postValue(conversation)
     }
@@ -120,6 +127,7 @@ class ConversationViewModel(chat: Conversation) : ViewModel()  {
             if (!messageText.value.isNullOrBlank()) {
                 val message = Message(
                     id = messagesList.value?.last()?.id?.plus(1) ?: 0,
+                    conversationId = conversation.value?.id ?: 0,
                     timeStamp = Date().time,
                     sender = conversation.value!!.companion,
                     isOutgoing = true,
@@ -175,6 +183,10 @@ class ConversationViewModel(chat: Conversation) : ViewModel()  {
                 }
             }
         }
+    }
+
+    fun newMessage() {
+        notifyDatasetChanged()
     }
 
     fun messageEdited(index: Int) {

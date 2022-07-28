@@ -127,6 +127,9 @@ class TelegramFragment : Fragment(R.layout.fragment_telegram) {
         _viewModel.notifyItemRangeChangedEvent.observe(viewLifecycleOwner, EventObserver {
             notifyWithoutScroll { _listAdapter?.notifyItemRangeChanged(it.first, it.second) }
         })
+        _viewModel.notifyDatasetChangedEvent.observe(viewLifecycleOwner, EventObserver {
+            notifyWithoutScroll { _listAdapter?.notifyDataSetChanged() }
+        })
     }
 
     private fun notifyWithoutScroll(notification: () -> Unit) {

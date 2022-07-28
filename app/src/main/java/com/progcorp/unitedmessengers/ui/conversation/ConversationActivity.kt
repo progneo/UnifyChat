@@ -135,6 +135,9 @@ class ConversationActivity : AppCompatActivity() {
         _viewModel.notifyItemRangeChangedEvent.observe(this, EventObserver {
             _listAdapter?.notifyItemRangeChanged(it.first, it.second)
         })
+        _viewModel.notifyDatasetChangedEvent.observe(this, EventObserver {
+            _listAdapter?.notifyDataSetChanged()
+        })
     }
 
     private fun forceShowKeyboard() {

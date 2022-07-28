@@ -83,6 +83,12 @@ data class Conversation(
         companion.lastSeen = user.lastSeen
     }
 
+    suspend fun vkParseOnlineStatus(update: VKUpdateUserStatus) {
+        companion as User
+        companion.isOnline = update.isOnline
+        companion.lastSeen = update.timeStamp * 1000
+    }
+
     companion object {
 
         suspend fun vkParse(json: JSONObject, profiles: JSONArray?, groups: JSONArray?): Conversation {
@@ -126,6 +132,47 @@ data class Conversation(
             }
 
             return Conversation(id, companion, lastMessage, unreadCount, canWrite, Constants.Messenger.VK)
+        }
+
+        suspend fun vkParseWithoutMessage(json: JSONObject, profiles: JSONArray?, groups: JSONArray?): Conversation {
+            val peer = json.getJSONObject("peer")
+
+            val id = peer.optLong("id")
+            val type = peer.optString("type")
+            var companion: ICompanion? = null
+            when {
+                type == "chat" -> {
+                    companion = Chat.vkParse(json.getJSONObject("chat_settings"), id)
+                }
+                type == "user" && profiles != null -> {
+                    for (i in 0 until profiles.length()) {
+                        val profile = profiles.getJSONObject(i)
+                        if (profile.getLong("id") == id) {
+                            companion = User.vkParse(profile)
+                            break
+                        }
+                    }
+                }
+                type == "group" && groups != null -> {
+                    for (i in 0 until groups.length()) {
+                        val group = groups.getJSONObject(i)
+                        if (group.getLong("id") == -id) {
+                            companion = Bot.vkParse(group)
+                            break
+                        }
+                    }
+                }
+            }
+
+            var unreadCount = json.optInt("unread_count")
+
+            val canWrite = json.getJSONObject("can_write").getBoolean("allowed")
+
+            if (json.getInt("in_read_cmid") > json.getInt("out_read_cmid")) {
+                unreadCount = -1
+            }
+
+            return Conversation(id, companion, null, unreadCount, canWrite, Constants.Messenger.VK)
         }
 
         suspend fun tgParse(conversation: TdApi.Chat): Conversation? {

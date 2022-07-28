@@ -18,9 +18,8 @@ import kotlinx.coroutines.flow.*
 import org.drinkless.td.libcore.telegram.Client
 import org.drinkless.td.libcore.telegram.TdApi
 
-class TelegramClient (
-        private val _tdLibParameters: TdApi.TdlibParameters
-    ) : Client.ResultHandler {
+class TelegramClient (private val _tdLibParameters: TdApi.TdlibParameters)
+    : Client.ResultHandler {
     var client: Client? = null
 
     val repository: TelegramDataSource = TelegramDataSource(this)
@@ -243,7 +242,7 @@ class TelegramClient (
                                 it.sortByDescending { conversation ->
                                     conversation.lastMessage?.timeStamp
                                 }
-                                conversationsViewModel?.addNewChat(it.indexOf(chat))
+                                conversationsViewModel?.addNewChat()
                             }
                         }
                     }

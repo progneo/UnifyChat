@@ -36,11 +36,50 @@ class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
     private val _toMailingPressed = MutableLiveData<Event<Unit>>()
     val toMailingPressed: LiveData<Event<Unit>> = _toMailingPressed
 
+    private val _notifyItemInsertedEvent = MutableLiveData<Event<Int>>()
+    val notifyItemInsertedEvent: LiveData<Event<Int>> = _notifyItemInsertedEvent
+
+    private val _notifyItemChangedEvent = MutableLiveData<Event<Int>>()
+    val notifyItemChangedEvent: LiveData<Event<Int>> = _notifyItemChangedEvent
+
+    private val _notifyItemMovedEvent = MutableLiveData<Event<Pair<Int, Int>>>()
+    val notifyItemMovedEvent: LiveData<Event<Pair<Int, Int>>> = _notifyItemMovedEvent
+
+    private val _notifyItemRangeChangedEvent = MutableLiveData<Event<Pair<Int, Int>>>()
+    val notifyItemRangeChangedEvent: LiveData<Event<Pair<Int, Int>>> = _notifyItemRangeChangedEvent
+
+    private val _notifyDatasetChangedEvent = MutableLiveData<Event<Unit>>()
+    val notifyDatasetChangedEvent: LiveData<Event<Pair<Int, Int>>> = _notifyItemRangeChangedEvent
+
     private val _selectedConversation = MutableLiveData<Event<Conversation>>()
     var selectedConversation: LiveData<Event<Conversation>> = _selectedConversation
 
-    val user: LiveData<User?> = _client.user
     override val conversationsList = _client.conversationsList
+    val user: LiveData<User?> = _client.user
+
+    init {
+        _client.conversationsViewModel = this
+    }
+
+    private fun notifyItemInserted(position: Int) {
+        _notifyItemInsertedEvent.value = Event(position)
+    }
+
+    private fun notifyItemChanged(position: Int) {
+        _notifyItemChangedEvent.value = Event(position)
+    }
+
+    private fun notifyItemMoved(pair: Pair<Int, Int>) {
+        _notifyItemMovedEvent.value = Event(pair)
+    }
+
+    private fun notifyItemRangeChanged(pair: Pair<Int, Int>) {
+        _notifyItemRangeChangedEvent.value = Event(pair)
+    }
+
+    private fun notifyDatasetChanged() {
+        _notifyDatasetChangedEvent.value = Event(Unit)
+    }
 
     fun loadMoreConversations() {
         _client.loadConversations(conversationsList.value!!.size, false)
@@ -63,6 +102,27 @@ class VKConversationsViewModel : ViewModel(), IConversationsViewModel {
 
     fun goToMailingPressed() {
         _toMailingPressed.value = Event(Unit)
+    }
+
+    fun addNewChat() {
+        notifyDatasetChanged()
+    }
+
+    fun updateLastMessageContent(index: Int) {
+        notifyItemChanged(index)
+    }
+
+    fun updateLastMessage(previousIndex: Int, newIndex: Int) {
+        if (previousIndex == newIndex) {
+            notifyItemChanged(newIndex)
+        }
+        else {
+            notifyItemMoved(Pair(previousIndex, newIndex))
+        }
+    }
+
+    fun updateOnline(index: Int) {
+        notifyItemChanged(index)
     }
 
     override fun selectConversationPressed(conversation: Conversation) {

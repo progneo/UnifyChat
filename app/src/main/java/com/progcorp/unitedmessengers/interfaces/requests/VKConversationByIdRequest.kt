@@ -9,7 +9,7 @@ interface VKConversationByIdRequest {
     suspend fun conversationGet(
         @Query("access_token") token: String,
         @Query("v") v: String,
-        @Query("peer_ids") peer_ids: Int,
+        @Query("peer_ids") peer_ids: Long,
         @Query("extended") extended: Boolean,
         @Query("lang") lang: Int
     ): Response<String>

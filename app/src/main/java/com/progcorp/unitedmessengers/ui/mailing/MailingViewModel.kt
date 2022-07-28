@@ -70,6 +70,7 @@ class MailingViewModel : ViewModel() {
     fun startMailing() {
         val message = MessageText(messageText.value!!)
         messageText.value = ""
+        conversationsList.value?.clear()
         App.application.startMailing(message)
     }
 

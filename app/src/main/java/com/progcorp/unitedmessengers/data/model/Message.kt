@@ -17,6 +17,7 @@ import java.io.Serializable
 
 data class Message(
     var id: Long = 0,
+    val conversationId: Long = 0,
     var timeStamp: Long = 0,
     val sender: ICompanion? = null,
     val isOutgoing: Boolean = false,
@@ -241,6 +242,7 @@ data class Message(
     companion object {
         suspend fun vkParse(json: JSONObject, profiles: JSONArray?, groups: JSONArray?): Message {
             val id = json.optLong("id")
+            val conversationId = json.optLong("peer_id")
             val timeStamp = json.optLong("date") * 1000
 
             var sender: ICompanion? = null
@@ -414,6 +416,7 @@ data class Message(
 
             return Message(
                 id = id,
+                conversationId = conversationId,
                 timeStamp = timeStamp,
                 sender = sender,
                 isOutgoing = isOutgoing,
@@ -675,6 +678,7 @@ data class Message(
 
             return Message(
                 id = id,
+                conversationId = tgMessage.chatId,
                 timeStamp = timeStamp,
                 sender = sender,
                 isOutgoing = isOutgoing,

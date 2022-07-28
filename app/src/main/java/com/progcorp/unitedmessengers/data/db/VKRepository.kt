@@ -60,7 +60,7 @@ class VKRepository (private val dataSource: VKDataSource) {
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun getConversation(id: Int): Flow<Conversation?>  {
+    suspend fun getConversationById(id: Long): Flow<Conversation?>  {
         return flow {
             val response = dataSource.getConversationById(id)
             var result: Conversation? = null
@@ -69,7 +69,7 @@ class VKRepository (private val dataSource: VKDataSource) {
                     val json = response.data?.let { JSONObject(it) }
                     if (json != null) {
                         val items = json.getJSONObject("response").getJSONArray("items")
-                        result = Conversation.vkParse(
+                        result = Conversation.vkParseWithoutMessage(
                             items.getJSONObject(0),
                             json.getJSONObject("response").optJSONArray("profiles"),
                             json.getJSONObject("response").optJSONArray("groups")
@@ -130,9 +130,30 @@ class VKRepository (private val dataSource: VKDataSource) {
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun getUsers(): Flow<List<User>> {
+    suspend fun getUser(): Flow<List<User>> {
         return flow {
-            val response = dataSource.getUsers()
+            val response = dataSource.getUser()
+            if (response.status == Status.SUCCESS) {
+                val result: ArrayList<User> = arrayListOf()
+                val json = response.data?.let { JSONObject(it) }
+                if (json != null) {
+                    try {
+                        val users = json.getJSONArray("response")
+                        for (i in 0 until users.length()) {
+                            result.add(User.vkParse(users.getJSONObject(i)))
+                        }
+                    } catch (ex: JSONException) {
+                        Log.e("${javaClass.simpleName}.getUsers", ex.stackTraceToString())
+                    }
+                }
+                emit(result as List<User>)
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getUsers(userIds: List<Long>): Flow<List<User>> {
+        return flow {
+            val response = dataSource.getUsers(userIds.joinToString(separator = ","))
             if (response.status == Status.SUCCESS) {
                 val result: ArrayList<User> = arrayListOf()
                 val json = response.data?.let { JSONObject(it) }
@@ -200,6 +221,29 @@ class VKRepository (private val dataSource: VKDataSource) {
         }.flowOn(Dispatchers.IO)
     }
 
+    suspend fun getMessagesById(messageIds: ArrayList<Long>): Flow<List<Message>> {
+        return flow {
+            val response = dataSource.getMessagesById(messageIds.joinToString(separator = ","))
+            if (response.status == Status.SUCCESS) {
+                val result: ArrayList<Message> = arrayListOf()
+                val json = response.data?.let { JSONObject(it) }
+                if (json != null) {
+                    try {
+                        val messages = json.getJSONObject("response").getJSONArray("items")
+                        val profiles = json.getJSONObject("response").optJSONArray("profiles")
+                        val groups = json.getJSONObject("response").optJSONArray("groups")
+                        for (item in 0 until messages.length()) {
+                            result.add(Message.vkParse(messages.getJSONObject(item), profiles, groups))
+                        }
+                    } catch (ex: JSONException) {
+                        Log.e("${javaClass.simpleName}.getMessages", ex.stackTraceToString())
+                    }
+                }
+                emit(result as List<Message>)
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
     suspend fun editMessage(conversation: Conversation, message: Message): Flow<Boolean> {
         return flow {
             val response = dataSource.editMessage(conversation, message)
@@ -220,7 +264,7 @@ class VKRepository (private val dataSource: VKDataSource) {
                 val json = response.data?.let { JSONObject(it) }
                 if (json != null) {
                     try {
-                        result = VKLongPollServer.parse(json.getJSONObject("response"))
+                        result = VKLongPollServer.parseFull(json.getJSONObject("response"))
                     } catch (ex: JSONException) {
                         Log.e("${javaClass.simpleName}.getConversations", ex.stackTraceToString())
                     }

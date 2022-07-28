@@ -1,5 +1,6 @@
 package com.progcorp.unitedmessengers.data.db
 
+import android.util.Log
 import com.progcorp.unitedmessengers.data.Resource
 import com.progcorp.unitedmessengers.data.clients.VKClient
 import com.progcorp.unitedmessengers.data.model.Conversation
@@ -48,7 +49,7 @@ class VKDataSource (private val client: VKClient) {
         )
     }
 
-    suspend fun getConversationById(id: Int): Resource<String> {
+    suspend fun getConversationById(id: Long): Resource<String> {
         val service = _retrofit.create(VKConversationByIdRequest::class.java)
         return getResponse(
             request = {
@@ -96,13 +97,28 @@ class VKDataSource (private val client: VKClient) {
         )
     }
 
-    suspend fun getUsers(): Resource<String> {
+    suspend fun getUser(): Resource<String> {
+        val service = _retrofit.create(VKUsersRequest::class.java)
+        return getResponse(
+            request = {
+                service.userGet(
+                    client.token!!,
+                    "5.131",
+                    "photo_100",
+                    0
+                )
+            }
+        )
+    }
+
+    suspend fun getUsers(userIds: String): Resource<String> {
         val service = _retrofit.create(VKUsersRequest::class.java)
         return getResponse(
             request = {
                 service.usersGet(
                     client.token!!,
                     "5.131",
+                    userIds,
                     "photo_100",
                     0
                 )
@@ -171,6 +187,21 @@ class VKDataSource (private val client: VKClient) {
         return response
     }
 
+    suspend fun getMessagesById(messageIds: String): Resource<String> {
+        val service = _retrofit.create(VKMessagesRequest::class.java)
+        return getResponse(
+            request = {
+                service.messagesGetById(
+                    client.token!!,
+                    "5.131",
+                    messageIds,
+                    true,
+                    0
+                )
+            }
+        )
+    }
+
     suspend fun editMessage(conversation: Conversation, message: Message): Resource<String> {
         val service = _retrofit.create(VKEditMessage::class.java)
         return getResponse(
@@ -236,6 +267,7 @@ class VKDataSource (private val client: VKClient) {
                 Resource.error(error!!, null)
             }
         } catch (e: Throwable) {
+            Log.e("VKDataSource.getResponse", e.stackTraceToString())
             Resource.error("Unknown Error", null)
         }
     }

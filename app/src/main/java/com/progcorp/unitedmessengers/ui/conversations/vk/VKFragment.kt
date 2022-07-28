@@ -93,6 +93,21 @@ class VKFragment : Fragment() {
         _viewModel.loginEvent.observe(viewLifecycleOwner, EventObserver { navigateToLogin() })
         _viewModel.toTopPressed.observe(viewLifecycleOwner, EventObserver { goToTop() })
         _viewModel.toMailingPressed.observe(viewLifecycleOwner, EventObserver { goToMailing() })
+        _viewModel.notifyItemInsertedEvent.observe(viewLifecycleOwner, EventObserver {
+            notifyWithoutScroll { _listAdapter?.notifyItemInserted(it) }
+        })
+        _viewModel.notifyItemChangedEvent.observe(viewLifecycleOwner, EventObserver {
+            _listAdapter?.notifyItemChanged(it)
+        })
+        _viewModel.notifyItemMovedEvent.observe(viewLifecycleOwner, EventObserver {
+            notifyWithoutScroll { _listAdapter?.notifyItemMoved(it.first, it.second) }
+        })
+        _viewModel.notifyItemRangeChangedEvent.observe(viewLifecycleOwner, EventObserver {
+            notifyWithoutScroll { _listAdapter?.notifyItemRangeChanged(it.first, it.second) }
+        })
+        _viewModel.notifyDatasetChangedEvent.observe(viewLifecycleOwner, EventObserver {
+            notifyWithoutScroll { _listAdapter?.notifyDataSetChanged() }
+        })
     }
 
     private fun notifyWithoutScroll(notification: () -> Unit) {

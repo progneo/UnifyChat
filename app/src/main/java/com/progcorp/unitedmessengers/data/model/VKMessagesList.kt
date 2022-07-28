@@ -1,6 +1,6 @@
 package com.progcorp.unitedmessengers.data.model
 
-import android.os.Handler
+import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import com.progcorp.unitedmessengers.App
 import com.progcorp.unitedmessengers.interfaces.IMessagesList
@@ -8,11 +8,8 @@ import com.progcorp.unitedmessengers.ui.conversation.ConversationViewModel
 import com.progcorp.unitedmessengers.util.addFrontItem
 import com.progcorp.unitedmessengers.util.addNewItem
 import com.progcorp.unitedmessengers.util.updateItemAt
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 
 class VKMessagesList(
     override val conversation: Conversation,
@@ -26,26 +23,69 @@ class VKMessagesList(
 
     private var _job: Job? = null
 
-    private var _handler = Handler()
-    private var _messagesGetter: Runnable = Runnable {  }
-
     init { startHandlers() }
 
     override fun startHandlers() {
-        _messagesGetter = Runnable {
-            MainScope().launch {
-                loadLatestMessages()
-            }
-            _handler.postDelayed(_messagesGetter, 3000)
+        MainScope().launch {
+            loadLatestMessages()
         }
-        _handler.postDelayed(_messagesGetter, 0)
+        _job = MainScope().launch(Dispatchers.Main) {
+            _client.updateResult.collect { update ->
+                Log.d("VKMessagesList", "onResult: ${update?.javaClass?.simpleName}")
+                when (update) {
+                    is VKUpdateNewMessages -> {
+                        for (message in update.messages) {
+                            if (message.conversationId == conversation.id) {
+                                addNewMessage(message)
+                                markAsRead(message)
+                            }
+                        }
+                    }
+                    is VKUpdateMessagesContent -> {
+                        for (message in update.messages) {
+                            messagesList.value?.let { list ->
+                                list.find {
+                                    it.id == message.id
+                                }?.let {
+                                    list.indexOf(it).let { index ->
+                                        messagesList.updateItemAt(message, index)
+                                        conversationViewModel.messageEdited(index)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    is VKUpdateUserStatus -> {
+                        if (update.userId == conversation.id) {
+                            conversation.vkParseOnlineStatus(update)
+                        }
+                        conversationViewModel.updateConversation(conversation)
+                    }
+                    is VKUpdateDeleteMessage -> {
+                        if (update.chatId == conversation.id) {
+                            messagesList.value?.let { list ->
+                                val message = list.find {
+                                    it.id == update.messageId
+                                }
+                                val position = list.indexOf(message)
+                                if (message != null) {
+                                    list.remove(message)
+                                }
+                                conversationViewModel.messageDeleted(position)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun stopHandlers() {
-        _handler.removeCallbacks(_messagesGetter)
+        _job?.cancel()
     }
 
     override fun addNewMessage(message: Message) {
+        Log.d("longPoll", message.toString())
         messagesList.value?.find { it.id == message.id }?.let {
             messagesList.updateItemAt(it, messagesList.value!!.indexOf(it))
         } ?: run {

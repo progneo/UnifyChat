@@ -25,4 +25,13 @@ interface VKMessagesRequest {
         @Query("extended") extended: Boolean,
         @Query("lang") lang: Int
     ): Response<String>
+
+    @GET("messages.getById")
+    suspend fun messagesGetById(
+        @Query("access_token") token: String,
+        @Query("v") v: String,
+        @Query("message_ids") message_ids: String,
+        @Query("extended") extended: Boolean,
+        @Query("lang") lang: Int
+    ): Response<String>
 }

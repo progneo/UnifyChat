@@ -53,6 +53,9 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
     private val _notifyItemRangeChangedEvent = MutableLiveData<Event<Pair<Int, Int>>>()
     val notifyItemRangeChangedEvent: LiveData<Event<Pair<Int, Int>>> = _notifyItemRangeChangedEvent
 
+    private val _notifyDatasetChangedEvent = MutableLiveData<Event<Unit>>()
+    val notifyDatasetChangedEvent: LiveData<Event<Pair<Int, Int>>> = _notifyItemRangeChangedEvent
+
     private val _selectedConversation = MutableLiveData<Event<Conversation>>()
     var selectedConversation: LiveData<Event<Conversation>> = _selectedConversation
 
@@ -79,14 +82,18 @@ class TelegramConversationsViewModel : ViewModel(), IConversationsViewModel {
         _notifyItemRangeChangedEvent.value = Event(pair)
     }
 
+    private fun notifyDatasetChanged() {
+        _notifyDatasetChangedEvent.value = Event(Unit)
+    }
+
     fun goToLoginPressed() {
         if (_client.authState.value != TelegramAuthStatus.AUTHENTICATED) {
             _loginEvent.value = Event(Unit)
         }
     }
 
-    fun addNewChat(index: Int) {
-        notifyItemInserted(index)
+    fun addNewChat() {
+        notifyDatasetChanged()
     }
 
     fun updateOnline(index: Int) {
