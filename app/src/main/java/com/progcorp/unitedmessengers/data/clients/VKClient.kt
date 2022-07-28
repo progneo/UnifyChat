@@ -66,7 +66,6 @@ class VKClient (private val _sharedPreference: SharedPreferences) {
         _authStatus.value = if (token != null) VKAuthStatus.SUCCESS else VKAuthStatus.AUTH
         Log.d("VKClient", "authStatus: ${authStatus.value}")
         setAuth(_authStatus.value!!)
-        initLongPoll()
         startHandlers()
     }
 
@@ -169,6 +168,7 @@ class VKClient (private val _sharedPreference: SharedPreferences) {
         if (auth == VKAuthStatus.SUCCESS) {
             getUser()
             startGetter()
+            initLongPoll()
         }
     }
 

@@ -125,7 +125,7 @@
         <item name="android:maxWidth">266dp</item>
         <item name="android:scaleType">fitXY</item>
         <item name="android:src">@drawable/ic_image</item>
-        <item name="shapeAppearanceOverlay">@style/CornerImageViewPercent</item>
+        <item name="shapeAppearanceOverlay">@style/CornerImageView</item>
     </style>
 
     <style name="Widget.UM.ImageView.Message.Sticker" parent="">
