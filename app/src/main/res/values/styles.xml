@@ -86,6 +86,13 @@
         <item name="android:maxLines">1</item>
     </style>
 
+    <style name="Widget.UM.TextView.Message.Text.Forward" parent="Widget.UM.TextView.Message.Text">
+        <item name="android:layout_marginStart">6dp</item>
+        <item name="android:layout_marginVertical">8dp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
     <style name="Widget.UM.TextView.Message.Author.Reply" parent="Widget.UM.TextView.Message.Author">
         <item name="android:layout_marginStart">6dp</item>
         <item name="android:ellipsize">end</item>
