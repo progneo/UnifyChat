@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Unifychat</string>
+    <string name="favourite">Избранное</string>
+    <string name="settings">Настройки</string>
+    <string name="use_device_language">Использовать язык устройства</string>
+    <string name="light">Светлая</string>
+    <string name="dark">Тёмная</string>
+    <string name="use_device_theme">Использовать тему устройства</string>
+    <string name="accounts">Аккаунты</string>
+    <string name="back">Назад</string>
+    <string name="login_text">Войти в аккаунт</string>
+</resources>
