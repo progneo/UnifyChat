@@ -22,14 +22,22 @@ import java.net.URLEncoder
 @Composable
 fun LoginVkScreen(
     navController: NavHostController,
-    viewModel: LoginVkViewModel = hiltViewModel()
+    viewModel: LoginVkViewModel = hiltViewModel(),
 ) {
     val authParams = StringBuilder("https://oauth.vk.com/authorize?").apply {
         append(String.format("%s=%s", URLEncoder.encode("client_id", "UTF-8"), URLEncoder.encode("2685278", "UTF-8")) + "&")
         append(String.format("%s=%s", URLEncoder.encode("redirect_uri", "UTF-8"), URLEncoder.encode("https://oauth.vk.com/blank.html", "UTF-8")) + "&")
         append(String.format("%s=%s", URLEncoder.encode("display", "UTF-8"), URLEncoder.encode("mobile", "UTF-8")) + "&")
-        append(String.format("%s=%s", URLEncoder.encode("scope", "UTF-8"), URLEncoder.encode(
-            VKClient.SCOPE, "UTF-8")) + "&")
+        append(
+            String.format(
+                "%s=%s",
+                URLEncoder.encode("scope", "UTF-8"),
+                URLEncoder.encode(
+                    VKClient.SCOPE,
+                    "UTF-8",
+                ),
+            ) + "&",
+        )
         append(String.format("%s=%s", URLEncoder.encode("response_type", "UTF-8"), URLEncoder.encode("token", "UTF-8")) + "&")
         append(String.format("%s=%s", URLEncoder.encode("v", "UTF-8"), URLEncoder.encode("5.131", "UTF-8")) + "&")
         append(String.format("%s=%s", URLEncoder.encode("state", "UTF-8"), URLEncoder.encode("12345", "UTF-8")) + "&")
@@ -44,19 +52,19 @@ fun LoginVkScreen(
             WebView(it).apply {
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
+                    ViewGroup.LayoutParams.MATCH_PARENT,
                 )
                 webViewClient = WebViewClient()
-    
+
                 webViewClient = object : WebViewClient() {
                     var currentUrl = ""
-    
+
                     @Deprecated("Deprecated in Java")
                     override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                         view.loadUrl(url)
                         return true
                     }
-    
+
                     override fun onPageFinished(view: WebView, url: String) {
                         if (currentUrl != url) {
                             val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -87,16 +95,16 @@ fun LoginVkScreen(
                                 navController.popBackStack()
                             }
                         }
-    
+
                         currentUrl = url
                     }
                 }
-    
+
                 loadUrl(authParams)
             }
         },
         update = {
             it.loadUrl(authParams)
-        }
+        },
     )
 }

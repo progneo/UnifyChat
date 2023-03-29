@@ -3,7 +3,10 @@ package me.progneo.unifychat.ui.screen.settings.accounts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.progneo.unifychat.data.model.clients.VKClient
 import javax.inject.Inject
@@ -22,7 +25,7 @@ class AccountsViewModel @Inject constructor(
                 _accountUiState.update {
                     it.copy(
                         isVkConnected = user != null,
-                        vkUsername = user?.getName() ?: ""
+                        vkUsername = user?.getName() ?: "",
                     )
                 }
             }

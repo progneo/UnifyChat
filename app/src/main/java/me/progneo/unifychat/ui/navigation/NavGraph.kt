@@ -11,26 +11,26 @@ import me.progneo.unifychat.util.NavDestinations
 
 @Composable
 fun NavGraph(
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     NavHost(
         navController = navController,
-        startDestination = NavDestinations.HOME_SCREEN
+        startDestination = NavDestinations.HOME_SCREEN,
     ) {
         composable(
-            route = NavDestinations.HOME_SCREEN
+            route = NavDestinations.HOME_SCREEN,
         ) {
             HomeScreen(navController)
         }
 
         composable(
-            route = NavDestinations.ACCOUNTS
+            route = NavDestinations.ACCOUNTS,
         ) {
             AccountsScreen(navController)
         }
 
         composable(
-            route = NavDestinations.VK_LOGIN
+            route = NavDestinations.VK_LOGIN,
         ) {
             LoginVkScreen(navController)
         }

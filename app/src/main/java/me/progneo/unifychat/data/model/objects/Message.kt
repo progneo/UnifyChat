@@ -1,7 +1,7 @@
 package me.progneo.unifychat.data.model.objects
 
-import me.progneo.unifychat.data.model.interfaces.IMessageContent
 import me.progneo.unifychat.data.model.interfaces.ICompanion
+import me.progneo.unifychat.data.model.interfaces.IMessageContent
 import java.io.Serializable
 
 data class Message(
@@ -16,5 +16,5 @@ data class Message(
     var canBeEdited: Boolean = false,
     var canBeDeletedOnlyForSelf: Boolean = false,
     var canBeDeletedForAllUsers: Boolean = false,
-    var messenger: String = ""
+    var messenger: String = "",
 ) : Serializable

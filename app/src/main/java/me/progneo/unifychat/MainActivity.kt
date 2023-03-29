@@ -3,6 +3,7 @@ package me.progneo.unifychat
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material3.Surface
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,8 +28,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             SettingsProvider {
                 UCTheme {
-                    val navController = rememberNavController()
-                    NavGraph(navController)
+                    Surface {
+                        val navController = rememberNavController()
+                        NavGraph(navController)
+                    }
                 }
             }
         }

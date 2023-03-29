@@ -27,14 +27,14 @@ fun DisplayText(
                 top = 48.dp,
                 end = 24.dp,
                 bottom = 24.dp,
-            )
+            ),
     ) {
         Text(
             modifier = Modifier
                 .height(46.dp),
             text = text,
             style = MaterialTheme.typography.displaySmall.copy(
-                baselineShift = BaselineShift.Superscript
+                baselineShift = BaselineShift.Superscript,
             ),
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
@@ -46,7 +46,7 @@ fun DisplayText(
                 text = desc,
                 style = MaterialTheme.typography.labelMedium.copy(
                     fontSize = 14.sp,
-                    baselineShift = BaselineShift.Superscript
+                    baselineShift = BaselineShift.Superscript,
                 ),
                 color = MaterialTheme.colorScheme.outline.copy(alpha = 0.8f),
                 maxLines = 1,

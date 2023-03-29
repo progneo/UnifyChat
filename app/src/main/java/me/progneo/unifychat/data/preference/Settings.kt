@@ -6,16 +6,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.flow.map
 import me.progneo.unifychat.util.collectAsStateValue
 import me.progneo.unifychat.util.dataStore
-import kotlinx.coroutines.flow.map
 
 data class Settings(
 
     val theme: ThemePreference = ThemePreference.default,
     val languages: LanguagesPreference = LanguagesPreference.default,
 )
-
 
 val LocalTheme =
     compositionLocalOf<ThemePreference> { ThemePreference.default }

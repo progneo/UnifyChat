@@ -20,9 +20,8 @@ import me.progneo.unifychat.util.NavDestinations
 
 @Composable
 fun SettingsScreen(
-    navController: NavHostController
+    navController: NavHostController,
 ) {
-
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val languages = LocalLanguages.current
@@ -36,7 +35,7 @@ fun SettingsScreen(
                         text = remember(configuration.locales) {
                             context.resources.getString(R.string.settings)
                         },
-                        desc = ""
+                        desc = "",
                     )
                 }
                 item {
@@ -49,7 +48,7 @@ fun SettingsScreen(
                     }
                 }
             }
-        }
+        },
     )
 }
 

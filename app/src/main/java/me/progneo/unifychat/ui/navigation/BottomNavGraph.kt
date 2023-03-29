@@ -12,32 +12,32 @@ import me.progneo.unifychat.ui.screen.settings.SettingsScreen
 @Composable
 fun BottomNavGraph(
     navController: NavHostController,
-    bottomNavController: NavHostController
+    bottomNavController: NavHostController,
 ) {
     NavHost(
         navController = bottomNavController,
-        startDestination = BottomNavItem.FavouriteScreen.route
+        startDestination = BottomNavItem.FavouriteScreen.route,
     ) {
         composable(
-            route = BottomNavItem.FavouriteScreen.route
+            route = BottomNavItem.FavouriteScreen.route,
         ) {
             FavouriteScreen()
         }
 
         composable(
-            route = BottomNavItem.VKScreen.route
+            route = BottomNavItem.VKScreen.route,
         ) {
             VKScreen()
         }
 
         composable(
-            route = BottomNavItem.TelegramScreen.route
+            route = BottomNavItem.TelegramScreen.route,
         ) {
             TelegramScreen()
         }
 
         composable(
-            route = BottomNavItem.SettingsScreen.route
+            route = BottomNavItem.SettingsScreen.route,
         ) {
             SettingsScreen(navController)
         }

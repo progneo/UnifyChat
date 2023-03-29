@@ -21,7 +21,7 @@ sealed class LanguagesPreference(val value: Int) : Preference() {
         scope.launch {
             context.dataStore.put(
                 DataStoreKeys.Languages,
-                value
+                value,
             )
             setLocale(context)
         }
@@ -66,7 +66,7 @@ sealed class LanguagesPreference(val value: Int) : Preference() {
         val values = listOf(
             UseDeviceLanguages,
             English,
-            Russian
+            Russian,
         )
 
         fun fromPreferences(preferences: Preferences): LanguagesPreference =
@@ -85,5 +85,4 @@ sealed class LanguagesPreference(val value: Int) : Preference() {
                 else -> default
             }
     }
-
 }

@@ -10,7 +10,7 @@ data class User(
     var lastSeen: Long = 0,
     var isOnline: Boolean = false,
     var deactivated: Boolean = false,
-    override var messenger: String = ""
+    override var messenger: String = "",
 ) : ICompanion {
     override fun getName(): String {
         return "$firstName $lastName"

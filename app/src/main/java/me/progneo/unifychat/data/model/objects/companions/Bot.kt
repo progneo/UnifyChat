@@ -6,7 +6,7 @@ data class Bot(
     override val id: Long = 0,
     var title: String = "",
     override var photo: String = "",
-    override var messenger: String = ""
+    override var messenger: String = "",
 ) : ICompanion {
     override fun getName(): String {
         return title

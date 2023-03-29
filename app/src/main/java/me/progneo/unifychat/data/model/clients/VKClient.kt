@@ -16,7 +16,7 @@ import javax.inject.Singleton
 @Singleton
 class VKClient @Inject constructor(
     private val _sharedPreferences: SharedPreferences,
-    private val _getUserUseCase: GetUserUseCase
+    private val _getUserUseCase: GetUserUseCase,
 ) {
 
     private val _authStatus = MutableLiveData<VKAuthStatus>()
@@ -52,8 +52,8 @@ class VKClient @Inject constructor(
     }
 
     fun logout() {
-        token = null;
-        _user.value = null;
+        token = null
+        _user.value = null
         _authStatus.value = VKAuthStatus.AUTH
     }
 
@@ -65,14 +65,12 @@ class VKClient @Inject constructor(
             with(_sharedPreferences.edit()) {
                 if (value == null) {
                     remove(TOKEN)
-                }
-                else {
+                } else {
                     putString(TOKEN, value)
                     getUser()
                 }
                 apply()
             }
-
         }
 
     companion object {

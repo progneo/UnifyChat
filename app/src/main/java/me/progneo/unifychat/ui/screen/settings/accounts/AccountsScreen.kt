@@ -1,6 +1,10 @@
 package me.progneo.unifychat.ui.screen.settings.accounts
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
@@ -18,7 +22,7 @@ import me.progneo.unifychat.R
 import me.progneo.unifychat.ui.components.DisplayText
 import me.progneo.unifychat.ui.components.FeedbackIconButton
 import me.progneo.unifychat.ui.components.UCScaffold
-import me.progneo.unifychat.ui.icons.*
+import me.progneo.unifychat.ui.icons.VK
 import me.progneo.unifychat.ui.screen.settings.SelectableSettingGroupItem
 import me.progneo.unifychat.ui.theme.palette.onLight
 import me.progneo.unifychat.util.NavDestinations
@@ -27,7 +31,7 @@ import me.progneo.unifychat.util.collectAsStateValue
 @Composable
 fun AccountsScreen(
     navController: NavHostController,
-    viewModel: AccountsViewModel = hiltViewModel()
+    viewModel: AccountsViewModel = hiltViewModel(),
 ) {
     val accountUiState = viewModel.accountUiState.collectAsStateValue()
 
@@ -41,7 +45,7 @@ fun AccountsScreen(
             FeedbackIconButton(
                 imageVector = Icons.Rounded.ArrowBack,
                 contentDescription = stringResource(R.string.back),
-                tint = MaterialTheme.colorScheme.onSurface
+                tint = MaterialTheme.colorScheme.onSurface,
             ) {
                 navController.popBackStack()
             }
@@ -61,8 +65,7 @@ fun AccountsScreen(
                             navController.navigate(NavDestinations.VK_LOGIN)
                         }
                     }
-                }
-                else {
+                } else {
                     item {
                         SelectableSettingGroupItem(
                             title = stringResource(R.string.vk),
@@ -78,7 +81,7 @@ fun AccountsScreen(
                     Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
                 }
             }
-        }
+        },
     )
 }
 

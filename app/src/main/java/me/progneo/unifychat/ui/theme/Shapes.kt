@@ -10,7 +10,7 @@ val Shapes = Shapes(
     small = RoundedCornerShape(8.0.dp),
     medium = RoundedCornerShape(12.0.dp),
     large = RoundedCornerShape(16.0.dp),
-    extraLarge = RoundedCornerShape(28.0.dp)
+    extraLarge = RoundedCornerShape(28.0.dp),
 )
 
 @Stable

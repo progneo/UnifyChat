@@ -7,7 +7,7 @@ data class Chat(
     var title: String = "",
     override var photo: String = "",
     val membersCount: Int = 0,
-    override var messenger: String = ""
+    override var messenger: String = "",
 ) : ICompanion {
     override fun getName(): String {
         return title

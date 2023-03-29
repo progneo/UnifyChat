@@ -49,7 +49,7 @@ fun SelectableSettingGroupItem(
                 .padding(horizontal = 16.dp)
                 .background(
                     color = if (selected) MaterialTheme.colorScheme.onSurface else Color.Unspecified,
-                    shape = RoundedCornerShape(24.dp)
+                    shape = RoundedCornerShape(24.dp),
                 )
                 .padding(8.dp, 16.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -59,7 +59,7 @@ fun SelectableSettingGroupItem(
                     imageVector = it,
                     contentDescription = title,
                     modifier = Modifier.padding(start = 8.dp, end = 16.dp),
-                    tint = if (selected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = if (selected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             Column(modifier = Modifier.weight(1f)) {
@@ -72,8 +72,11 @@ fun SelectableSettingGroupItem(
                 description?.let {
                     Text(
                         text = it,
-                        color = if (selected) MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
-                        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        color = if (selected) {
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+                        } else {
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        },
                         maxLines = 1,
                         style = MaterialTheme.typography.bodyMedium,
                     )

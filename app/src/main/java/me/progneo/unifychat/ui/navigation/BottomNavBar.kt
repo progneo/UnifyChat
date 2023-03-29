@@ -8,13 +8,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
@@ -24,32 +21,31 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun BottomNavBar(
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     val bottomNavItems = listOf(
         BottomNavItem.FavouriteScreen,
         BottomNavItem.VKScreen,
         BottomNavItem.TelegramScreen,
-        BottomNavItem.SettingsScreen
+        BottomNavItem.SettingsScreen,
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
-    NavigationBar (
+    NavigationBar(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.surfaceColorAtElevation(0.dp))
             .navigationBarsPadding()
             .height(60.dp),
-        tonalElevation = 0.dp
+        tonalElevation = 0.dp,
     ) {
         bottomNavItems.forEach { item ->
             AddItem(
                 bottomNavItem = item,
                 navBackStackEntry = navBackStackEntry,
-                navController = navController
+                navController = navController,
             )
         }
-
     }
 }
 
@@ -57,18 +53,18 @@ fun BottomNavBar(
 fun RowScope.AddItem(
     bottomNavItem: BottomNavItem,
     navBackStackEntry: NavBackStackEntry?,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     NavigationBarItem(
         icon = {
             Icon(
                 imageVector = bottomNavItem.icon,
-                contentDescription = "${bottomNavItem.titleResId} Icon"
+                contentDescription = "${bottomNavItem.titleResId} Icon",
             )
         },
         selected = bottomNavItem.route == navBackStackEntry?.destination?.route,
         alwaysShowLabel = false,
-        onClick = { navController.navigate(bottomNavItem.route) }
+        onClick = { navController.navigate(bottomNavItem.route) },
     )
 }
 

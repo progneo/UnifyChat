@@ -38,9 +38,11 @@ object NetworkModule {
     @Provides
     fun provideOkHttpClient(prefs: SharedPreferences): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            })
+            .addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                },
+            )
             .addInterceptor {
                 val original = it.request()
                 val newRequestBuilder = original.newBuilder()
@@ -68,6 +70,6 @@ object NetworkModule {
 
     @Provides
     fun providerUsersService(
-        @Named("Retrofit") retrofit: Retrofit
-    ) : UsersService = retrofit.create(UsersService::class.java)
+        @Named("Retrofit") retrofit: Retrofit,
+    ): UsersService = retrofit.create(UsersService::class.java)
 }

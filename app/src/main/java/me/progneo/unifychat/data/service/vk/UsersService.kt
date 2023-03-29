@@ -12,6 +12,6 @@ interface UsersService {
         @Query("access_token") token: String,
         @Query("v") v: String,
         @Query("fields") fields: String,
-        @Query("lang") lang: Int
+        @Query("lang") lang: Int,
     ): Response<UsersResponse>
 }

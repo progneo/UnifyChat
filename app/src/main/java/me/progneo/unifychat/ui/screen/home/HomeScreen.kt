@@ -10,20 +10,20 @@ import me.progneo.unifychat.ui.navigation.BottomNavGraph
 
 @Composable
 fun HomeScreen(
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     val bottomNavController = rememberNavController()
-    
-    UCScaffold (
+
+    UCScaffold(
         content = {
             BottomNavGraph(
                 navController = navController,
-                bottomNavController = bottomNavController
+                bottomNavController = bottomNavController,
             )
         },
         bottomBar = {
             BottomNavBar(bottomNavController)
-        }
+        },
 
     )
 }

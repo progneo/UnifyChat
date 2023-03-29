@@ -3,7 +3,10 @@ package me.progneo.unifychat.util
 import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -61,7 +64,7 @@ sealed class DataStoreKeys<T> {
             get() = intPreferencesKey("theme")
     }
 
-   object Languages : DataStoreKeys<Int>() {
+    object Languages : DataStoreKeys<Int>() {
 
         override val key: Preferences.Key<Int>
             get() = intPreferencesKey("languages")
